@@ -11,11 +11,9 @@ class GameState:
     def start_new_round(self):
         self.round += 1
         for player in self.players:
-            if player.is_alive():
-                player.start_new_round(self.round)
-            else:
-                if player not in self.dead_players:
-                    self.dead_players.append(player)
+            player.start_new_round(self.round)
+            if not player.is_alive() and player not in self.dead_players:
+                self.dead_players.append(player)
 
     def get_alive_players(self) -> List['PlayerState']:
         return [player for player in self.players if player.is_alive()]

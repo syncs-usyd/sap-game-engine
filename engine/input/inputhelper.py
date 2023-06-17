@@ -6,18 +6,20 @@ from engine.input.inputvalidator import InputValidator
 from engine.input.movetype import MoveType
 from engine.input.playerinput import PlayerInput
 from engine.output.outputhandler import OutputHandler
+from engine.output.terminationtype import TerminationType
 from engine.state.gamestate import GameState
 from engine.state.playerstate import PlayerState
 
 
 class InputHelper:
-    def __init__(self, output_handler: 'OutputHandler'):
+    def __init__(self, state: 'GameState', output_handler: 'OutputHandler'):
+        self.state = state
         self.output_handler = output_handler
 
         curr_player_num = 0
 
         def open_pipe_timeout_handler(a, b):
-            print(f"Terminate game for timeout...Submission {curr_player_num} is faulty")
+            self.output_handler.terminate_fail(TerminationType.OPEN_TIMEOUT, self.state.players[curr_player_num])
         signal(SIGALRM, open_pipe_timeout_handler)
 
         self.from_engine_pipes = []
@@ -29,14 +31,13 @@ class InputHelper:
             self.to_engine_pipes.append(open(self._get_pipe_path(curr_player_num, from_engine = False), 'r'))
             alarm(0) # Disable timer
 
-    def get_player_input(self, player: 'PlayerState', state: 'GameState', remaining_moves: int) -> 'PlayerInput':
-        self._send_view_to_player(player, state.get_view(player, remaining_moves))
+    def get_player_input(self, player: 'PlayerState', remaining_moves: int) -> 'PlayerInput':
+        self._send_view_to_player(player, self.state.get_view(player, remaining_moves))
         input = self._receive_input_from_player(player)
 
-        valid, reason = InputValidator.validate_input(input, player, state)
+        valid, reason = InputValidator.validate_input(input, player, self.state)
         if not valid:
-            # TODO: terminate
-            pass
+            self.output_handler.terminate_fail(TerminationType.INVALID_MOVE, player, reason = reason)
 
         return input
 
@@ -46,10 +47,10 @@ class InputHelper:
 
     def _send_view_to_player(self, player: 'PlayerState', view: dict):
         def write_pipe_timeout_handler(a, b):
-            print(f"Terminate game for timeout...Submission {player.player_num} is faulty")
+            self.output_handler.terminate_fail(TerminationType.WRITE_TIMEOUT, player)
         signal(SIGALRM, write_pipe_timeout_handler)
 
-        json =  dumps(view)
+        json = dumps(view)
         json += ";"
 
         alarm(WRITE_PIPE_TIMEOUT_SECONDS) # Enable timer
@@ -59,7 +60,7 @@ class InputHelper:
 
     def _receive_input_from_player(self, player: 'PlayerState') -> 'PlayerInput':
         def read_pipe_timeout_handler(a, b):
-            print(f"Terminate game for timeout...Submission {player.player_num} is faulty")
+            self.output_handler.terminate_fail(TerminationType.READ_TIMEOUT, player)
         signal(SIGALRM, read_pipe_timeout_handler)
 
         json = ''
@@ -75,9 +76,6 @@ class InputHelper:
         try:
             input_dict = json.loads(json)
             move_type = MoveType[input_dict["move_type"]]
-            input = PlayerInput(move_type, input_dict)
-        except:
-            # TODO terminate
-            pass
-
-        return input
+            return PlayerInput(move_type, input_dict)
+        except Exception as exception:
+            self.output_handler.terminate_fail(TerminationType.CANNOT_PARSE_INPUT, player, exception = exception)

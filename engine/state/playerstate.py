@@ -57,7 +57,7 @@ class PlayerState:
             "health": self.health,
             "coins": self.coins,
             "pets": [pet.get_view_for_self() if pet is not None else None for pet in self.pets],
-            "shop_pets": [pet.get_view_for_self() for pet in self.shop_pets],
+            "shop_pets": [pet.get_view_for_shop() for pet in self.shop_pets],
             "shop_foods": [food.FOOD_NAME for food in self.shop_foods]
         }
 

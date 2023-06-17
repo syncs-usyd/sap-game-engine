@@ -12,11 +12,11 @@ class BuyRoundHelper:
     def __init__(self, state: 'GameState', output_handler: 'OutputHandler'):
         self.state = state
         self.output_handler = output_handler
-        self.input_helper = InputHelper(output_handler)
+        self.input_helper = InputHelper(state, output_handler)
 
     def run(self, player: 'PlayerState'):
         for moves in range(MAX_MOVES_PER_ROUND):
-            input = self.input_helper.get_player_input(player, self.state, MAX_MOVES_PER_ROUND - moves)
+            input = self.input_helper.get_player_input(player, MAX_MOVES_PER_ROUND - moves)
 
             if input.move_type == MoveType.BUY_PET:
                 self._buy_pet(player, input)
@@ -38,7 +38,7 @@ class BuyRoundHelper:
                 return
             else:
                 raise Exception(f'Invalid move type: {input.move_type}')
-        
+
         self.output_handler.terminate_fail(TerminationType.TOO_MANY_MOVES, player, reason = f"Used more than the max number of moves in a single round. Note: the max is {MAX_MOVES_PER_ROUND}")
 
     def _buy_pet(self, player: 'PlayerState', input: 'PlayerInput'):
