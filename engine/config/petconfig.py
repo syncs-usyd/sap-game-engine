@@ -7,7 +7,7 @@ class PetConfig:
                  tier,
                  base_health,
                  base_defense,
-                 base_buy_cost) -> 'PetConfig':
+                 base_buy_cost):
         self.PET_NAME = pet_name
         self.TIER = tier
         self.BASE_HEALTH = base_health

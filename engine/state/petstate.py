@@ -4,7 +4,7 @@ from engine.config.petconfig import PetConfig
 
 
 class PetState:
-    def __init__(self, health: int, defense: int, pet_config: 'PetConfig') -> 'PetState':
+    def __init__(self, health: int, defense: int, pet_config: 'PetConfig'):
         self.perm_health = health
         self.perm_defense = defense
         self.pet_config = pet_config
@@ -49,7 +49,7 @@ class PetState:
             "defense": self.defense,
             "level": self.get_level(),
             "sub_level": self.get_sub_level_progress(),
-            "carried_food": self.carried_food.FOOD_NAME if self.carried_food != None else None
+            "carried_food": self.carried_food.FOOD_NAME if self.carried_food is not None else None
         }
 
     def get_view_for_others(self) -> dict:
@@ -58,5 +58,5 @@ class PetState:
             "health": self.prev_health,
             "defense": self.prev_defense,
             "level": self.prev_level,
-            "carried_food": self.prev_carried_food.FOOD_NAME if self.prev_carried_food != None else None
+            "carried_food": self.prev_carried_food.FOOD_NAME if self.prev_carried_food is not None else None
         }

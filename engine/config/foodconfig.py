@@ -5,7 +5,7 @@ class FoodConfig:
     def __init__(self,
                  food_name,
                  tier,
-                 base_buy_cost) -> 'FoodConfig':
+                 base_buy_cost):
         self.FOOD_NAME = food_name
         self.TIER = tier
         self.BASE_BUY_COST = base_buy_cost

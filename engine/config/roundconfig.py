@@ -5,7 +5,7 @@ class RoundConfig:
 
     def __init__(self,
                  round_num: int,
-                 max_pet_tier: int) -> 'RoundConfig':
+                 max_pet_tier: int):
         self.MAX_PET_TIER = max_pet_tier
 
 ROUND_CONFIG = [

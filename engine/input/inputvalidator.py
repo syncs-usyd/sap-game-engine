@@ -10,7 +10,7 @@ class InputValidator:
     @staticmethod
     def validate_input(input: 'PlayerInput', player: 'PlayerState', state: 'GameState') -> Tuple[bool, str]:
         # TODO
-        if input.move_type == MoveType.BuyPet:
+        if input.move_type == MoveType.BUY_PET:
             a = 1
             b = 2
             if a == b:

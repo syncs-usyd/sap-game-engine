@@ -1,15 +1,15 @@
 from engine.game.battlehelper import BattleHelper
 from engine.game.buyroundhelper import BuyRoundHelper
-from engine.input.inputhelper import InputHelper
+from engine.output.outputhandler import OutputHandler
 from engine.state.gamestate import GameState
 
 
 class GameEngine:
-    def __init__(self) -> 'GameEngine':
+    def __init__(self):
         self.state = GameState()
-        self.buy_round_helper = BuyRoundHelper()
-        self.battle_helper = BattleHelper()
-        self.input_helper = InputHelper()
+        self.output_handler = OutputHandler(self.state)
+        self.buy_round_helper = BuyRoundHelper(self.state, self.output_handler)
+        self.battle_helper = BattleHelper(self.state)
 
     def run(self):
         while not self.state.is_game_over():
@@ -22,4 +22,4 @@ class GameEngine:
             for player in players:
                 self.battle_helper.run(player)
 
-        # TODO: return winner
+        self.output_handler.terminate_success(self.state.get_player_ranking())

@@ -10,7 +10,7 @@ from engine.state.petstate import PetState
 
 
 class PlayerState:
-    def __init__(self, player_num: int) -> 'PlayerState':
+    def __init__(self, player_num: int):
         self.player_num = player_num
         self.health = STARTING_HEALTH
         self.pets: List['PetState'] = [None] * PET_POSITIONS
@@ -25,7 +25,7 @@ class PlayerState:
         self.coins = STARTING_COINS + self.get_bonus_coins()
         self.shop_pets, self.shop_foods = self.get_shop_options(round)
         for pet in self.pets:
-            if pet != None: pet.start_new_round(round)
+            if pet is not None: pet.start_new_round(round)
 
     # Round robin through battle order until the next alive player is found
     def get_challenger(self, state: 'GameState', increment_index = True) -> 'PlayerState':
@@ -39,7 +39,7 @@ class PlayerState:
                 return challenger
 
     def reroll(self, round: int):
-        self.shop_options = self.get_shop_options(round)
+        self.shop_pets, self.shop_foods = self.get_shop_options(round)
         self.coins -= REROLL_COST
 
     def get_bonus_coins(self) -> int:
@@ -47,7 +47,7 @@ class PlayerState:
 
     def get_shop_options(self, round: int) -> Tuple[List['PetState'], List['FoodConfig']]:
         round_config = RoundConfig.get_round_config(round)
-        pass
+        return ([], [])
 
     def is_alive(self) -> bool:
         return self.health > 0
@@ -56,7 +56,7 @@ class PlayerState:
         return {
             "health": self.health,
             "coins": self.coins,
-            "pets": [pet.get_view_for_self() if pet != None else None for pet in self.pets],
+            "pets": [pet.get_view_for_self() if pet is not None else None for pet in self.pets],
             "shop_pets": [pet.get_view_for_self() for pet in self.shop_pets],
             "shop_foods": [food.FOOD_NAME for food in self.shop_foods]
         }
@@ -64,5 +64,5 @@ class PlayerState:
     def get_view_for_others(self) -> dict:
         return {
             "health": self.prev_health,
-            "pets": [pet.get_view_for_others() if pet != None else None for pet in self.prev_pets]
+            "pets": [pet.get_view_for_others() if pet is not None else None for pet in self.prev_pets]
         }

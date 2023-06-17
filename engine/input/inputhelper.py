@@ -1,16 +1,19 @@
 from json import dumps
 from signal import SIGALRM, alarm, signal
 
-from engine.config.inputconfig import CORE_DIRECTORY, OPEN_PIPE_TIMEOUT_SECONDS, READ_PIPE_TIMEOUT_SECONDS, WRITE_PIPE_TIMEOUT_SECONDS
+from engine.config.ioconfig import CORE_DIRECTORY, OPEN_PIPE_TIMEOUT_SECONDS, READ_PIPE_TIMEOUT_SECONDS, WRITE_PIPE_TIMEOUT_SECONDS
 from engine.input.inputvalidator import InputValidator
 from engine.input.movetype import MoveType
 from engine.input.playerinput import PlayerInput
+from engine.output.outputhandler import OutputHandler
 from engine.state.gamestate import GameState
 from engine.state.playerstate import PlayerState
 
 
 class InputHelper:
-    def __init__(self) -> 'InputHelper':
+    def __init__(self, output_handler: 'OutputHandler'):
+        self.output_handler = output_handler
+
         curr_player_num = 0
 
         def open_pipe_timeout_handler(a, b):
@@ -37,7 +40,7 @@ class InputHelper:
 
         return input
 
-    def _get_pipe_path(player_num, from_engine: bool) -> str:
+    def _get_pipe_path(self, player_num, from_engine: bool) -> str:
         ending = "from_engine.pipe" if from_engine else "to_engine.pipe"
         return f"{CORE_DIRECTORY}/submission{player_num}/io/{ending}"
 
