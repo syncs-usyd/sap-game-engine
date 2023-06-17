@@ -1,4 +1,6 @@
-from engine.config import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF, FoodConfig, PetConfig
+from engine.config.foodconfig import FoodConfig
+from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF
+from engine.config.petconfig import PetConfig
 
 
 class PetState:

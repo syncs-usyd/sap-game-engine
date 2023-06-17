@@ -1,7 +1,9 @@
 from typing import Tuple
-from engine.gamestate import GameState
-from engine.playerinput import MoveType, PlayerInput
-from engine.playerstate import PlayerState
+
+from engine.input.movetype import MoveType
+from engine.input.playerinput import PlayerInput
+from engine.state.gamestate import GameState
+from engine.state.playerstate import PlayerState
 
 
 class InputValidator:

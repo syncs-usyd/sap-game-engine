@@ -1,9 +1,12 @@
 from copy import deepcopy
 from random import shuffle
 from typing import List, Tuple
-from engine.config import NUM_PLAYERS, PET_POSITIONS, REROLL_COST, ROUND_CONFIG, STARTING_COINS, STARTING_HEALTH, FoodConfig
-from engine.gamestate import GameState
-from engine.petstate import PetState
+
+from engine.config.foodconfig import FoodConfig
+from engine.config.gameconfig import NUM_PLAYERS, PET_POSITIONS, REROLL_COST, STARTING_COINS, STARTING_HEALTH
+from engine.config.roundconfig import RoundConfig
+from engine.state.gamestate import GameState
+from engine.state.petstate import PetState
 
 
 class PlayerState:
@@ -43,7 +46,7 @@ class PlayerState:
         return 0
 
     def get_shop_options(self, round: int) -> Tuple[List['PetState'], List['FoodConfig']]:
-        round_config = ROUND_CONFIG[round]
+        round_config = RoundConfig.get_round_config(round)
         pass
 
     def is_alive(self) -> bool:
