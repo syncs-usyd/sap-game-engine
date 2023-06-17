@@ -1,4 +1,4 @@
-from engine.config import MAX_TURNS_PER_ROUND
+from engine.config import MAX_MOVES_PER_ROUND
 from engine.gamestate import GameState
 from engine.playerinput import MoveType, PlayerInput
 from engine.playerstate import PlayerState
@@ -22,8 +22,8 @@ class GameEngine:
         # TODO: return winner
 
     def run_buy_round(self, player: 'PlayerState'):
-        for _ in range(MAX_TURNS_PER_ROUND):
-            input = PlayerInput.get_player_input(player, self.state)
+        for moves in range(MAX_MOVES_PER_ROUND):
+            input = PlayerInput.get_player_input(player, self.state, MAX_MOVES_PER_ROUND - moves)
             if input.move_type == MoveType.BuyPet:
                 self.buy_pet()
             elif input.move_type == MoveType.BuyItem:

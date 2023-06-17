@@ -21,3 +21,15 @@ class GameState:
         num_alive = len(alive_players)
         assert num_alive > 0
         return num_alive == 1
+
+    def get_view(self, player: 'PlayerState', remaining_moves: int) -> dict:
+        next_opponent = player.get_challenger(self, increment_index = False)
+        other_players = [player for player in self.get_alive_players() if self.player != player]
+
+        return {
+            "remaining_moves": remaining_moves,
+            "player_info": player.get_view_for_self(),
+            "next_opponent_index": other_players.index(next_opponent),
+            "other_players_info": [player.get_view_for_others() for player in other_players] 
+        }
+    
