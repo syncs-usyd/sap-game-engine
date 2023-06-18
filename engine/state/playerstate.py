@@ -18,6 +18,9 @@ class PlayerState:
         shuffle(self.battle_order)
         self.next_battle_index = 0
 
+        self.shop_pets = None
+        self.shop_foods = None
+
     def start_new_round(self, round: int):
         self.prev_health = self.health
         self.prev_pets = deepcopy(self.pets)
@@ -48,6 +51,12 @@ class PlayerState:
     def get_shop_options(self, round: int) -> Tuple[List['PetState'], List['FoodConfig']]:
         round_config = RoundConfig.get_round_config(round)
         return ([], [])
+
+    def remove_pet_option(self, round: int) -> None:
+        return
+
+    def remove_food_option(self, round: int) -> None:
+        return
 
     def is_alive(self) -> bool:
         return self.health > 0
