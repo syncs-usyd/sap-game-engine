@@ -30,6 +30,12 @@ class PlayerState:
         prev_shop_pets = self.shop_pets
         prev_shop_foods = seld.shop_foods
 
+        self.refresh_shop(round)
+
+        for pet in self.pets:
+            if pet is not None: pet.start_new_round(round)
+
+    def refresh_shop(self, round: int):
         self.shop_pets, self.shop_foods = self.get_shop_options(round)
         
         # Handles freezes
@@ -43,8 +49,6 @@ class PlayerState:
                 prev_shop_foods[i].is_frozen = False
                 self.shop_foods[i] = prev_shop_foods[i]
 
-        for pet in self.pets:
-            if pet is not None: pet.start_new_round(round)
 
     # Round robin through battle order until the next alive player is found
     def get_challenger(self, state: 'GameState', increment_index = True) -> 'PlayerState':
@@ -58,7 +62,7 @@ class PlayerState:
                 return challenger
 
     def reroll(self, round: int):
-        self.shop_pets, self.shop_foods = self.get_shop_options(round)
+        self.refresh_shop(round)
         self.coins -= REROLL_COST
 
     def get_bonus_coins(self) -> int:
