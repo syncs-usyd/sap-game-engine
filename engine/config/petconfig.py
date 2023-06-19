@@ -160,7 +160,5 @@ TIER_PETS = [
     [Pet.FISH, Pet.BEAVER, Pet.HORSE, Pet.PIG, Pet.ANT, Pet.MOZZIE, Pet.CRICKET],
     [Pet.CRAB, Pet.SWAN, Pet.HEDGEHOG, Pet.FLAMINGO, Pet.KANGAROO, Pet.SPIDER],
     [],
-    [],
-    [],
     []
 ]
