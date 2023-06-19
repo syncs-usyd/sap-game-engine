@@ -2,21 +2,24 @@ from engine.config.gameconfig import MAX_MOVES_PER_ROUND
 from engine.input.inputhelper import InputHelper
 from engine.input.movetype import MoveType
 from engine.input.playerinput import PlayerInput
+from engine.output.gamelog import GameLog
 from engine.output.outputhandler import OutputHandler
 from engine.output.terminationtype import TerminationType
 from engine.state.gamestate import GameState
 from engine.state.playerstate import PlayerState
 
 
-class BuyRoundHelper:
-    def __init__(self, state: 'GameState', output_handler: 'OutputHandler'):
+class BuyStageHelper:
+    def __init__(self, state: 'GameState', log: 'GameLog', output_handler: 'OutputHandler'):
         self.state = state
+        self.log = log
         self.output_handler = output_handler
         self.input_helper = InputHelper(state, output_handler)
 
     def run(self, player: 'PlayerState'):
         for moves in range(MAX_MOVES_PER_ROUND):
             input = self.input_helper.get_player_input(player, MAX_MOVES_PER_ROUND - moves)
+            self.log.write_buy_stage_log(player, input)
 
             if input.move_type == MoveType.BUY_PET:
                 self._buy_pet(player, input)
