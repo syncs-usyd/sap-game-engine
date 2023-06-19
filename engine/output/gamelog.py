@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from engine.config.gameconfig import NUM_PLAYERS
 from engine.input.movetype import MoveType
@@ -15,8 +15,8 @@ class GameLog:
         # Per round, we store the starting state of each player
         self.start_state_logs: List[List[str]] = []
 
-        # Per round, per player, we store the buy round moves
-        self.buy_stage_logs: List[List[List[str]]] = []
+        # Per round, per player, we store the shop log + buy round moves
+        self.buy_stage_logs: List[List[Tuple[str, List[str]]]] = []
 
         # Per round, we store the outcomes of each battle
         self.battle_stage_logs: List[List[str]] = []
@@ -34,6 +34,7 @@ class GameLog:
 
     def write_start_state_logs(self):
         logs_per_player = []
+
         for player in self.state.players:
             log = ""
             if not player.is_alive():
@@ -41,12 +42,13 @@ class GameLog:
             else:
                 log += f"- {player.health} health remaining\n"
                 for i, pet in enumerate(player.pets):
-                    log += f"{i + 1}. {self._write_pet_log(pet)}"
+                    log += f"{i + 1}. {self._write_pet_log(pet)}\n"
             logs_per_player.append(log)
 
         self.start_state_logs.append(logs_per_player)
-        self.buy_stage_logs.append([[] for _ in range(NUM_PLAYERS)])
-        self.battle_stage_logs.append([])
+
+    def init_buy_stage_log(self):
+        self.buy_stage_logs.append([(self._write_shop_log(self.state.players[player_num]), []) for player_num in range(NUM_PLAYERS)])
 
     def write_buy_stage_log(self, player: 'PlayerState', input: 'PlayerInput'):
         log = ""
@@ -72,7 +74,11 @@ class GameLog:
         else:
             raise Exception(f'Invalid move type: {input.move_type}')
 
-        self.buy_stage_logs[self.state.round][player.player_num].append(log)
+        _, logs = self.buy_stage_logs[self.state.round][player.player_num]
+        logs.append(log)
+
+    def init_battle_stage_log(self):
+        self.battle_stage_logs.append([])
 
     def write_battle_stage_log(self, player: 'PlayerState', challenger: 'PlayerState', player_lost: Optional[bool], health_lost: int):
         log = ""
@@ -112,7 +118,12 @@ class GameLog:
     def _get_round_buy_stage_log(self, round: int, player: 'PlayerState'):
         log = f"## Buy Stage\n"
 
-        for i, buy_log in enumerate(self.buy_stage_logs[round][player.player_num]):
+        shop_log, buy_logs = self.buy_stage_logs[round][player.player_num]
+
+        log += shop_log
+        log += "\n"
+
+        for i, buy_log in enumerate(buy_logs):
             log += f"{i + 1}. "
             log += buy_log
             log += "\n"
@@ -133,6 +144,23 @@ class GameLog:
             log += "\n"
 
         log += "\n"
+        return log
+
+    def _write_shop_log(self, player: 'PlayerState'):
+        log = ""
+
+        log += "Shop pets:\n"
+        for i, pet in enumerate(player.shop_pets):
+            log += f"{i + 1}. "
+            log += f"\"{pet.pet_config.PET_NAME}\"; "
+            log += f"{pet.perm_health} health; "
+            log += f"{pet.perm_attack} attack\n\n"
+
+        log += "Shop foods:\n"
+        for i, food in enumerate(player.shop_foods):
+            log += f"{i + 1}. "
+            log += f"\"{food.FOOD_NAME}\"\n"
+
         return log
 
     def _write_pet_log(self, pet: 'PetState') -> str:

@@ -19,9 +19,11 @@ class GameEngine:
             self.log.write_start_state_logs()
             players = self.state.get_alive_players()
 
+            self.log.init_buy_stage_log()
             for player in players:
                 self.buy_stage_helper.run(player)
 
+            self.log.init_battle_stage_log()
             for player in players:
                 self.battle_stage_helper.run(player)
 

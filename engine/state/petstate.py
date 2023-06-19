@@ -42,6 +42,9 @@ class PetState:
         # Some food is entirely temporary (so update only health/attack)
         pass
 
+    def is_alive(self) -> bool:
+        return self.health > 0
+
     def get_view_for_self(self) -> dict:
         return {
             "type": self.pet_config.PET_NAME,
