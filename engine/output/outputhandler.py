@@ -5,21 +5,23 @@ from traceback import TracebackException
 from typing import List, Optional
 
 from engine.config.ioconfig import CORE_DIRECTORY
+from engine.output.gamelog import GameLog
 from engine.output.terminationtype import TerminationType
 from engine.state.gamestate import GameState
 from engine.state.playerstate import PlayerState
 
 
 class OutputHandler:
-    def __init__(self, state: 'GameState'):
+    def __init__(self, state: 'GameState', log: 'GameLog'):
         self.state = state
+        self.log = log
 
     def terminate_success(self, player_ranking: List[int]):
         self._write_results(TerminationType.SUCCESS, player_ranking = player_ranking)
 
         # Write the game log for each player
         for player in self.state.players:
-            self._write_game_log(player.player_num, self.state.get_game_log(player))
+            self._write_game_log(player.player_num, self.log.get_game_log(player))
 
         # Copy all the players stdout so they can see debug info
         for player in self.state.players:
@@ -32,7 +34,7 @@ class OutputHandler:
         self._write_results(termination_type, faulty_player_num = player.player_num)
 
         # Write the game log for the faulty player
-        self._write_game_log(player.player_num, self.state.get_game_log(player))
+        self._write_game_log(player.player_num, self.log.get_game_log(player))
 
         # If we're given an exception or reason, we will populate the stderr with it
         error: str = None
