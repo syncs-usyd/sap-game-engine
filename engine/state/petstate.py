@@ -10,6 +10,7 @@ class PetState:
         self.pet_config = pet_config
         self.carried_food: 'FoodConfig' = None 
         self.sub_level = 1
+        self.is_frozen = False
 
     def start_new_round(self, round: int):
         self.prev_health = self.perm_health

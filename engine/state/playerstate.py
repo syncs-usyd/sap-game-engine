@@ -26,7 +26,23 @@ class PlayerState:
         self.prev_pets = deepcopy(self.pets)
 
         self.coins = STARTING_COINS + self.get_bonus_coins()
+
+        prev_shop_pets = self.shop_pets
+        prev_shop_foods = seld.shop_foods
+
         self.shop_pets, self.shop_foods = self.get_shop_options(round)
+        
+        # Handles freezes
+        for i in range(len(prev_shop_pets)):
+            if(prev_shop_pets[i].is_frozen):
+                prev_shop_pets[i].is_frozen = False
+                self.shop_pets[i] = prev_shop_pets[i]
+
+        for i in range(len(prev_shop_foods)):
+            if(prev_shop_foods[i].is_frozen):
+                prev_shop_foods[i].is_frozen = False
+                self.shop_foods[i] = prev_shop_foods[i]
+
         for pet in self.pets:
             if pet is not None: pet.start_new_round(round)
 
@@ -51,12 +67,6 @@ class PlayerState:
     def get_shop_options(self, round: int) -> Tuple[List['PetState'], List['FoodConfig']]:
         round_config = RoundConfig.get_round_config(round)
         return ([], [])
-
-    def remove_pet_option(self, round: int) -> None:
-        return
-
-    def remove_food_option(self, round: int) -> None:
-        return
 
     def is_alive(self) -> bool:
         return self.health > 0
