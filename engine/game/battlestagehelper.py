@@ -1,7 +1,8 @@
 from copy import deepcopy
-from typing import List, Optional
-from engine.config.roundconfig import RoundConfig
+from typing import Optional
 
+from engine.config.roundconfig import RoundConfig
+from engine.game.abilitytype import AbilityType
 from engine.output.gamelog import GameLog
 from engine.state.gamestate import GameState
 from engine.state.petstate import PetState
@@ -14,50 +15,64 @@ class BattleStageHelper:
         self.log = log
 
     def run(self, player: 'PlayerState'):
-        challenger = player.get_challenger()
-        player_lost = self._determine_winner(player, challenger)
+        player.start_battle(player.challenger)
+        player.challenger.start_battle(player)
+
+        # Actually run the battle
+        player_lost = self._determine_winner(player, player.challenger)
 
         round_config = RoundConfig.get_round_config(self.state.round)
         if player_lost:
             player.health -= round_config.HEALTH_LOST
 
-        self.log.write_battle_stage_log(player, challenger, player_lost, round_config.HEALTH_LOST)
+        self.log.write_battle_stage_log(player, player.challenger, player_lost, round_config.HEALTH_LOST)
 
     def _determine_winner(self, player: 'PlayerState', challenger: 'PlayerState') -> Optional[bool]:
-        player_pets = self._clear_dead_and_empty(deepcopy(player.pets))
-        challenger_pets = self._clear_dead_and_empty(deepcopy(challenger.pets))
-
-        # TODO: go through battle start abilities
+        self._check_battle_round_start(player)
+        self._check_battle_round_start(challenger)
 
         # Go round by round until someone has no pets
-        while len(player_pets) > 0 or len(challenger_pets) > 0:
-            player_front = player_pets[0]
-            challenger_front = challenger_pets[0]
+        while len(player.battle_pets) > 0 or len(challenger.battle_pets) > 0:
+            self._start_next_battle_turn(player)
+            self._start_next_battle_turn(challenger)
 
-            # go through before attack abilities
+            player_front = player.battle_pets[0]
+            challenger_front = challenger.battle_pets[0]
 
-            # Probably move this into a method on pet state
-            # to better handle attacking non-infront enemies
+            player_front.proc_ability(AbilityType.BEFORE_ATTACK)
+            challenger_front.proc_ability(AbilityType.BEFORE_ATTACK)
 
-            player_front.health -= challenger_front.attack
-            challenger_front.health -= player_front.attack
+            player_front.take_damage(challenger_front.attack)
+            challenger_front.take_damage(player_front.attack)
 
-            # go through hurt abilities
+            self._check_after_attack(player_front)
+            self._check_after_attack(challenger_front)
 
-            # go through knockout abilities
+            self._check_friend_ahead_attacked(player)
+            self._check_friend_ahead_attacked(challenger)
 
-            # go through player in front attacked abilities
+            player.cleanup_battle_pets()
+            challenger.cleanup_battle_pets()
 
-            # Cleanup pets
-            player_pets = self._clear_dead_and_empty(player_pets)
-            challenger_pets = self._clear_dead_and_empty(challenger_pets)
-
-        if len(player_pets) == 0 and len(challenger_pets) == 0:
+        if len(player.battle_pets) == 0 and len(challenger.battle_pets) == 0:
             return None # Tied
-        elif len(player_pets) == 0:
+        elif len(player.battle_pets) == 0:
             return True # Lost
         else:
             return False # Won
 
-    def _clear_dead_and_empty(self, pets: List[Optional['PetState']]) -> List['PetState']:
-        return [pet for pet in pets if pet is not None and pet.is_alive()]
+    def _start_next_battle_turn(self, player: 'PlayerState'):
+        for pet in player.battle_pets:
+            pet.start_next_battle_turn()
+
+    def _check_battle_round_start(self, player: 'PlayerState'):
+        for pet in player.battle_pets:
+            pet.proc_ability(AbilityType.BATTLE_ROUND_START)
+
+    def _check_after_attack(self, pet: 'PetState'):
+        if pet.is_alive():
+            pet.proc_ability(AbilityType.AFTER_ATTACK)
+
+    def _check_friend_ahead_attacked(self, player: 'PlayerState'):
+        if len(player.battle_pets) > 1:
+            player.battle_pets[1].proc_ability(AbilityType.FRIEND_AHEAD_ATTACK)
