@@ -4,6 +4,7 @@ from engine.input.movetype import MoveType
 class PlayerInput:
     self.index_from: int
     self.index_to: int
+    self.round: int
 
     def __init__(self, move_type: 'MoveType', input_dict: dict):
         self.move_type = move_type
