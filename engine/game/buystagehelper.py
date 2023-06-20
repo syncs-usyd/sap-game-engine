@@ -1,4 +1,4 @@
-from engine.config.gameconfig import MAX_MOVES_PER_ROUND, REROLL_COST
+from engine.config.gameconfig import MAX_MOVES_PER_ROUND, PET_BUY_COST, REROLL_COST
 from engine.game.abilitytype import AbilityType
 from engine.input.inputhelper import InputHelper
 from engine.input.movetype import MoveType
@@ -51,6 +51,7 @@ class BuyStageHelper:
     def _buy_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         new_pet = player.shop_pets[input.index_from]
         player.shop_pets.remove(new_pet)
+        player.coins -= PET_BUY_COST
 
         player.pets[input.index_to] = new_pet
         new_pet.proc_ability(AbilityType.BUY)
@@ -75,6 +76,7 @@ class BuyStageHelper:
     def _upgrade_pet_from_shop(self, player: 'PlayerState', input: 'PlayerInput'):
         shop_pet = player.shop_pets[input.index_from]
         player.shop_pets.remove(shop_pet)
+        player.coins -= PET_BUY_COST
 
         pet = player.pets[input.index_to]
         pet.level_up(shop_pet)
