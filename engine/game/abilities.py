@@ -16,8 +16,8 @@ class Abilities:
         num_choose = 2 if len(other_pets) >= 2 else 1
         pets_to_upgrade = sample(other_pets, num_choose)
         for pet in pets_to_upgrade:
-            pet.perm_increase_health(fish.prev_level)
-            pet.perm_increase_attack(fish.prev_level)
+            pet.perm_increase_health(fish.get_level() - 1)
+            pet.perm_increase_attack(fish.get_level() - 1)
 
     @staticmethod
     def pig_ability(pig: 'PetState', player: 'PlayerState', state: 'GameState'):

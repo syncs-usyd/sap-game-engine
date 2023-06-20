@@ -1,4 +1,5 @@
 from engine.config.gameconfig import MAX_MOVES_PER_ROUND, REROLL_COST
+from engine.game.abilitytype import AbilityType
 from engine.input.inputhelper import InputHelper
 from engine.input.movetype import MoveType
 from engine.input.playerinput import PlayerInput
@@ -22,8 +23,8 @@ class BuyStageHelper:
 
             if input.move_type == MoveType.BUY_PET:
                 self._buy_pet(player, input)
-            elif input.move_type == MoveType.BUY_ITEM:
-                self._buy_item(player, input)
+            elif input.move_type == MoveType.BUY_FOOD:
+                self._buy_food(player, input)
             elif input.move_type == MoveType.UPGRADE_PET_FROM_PETS:
                 self._upgrade_pet_from_pets(player, input)
             elif input.move_type == MoveType.UPGRADE_PET_FROM_SHOP:
@@ -34,8 +35,8 @@ class BuyStageHelper:
                 self._reroll(player, input)
             elif input.move_type == MoveType.FREEZE_PET:
                 self._freeze_pet(player, input)
-            elif input.move_type == MoveType.FREEZE_ITEM:
-                self._freeze_item(player, input)
+            elif input.move_type == MoveType.FREEZE_FOOD:
+                self._freeze_food(player, input)
             elif input.move_type == MoveType.SWAP_PET:
                 self._swap_pet(player, input)
             elif input.move_type == MoveType.END_TURN:
@@ -48,58 +49,44 @@ class BuyStageHelper:
         self.output_handler.terminate_fail(TerminationType.TOO_MANY_MOVES, player, reason = f"Used more than the max number of moves in a single round. Note: the max is {MAX_MOVES_PER_ROUND}")
 
     def _buy_pet(self, player: 'PlayerState', input: 'PlayerInput'):
-        # find the pet specified by the user
-        pet_to_buy = player.shop_pets[input.index_from]
+        new_pet = player.shop_pets[input.index_from]
+        player.shop_pets.remove(new_pet)
 
-        # buy the pet specified by the user
-        player.pets[input.index_to] = pet_to_buy
+        player.pets[input.index_to] = new_pet
+        new_pet.proc_ability(AbilityType.BUY)
+        player.friend_summoned(new_pet)
 
-        # remove pet from buy options
-        player.shop_pets.remove(pet_to_buy)
-
-    def _buy_item(self, player: 'PlayerState', input: 'PlayerInput'):
-        # find the item specified by the user
+    def _buy_food(self, player: 'PlayerState', input: 'PlayerInput'):
+        # TODO: handle different kinds of food
         food_to_buy = player.shop_foods[input.index_from]
+        player.shop_foods.remove(food_to_buy)
+        player.coins -= food_to_buy.BASE_BUY_COST
 
-        # buy the pet specified by the user
         pet_to_add_food = player.pets[input.index_to]
         pet_to_add_food.add_food(food_to_buy)
 
-        # remove pet from buy options
-        player.shop_foods.remove(food_to_buy)
-
     def _upgrade_pet_from_pets(self, player: 'PlayerState', input: 'PlayerInput'):
-        # find the pet specified by the user
-        pet = player.pets[input.index_to]
-
-        # TODO: Add level-up bonus pet to shop
-
-        # Upgrade pets level
-        pet.sub_level += 1
-        pet.perm_increase_health(1)
-        pet.perm_increase_attack(1)
-
-        # remove pet from buy options
+        from_pet = player.pets[input.index_from]
         player.pets[input.index_from] = None
 
+        to_pet = player.pets[input.index_to]
+        to_pet.level_up(from_pet)
+
     def _upgrade_pet_from_shop(self, player: 'PlayerState', input: 'PlayerInput'):
-         # find the pet specified by the user
-        shop_pet = player.pets[input.index_from]
-        pet = player.pets[input.index_to]
-
-        # TODO: Add level-up bonus pet to shop
-
-        # Upgrade pets level
-        pet.sub_level += 1
-        pet.perm_increase_health(1)
-        pet.perm_increase_attack(1)
-
-        # remove pet from buy options
+        shop_pet = player.shop_pets[input.index_from]
         player.shop_pets.remove(shop_pet)
 
+        pet = player.pets[input.index_to]
+        pet.level_up(shop_pet)
+        shop_pet.proc_ability(AbilityType.BUY)
+        player.friend_summoned(pet)
+
     def _sell_pet(self, player: 'PlayerState', input: 'PlayerInput'):
-        # TODO
-        pass
+        pet = player.pets[input.index_from]
+        player.pets[input.index_from] = None
+
+        pet.proc_ability(AbilityType.SELL)
+        player.coins += pet.get_level()
 
     def _reroll(self, player: 'PlayerState', input: 'PlayerInput'):
         player.reset_shop_options()
@@ -109,12 +96,11 @@ class BuyStageHelper:
         pet_to_freeze = player.shop_pets[input.index_from]
         # pet_to_freeze.is_frozen = True
 
-    def _freeze_item(self, player: 'PlayerState', input: 'PlayerInput'):
-        # Freeze item specified
+    def _freeze_food(self, player: 'PlayerState', input: 'PlayerInput'):
+        # Freeze food specified
         food_to_freeze = player.shop_foods[input.index_from]
         # food_to_freeze.is_frozen = True
 
     def _swap_pet(self, player: 'PlayerState', input: 'PlayerInput'):
-        # Swap Pets
         player.pets[input.index_from], player.pets[input.index_to]\
                 = player.pets[input.index_to], player.pets[input.index_from]

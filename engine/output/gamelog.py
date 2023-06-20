@@ -55,7 +55,7 @@ class GameLog:
 
         if input.move_type == MoveType.BUY_PET:
             log = ""
-        elif input.move_type == MoveType.BUY_ITEM:
+        elif input.move_type == MoveType.BUY_FOOD:
             log = ""
         elif input.move_type == MoveType.UPGRADE_PET_FROM_PETS:
             log = ""
@@ -67,7 +67,7 @@ class GameLog:
             log = ""
         elif input.move_type == MoveType.FREEZE_PET:
             log = ""
-        elif input.move_type == MoveType.FREEZE_ITEM:
+        elif input.move_type == MoveType.FREEZE_FOOD:
             log = ""
         elif input.move_type == MoveType.SWAP_PET:
             log = ""
