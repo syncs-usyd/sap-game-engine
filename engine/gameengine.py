@@ -23,6 +23,7 @@ class GameEngine:
             for player in players:
                 self.buy_stage_helper.run(player)
 
+            self.state.start_battle_stage()
             self.log.init_battle_stage_log()
             for player in players:
                 self.battle_stage_helper.run(player)

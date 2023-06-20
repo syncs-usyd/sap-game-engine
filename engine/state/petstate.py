@@ -16,6 +16,9 @@ class PetState:
         self.player = player
         self.state = state
 
+        # Represents whether the pet has already been hurt in the current battle turn
+        self.hurt_already = False
+
     def start_new_round(self):
         self.prev_health = self.perm_health
         self.prev_attack = self.perm_attack
@@ -27,6 +30,9 @@ class PetState:
 
         if self.pet_config.ABILITY_TYPE == AbilityType.BUY_ROUND_START:
             self.pet_config.ABILITY_FUNC(self, self.player, self.state)
+
+    def start_next_battle_turn(self):
+        self.hurt_already = False
 
     def get_level(self):
         if self.sub_level == LEVEL_3_CUTOFF:
@@ -45,10 +51,15 @@ class PetState:
         else:
             return self.sub_level
 
-    def take_damage(self, amount: int):
-        self.health -= amount
-        if self.pet_config.ABILITY_TYPE == AbilityType.HURT:
-            pass
+    def damage_enemy(self, enemy_pet: 'PetState'):
+        enemy_was_alive = enemy_pet.is_alive() 
+        enemy_pet._take_damage(self.attack)
+        if enemy_was_alive and not enemy_pet.is_alive():
+            self.proc_ability(AbilityType.KILLED_ENEMY)
+
+    def proc_ability(self, ability_type: AbilityType):
+        if self.pet_config.ABILITY_TYPE == ability_type:
+            self.pet_config.ABILITY_FUNC(self, self.player, self.state)
 
     def perm_increase_health(self, amount: int):
         self.health += amount
@@ -92,3 +103,9 @@ class PetState:
             "level": self.prev_level,
             "carried_food": self.prev_carried_food.FOOD_NAME if self.prev_carried_food is not None else None
         }
+
+    def _take_damage(self, amount: int):
+        self.health -= amount
+        if not self.hurt_already:
+            self.hurt_already = True
+            self.proc_ability(AbilityType.HURT)
