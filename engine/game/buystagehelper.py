@@ -80,7 +80,7 @@ class BuyStageHelper:
 
         pet = player.pets[input.index_to]
         pet.level_up(shop_pet)
-        shop_pet.proc_ability(AbilityType.BUY)
+        pet.proc_ability(AbilityType.BUY)
         player.friend_summoned(pet)
 
     def _sell_pet(self, player: 'PlayerState', input: 'PlayerInput'):
