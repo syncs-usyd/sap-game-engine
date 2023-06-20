@@ -14,3 +14,4 @@ class AbilityType(Enum):
     BEFORE_ATTACK = 10 # Triggers before you attack an enemy
     AFTER_ATTACK = 11 # Triggers after you attack an enemy
     KILLED_ENEMY = 12 # Triggers when you kill an enemy pet
+    FAINTED = 13 # Triggers when the pet dies

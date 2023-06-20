@@ -1,6 +1,6 @@
 from enum import Enum
 
-from engine.game.abilities import Abilities
+from engine.game.petabilities import PetAbilities
 from engine.game.abilitytype import AbilityType
 
 
@@ -55,7 +55,7 @@ PET_CONFIG = {
                         base_health = 3,
                         base_attack = 2,
                         ability_type = AbilityType.LEVEL_UP,
-                        ability_func = Abilities.fish_ability),
+                        ability_func = PetAbilities.fish_ability),
     
     # Animal: Beaver
     # Ability: On sell, give 2 (random) pets +L attack
@@ -72,7 +72,7 @@ PET_CONFIG = {
                         base_health = 1,
                         base_attack = 4,
                         ability_type = AbilityType.BUY_ROUND_START,
-                        ability_func = Abilities.pig_ability,),
+                        ability_func = PetAbilities.pig_ability,),
     # Animal: Ant 
     # Ability: On faint, give L attack and helath to a random friend
     # Implementation: Mostly a battle ability; maybe need to check if the pill is used on an ant for a special case?

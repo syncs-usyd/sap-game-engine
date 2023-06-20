@@ -1,3 +1,5 @@
+from typing import Optional
+
 from engine.config.gameconfig import MAX_MOVES_PER_ROUND, PET_BUY_COST, REROLL_COST
 from engine.game.abilitytype import AbilityType
 from engine.input.inputhelper import InputHelper
@@ -7,6 +9,7 @@ from engine.output.gamelog import GameLog
 from engine.output.outputhandler import OutputHandler
 from engine.output.terminationtype import TerminationType
 from engine.state.gamestate import GameState
+from engine.state.petstate import PetState
 from engine.state.playerstate import PlayerState
 
 
@@ -58,13 +61,19 @@ class BuyStageHelper:
         player.friend_summoned(new_pet)
 
     def _buy_food(self, player: 'PlayerState', input: 'PlayerInput'):
-        # TODO: handle different kinds of food
-        food_to_buy = player.shop_foods[input.index_from]
-        player.shop_foods.remove(food_to_buy)
-        player.coins -= food_to_buy.BASE_BUY_COST
+        food = player.shop_foods[input.index_from]
+        player.shop_foods.remove(food)
+        player.coins -= food.BUY_COST
 
-        pet_to_add_food = player.pets[input.index_to]
-        pet_to_add_food.add_food(food_to_buy)
+        pet: Optional['PetState'] = None
+        if food.IS_TARGETED:
+            pet = player.pets[input.index_to]
+
+        # For carried food, the effects are hard-coded
+        if food.IS_CARRIED:
+            pet.carried_food = food
+        else:
+            food.EFFECT_FUNC(pet, player, self.state)
 
     def _upgrade_pet_from_pets(self, player: 'PlayerState', input: 'PlayerInput'):
         from_pet = player.pets[input.index_from]

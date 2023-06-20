@@ -42,8 +42,8 @@ class BattleStageHelper:
             player_front.proc_ability(AbilityType.BEFORE_ATTACK)
             challenger_front.proc_ability(AbilityType.BEFORE_ATTACK)
 
-            player_front.take_damage(challenger_front.attack)
-            challenger_front.take_damage(player_front.attack)
+            player_front.damage_enemy_with_attack(challenger_front)
+            challenger_front.damage_enemy_with_attack(player_front)
 
             self._check_after_attack(player_front)
             self._check_after_attack(challenger_front)
@@ -74,5 +74,5 @@ class BattleStageHelper:
             pet.proc_ability(AbilityType.AFTER_ATTACK)
 
     def _check_friend_ahead_attacked(self, player: 'PlayerState'):
-        if len(player.battle_pets) > 1:
+        if len(player.battle_pets) >= 2:
             player.battle_pets[1].proc_ability(AbilityType.FRIEND_AHEAD_ATTACK)
