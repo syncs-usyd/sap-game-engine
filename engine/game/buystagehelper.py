@@ -1,4 +1,4 @@
-from engine.config.gameconfig import MAX_MOVES_PER_ROUND
+from engine.config.gameconfig import MAX_MOVES_PER_ROUND, REROLL_COST
 from engine.input.inputhelper import InputHelper
 from engine.input.movetype import MoveType
 from engine.input.playerinput import PlayerInput
@@ -52,7 +52,7 @@ class BuyStageHelper:
         pet_to_buy = player.shop_pets[input.index_from]
 
         # buy the pet specified by the user
-        player.pets.insert(input.index_to, pet_to_buy)
+        player.pets[input.index_to] = pet_to_buy
 
         # remove pet from buy options
         player.shop_pets.remove(pet_to_buy)
@@ -70,40 +70,49 @@ class BuyStageHelper:
 
     def _upgrade_pet_from_pets(self, player: 'PlayerState', input: 'PlayerInput'):
         # find the pet specified by the user
-        pet_to_buy = player.shop_pets[input.index_from]
-        pet_to_upgrade = player.pets[input.index_to]
-        
+        pet = player.pets[input.index_to]
+
+        # TODO: Add level-up bonus pet to shop
+
         # Upgrade pets level
-        pet_to_upgrade.sub_level += 1
+        pet.sub_level += 1
+        pet.perm_increase_health(1)
+        pet.perm_increase_attack(1)
 
         # remove pet from buy options
-        player.shop_pets.remove(pet_to_buy)
+        player.pets[input.index_from] = None
 
     def _upgrade_pet_from_shop(self, player: 'PlayerState', input: 'PlayerInput'):
-        # find the pet specified by the user
-        pet_to_buy = player.shop_pets[input.index_from]
-        pet_to_upgrade = player.pets[input.index_to]
-        
+         # find the pet specified by the user
+        shop_pet = player.pets[input.index_from]
+        pet = player.pets[input.index_to]
+
+        # TODO: Add level-up bonus pet to shop
+
         # Upgrade pets level
-        pet_to_upgrade.sub_level += 1
+        pet.sub_level += 1
+        pet.perm_increase_health(1)
+        pet.perm_increase_attack(1)
 
         # remove pet from buy options
-        player.shop_pets.remove(pet_to_buy)
+        player.shop_pets.remove(shop_pet)
 
     def _sell_pet(self, player: 'PlayerState', input: 'PlayerInput'):
+        # TODO
         pass
 
     def _reroll(self, player: 'PlayerState', input: 'PlayerInput'):
-        player.shop_pets, player.shop_foods = player.get_shop_options(round)
+        player.reset_shop_options(self.state.round)
+        player.coins -= REROLL_COST
 
     def _freeze_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         pet_to_freeze = player.shop_pets[input.index_from]
-        pet_to_freeze.is_frozen = True
+        # pet_to_freeze.is_frozen = True
 
     def _freeze_item(self, player: 'PlayerState', input: 'PlayerInput'):
         # Freeze item specified
         food_to_freeze = player.shop_foods[input.index_from]
-        food_to_freeze.is_frozen = True
+        # food_to_freeze.is_frozen = True
 
     def _swap_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         # Swap Pets

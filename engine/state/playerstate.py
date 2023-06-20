@@ -2,9 +2,9 @@ from copy import deepcopy
 from random import choice, randint, shuffle
 from typing import List, Optional
 
-from engine.config.foodconfig import FOOD_CONFIG, TIER_FOOD, FoodConfig
-from engine.config.gameconfig import NUM_PLAYERS, PET_POSITIONS, REROLL_COST, STARTING_COINS, STARTING_HEALTH
-from engine.config.petconfig import PET_CONFIG, TIER_PETS
+from engine.config.foodconfig import FOOD_CONFIG, TIER_FOOD, Food, FoodConfig
+from engine.config.gameconfig import NUM_PLAYERS, PET_POSITIONS, STARTING_COINS, STARTING_HEALTH
+from engine.config.petconfig import PET_CONFIG, TIER_PETS, Pet
 from engine.config.roundconfig import RoundConfig
 from engine.state.gamestate import GameState
 from engine.state.petstate import PetState
@@ -46,30 +46,19 @@ class PlayerState:
                 if increment_index: self.next_battle_index = i
                 return challenger
 
-    def reroll(self, round: int):
-        self.reset_shop_options(round)
-        self.coins -= REROLL_COST
-
     def reset_shop_options(self, round: int):
         round_config = RoundConfig.get_round_config(round)
 
-        # We do a two-level lottery
-        # The first random tells us which tier the pet/food is going to come from
-        # The second random tells us which pet/food within that tier we are choosing
-
         self.shop_pets = []
         for _ in range(round_config.NUM_SHOP_PETS):
-            tier = self._get_shop_tier(round_config.MAX_SHOP_TIER)
-            pet_config = PET_CONFIG[choice(TIER_PETS[tier])]
-
+            pet_config = PET_CONFIG[self._get_random_pet(round_config.MAX_SHOP_TIER)]
             health = pet_config.BASE_HEALTH + self.shop_perm_health_bonus
             attack = pet_config.BASE_ATTACK + self.shop_perm_attack_bonus
             self.shop_pets.append(PetState(health, attack, pet_config))
 
         self.shop_foods = []
         for _ in range(round_config.NUM_SHOP_FOODS):
-            tier = self._get_shop_tier(round_config.MAX_SHOP_TIER)
-            food_config = FOOD_CONFIG[choice(TIER_FOOD[tier])]
+            food_config = FOOD_CONFIG[self._get_random_food(round_config.MAX_SHOP_TIER)]
             self.shop_foods.append(food_config)
 
     def is_alive(self) -> bool:
@@ -93,14 +82,22 @@ class PlayerState:
     def _get_bonus_coins(self) -> int:
         return 0
 
-    def _get_shop_tier(self, max_shop_tier: int):
-        # Note: we prioritise higher tiers to keep the game interesting
-        total_tickets = (max_shop_tier * (max_shop_tier + 1)) / 2
-        ticket_num = randint(1, total_tickets)
+    def _get_random_pet(self, max_shop_tier: int) -> 'Pet':
+        return self._get_random_from_config_tiers(TIER_PETS, max_shop_tier)
 
-        tier = 0
-        while ticket_num > 0:
-            ticket_num -= tier
-            tier += 1
+    def _get_random_food(self, max_shop_tier: int) -> 'Food':
+        return self._get_random_from_config_tiers(TIER_FOOD, max_shop_tier)
 
-        return tier
+    # Simple probability. Every pet/food has an equal chance among the currently
+    # allowed tiers
+    def _get_random_from_config_tiers(self, config_tiers, max_shop_tier: int):
+        total_num = 0
+        for tier in range(max_shop_tier):
+            total_num += len(config_tiers[tier])
+
+        global_index = randint(0, total_num - 1)
+        for tier in range(max_shop_tier):
+            if global_index < len(config_tiers[tier]):
+                return config_tiers[tier][global_index]
+            else:
+                global_index -= len(config_tiers[tier])
