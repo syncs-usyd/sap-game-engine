@@ -69,6 +69,10 @@ class GameLog:
             log = ""
         elif input.move_type == MoveType.FREEZE_FOOD:
             log = ""
+        elif input.move_type == MoveType.UNFREEZE_PET:
+            log = ""
+        elif input.move_type == MoveType.UNFREEZE_FOOD:
+            log = ""
         elif input.move_type == MoveType.SWAP_PET:
             log = ""
         elif input.move_type == MoveType.END_TURN:
@@ -161,7 +165,7 @@ class GameLog:
         log += "Shop foods:\n"
         for i, food in enumerate(player.shop_foods):
             log += f"{i + 1}. "
-            log += f"\"{food.FOOD_NAME}\"\n"
+            log += f"\"{food.food_config.FOOD_NAME}\"\n"
 
         return log
 

@@ -10,5 +10,7 @@ class MoveType(Enum):
     REROLL = 6
     FREEZE_PET = 7
     FREEZE_FOOD = 8
-    SWAP_PET = 9
-    END_TURN = 10
+    UNFREEZE_PET = 9
+    UNFREEZE_FOOD = 10
+    SWAP_PET = 11
+    END_TURN = 12
