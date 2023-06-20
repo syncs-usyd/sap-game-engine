@@ -107,11 +107,10 @@ class PlayerState:
         # Clear the reference now its not needed
         self.new_summoned_pet = None
 
-    def friend_ate_food(self, pet: 'PetState'):
-        self.pet_that_ate_food = pet
+    def friend_ate_food(self, fat_pet: 'PetState'):
+        self.pet_that_ate_food = fat_pet
         for pet in self.pets:
-            if pet is not None and pet != pet:
-                pet.proc_ability(AbilityType.FRIEND_ATE_FOOD)
+            pet.proc_ability(AbilityType.FRIEND_ATE_FOOD)
 
         # Clear the reference now its not needed
         self.pet_that_ate_food = None
