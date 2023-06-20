@@ -1,4 +1,6 @@
-from engine.config.foodconfig import FoodConfig
+from typing import Optional
+
+from engine.config.foodconfig import FOOD_CONFIG, FoodConfig, FoodType
 from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF
 from engine.config.petconfig import PetConfig
 from engine.game.abilitytype import AbilityType
@@ -11,7 +13,7 @@ class PetState:
         self.perm_health = health
         self.perm_attack = attack
         self.pet_config = pet_config
-        self.carried_food: 'FoodConfig' = None 
+        self.carried_food: Optional['FoodConfig'] = None 
         self.sub_level = 0
         self.player = player
         self.state = state
@@ -66,11 +68,11 @@ class PetState:
             self.player.add_level_up_shop_pet()
             self.proc_ability(AbilityType.LEVEL_UP)
 
-    def damage_enemy(self, enemy_pet: 'PetState'):
-        enemy_was_alive = enemy_pet.is_alive() 
-        enemy_pet._take_damage(self.attack)
-        if enemy_was_alive and not enemy_pet.is_alive():
-            self.proc_ability(AbilityType.KILLED_ENEMY)
+    def damage_enemy_with_attack(self, enemy_pet: 'PetState'):
+        self._damage_enemy(self.attack + self.get_bonus_attack(), enemy_pet)
+
+    def damage_enemy_with_ability(self, attack, enemy_pet: 'PetState'):
+        self._damage_enemy(attack, enemy_pet)
 
     def proc_ability(self, ability_type: AbilityType):
         if self.pet_config.ABILITY_TYPE == ability_type:
@@ -84,11 +86,11 @@ class PetState:
         self.attack += amount
         self.perm_attack += amount
 
-    def add_food(self, food: 'FoodConfig'):
-        # Some food have permanent effects (so update both health & perm_health and attack & perm_attack)
-        # Some food is more like an item so add it to carried_food
-        # Some food is entirely temporary (so update only health/attack)
-        pass
+    def get_bonus_attack(self) -> int:
+        if self.carried_food == FOOD_CONFIG[FoodType.MEAT_BONE]:
+            return 3
+        else:
+            return 0
 
     def is_alive(self) -> bool:
         return self.health > 0
@@ -119,8 +121,24 @@ class PetState:
             "carried_food": self.prev_carried_food.FOOD_NAME if self.prev_carried_food is not None else None
         }
 
+    def _damage_enemy(self, attack: int, enemy_pet: 'PetState'):
+        enemy_was_alive = enemy_pet.is_alive()
+        enemy_pet._take_damage(attack)
+        if enemy_was_alive and not enemy_pet.is_alive():
+            enemy_pet._on_death()
+            self.proc_ability(AbilityType.KILLED_ENEMY)
+
     def _take_damage(self, amount: int):
+        if self.carried_food == FOOD_CONFIG[FoodType.GARLIC]:
+            amount = max(amount - 2, 1)
+
         self.health -= amount
         if not self.hurt_already:
             self.hurt_already = True
             self.proc_ability(AbilityType.HURT)
+
+    def _on_death(self):
+        self.proc_ability(AbilityType.FAINTED)
+        if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
+            # TODO: summon beeeeeee
+            pass

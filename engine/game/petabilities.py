@@ -4,7 +4,7 @@ from engine.state.petstate import PetState
 from engine.state.playerstate import PlayerState
 
 
-class Abilities:
+class PetAbilities:
     @staticmethod
     # On level up, Give 2 (random) pets +1L health and +1L attack (consider previous level)
     def fish_ability(fish: 'PetState', player: 'PlayerState', state: 'GameState'):

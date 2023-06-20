@@ -42,6 +42,10 @@ class PlayerState:
         # FRIEND_SUMMON abilities
         self.new_summoned_pet: Optional['PetState'] = None
 
+        # Contains a reference to the pet that just ate food
+        # for use in FRIEND_ATE_FOOD abilities
+        self.pet_that_ate_food: Optional['PetState'] = None
+
     def start_new_round(self):
         self.prev_health = self.health
         self.prev_pets = deepcopy(self.pets)
@@ -102,6 +106,14 @@ class PlayerState:
 
         # Clear the reference now its not needed
         self.new_summoned_pet = None
+
+    def friend_ate_food(self, fat_pet: 'PetState'):
+        self.pet_that_ate_food = fat_pet
+        for pet in self.pets:
+            pet.proc_ability(AbilityType.FRIEND_ATE_FOOD)
+
+        # Clear the reference now its not needed
+        self.pet_that_ate_food = None
 
     def is_alive(self) -> bool:
         return self.health > 0
