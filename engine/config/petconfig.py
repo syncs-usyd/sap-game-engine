@@ -34,7 +34,6 @@ class Pet(Enum):
     BUNNY = 19 
     DOG = 20
     SHEEP = 21
-    
 
 PET_CONFIG = {
     # Abilities are scaled per level, where L = level
@@ -149,11 +148,6 @@ PET_CONFIG = {
                         tier = 2,
                         base_health = 2,
                         base_attack = 2,)
-
-
-    
-    
-        
 }
 
 TIER_PETS = [
