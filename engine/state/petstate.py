@@ -36,11 +36,22 @@ class PetState:
         else:
             return self.sub_level
 
+    def perm_increase_health(self, amount: int):
+        self.health += amount
+        self.perm_health += amount
+
+    def perm_increase_attack(self, amount: int):
+        self.attack += amount
+        self.perm_attack += amount
+
     def add_food(self, food: 'FoodConfig'):
         # Some food have permanent effects (so update both health & perm_health and attack & perm_attack)
         # Some food is more like an item so add it to carried_food
         # Some food is entirely temporary (so update only health/attack)
         pass
+
+    def is_alive(self) -> bool:
+        return self.health > 0
 
     def get_view_for_self(self) -> dict:
         return {

@@ -36,7 +36,6 @@ class Pet(Enum):
     SHEEP = 21
     ELEPHANT = 22
     CAMEL = 23
-    
 
 PET_CONFIG = {
     # Abilities are scaled per level, where L = level
@@ -159,8 +158,6 @@ PET_CONFIG = {
                         tier = 3,
                         base_health = 2,
                         base_attack = 4,),
-
-
     # Animal: Badger 
     # Ability: Before faint, deal 0.5L attack damage to the adjacent pets
     # Implementation: Attack the pet behind it and do a normal attack on the pet at the start of the other team; mayber pretend to have an instance of thi pet on the other side attacking?
@@ -216,7 +213,6 @@ PET_CONFIG = {
                         tier = 3,
                         base_attack = 2,
                         base_health = 3,),
-    
     # Animal: Sheep 
     # Ability: On faint, summon 2 rams with 2L health and attack
     # Implementation: Faint ability is mostly battle, but need to cover pill usage. You will always be able to spwan one ram in, need to check if the amount on the lineup is <= 3 for second one
@@ -224,7 +220,6 @@ PET_CONFIG = {
                         tier = 3,
                         base_attack = 2,
                         base_health = 3,)
-    
 
 }
 
@@ -232,7 +227,5 @@ TIER_PETS = [
     [Pet.FISH, Pet.BEAVER, Pet.HORSE, Pet.PIG, Pet.ANT, Pet.MOZZIE, Pet.CRICKET],
     [Pet.CRAB, Pet.SWAN, Pet.HEDGEHOG, Pet.FLAMINGO, Pet.KANGAROO, Pet.SPIDER],
     [Pet.DODO, Pet.BADGER, Pet.DOLPHIN, Pet.GIRAFFE, Pet.ELEPHANT, Pet.CAMEL, Pet.BUNNY, Pet.DOG, Pet.SHEEP],
-    [],
-    [],
     []
 ]
