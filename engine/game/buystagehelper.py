@@ -102,7 +102,7 @@ class BuyStageHelper:
         pass
 
     def _reroll(self, player: 'PlayerState', input: 'PlayerInput'):
-        player.reset_shop_options(self.state.round)
+        player.reset_shop_options()
         player.coins -= REROLL_COST
 
     def _freeze_pet(self, player: 'PlayerState', input: 'PlayerInput'):

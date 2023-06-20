@@ -5,7 +5,7 @@ from engine.state.playerstate import PlayerState
 class GameState:
     def __init__(self):
         self.round = -1
-        self.players = [PlayerState(i) for i in range(NUM_PLAYERS)]
+        self.players = [PlayerState(i, self) for i in range(NUM_PLAYERS)]
         self.dead_players: List['PlayerState'] = []
 
     def start_new_round(self):
@@ -38,7 +38,7 @@ class GameState:
         return player_ranking
 
     def get_view(self, player: 'PlayerState', remaining_moves: int) -> dict:
-        next_opponent = player.get_challenger(self, increment_index = False)
+        next_opponent = player.get_challenger(increment_index = False)
         other_players = [alive_player for alive_player in self.get_alive_players() if alive_player != player]
 
         return {
