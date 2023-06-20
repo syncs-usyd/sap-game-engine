@@ -3,7 +3,7 @@ from random import choice, randint, shuffle
 from typing import List, Optional
 
 from engine.config.foodconfig import FOOD_CONFIG, TIER_FOOD, FoodType, FoodConfig
-from engine.config.gameconfig import NUM_PLAYERS, PET_POSITIONS, STARTING_COINS, STARTING_HEALTH
+from engine.config.gameconfig import MAX_SHOP_TIER, NUM_PLAYERS, PET_POSITIONS, STARTING_COINS, STARTING_HEALTH
 from engine.config.petconfig import PET_CONFIG, TIER_PETS, PetType
 from engine.config.roundconfig import RoundConfig
 from engine.game.abilitytype import AbilityType
@@ -38,6 +38,10 @@ class PlayerState:
         shuffle(self.battle_order)
         self.next_battle_index = 0
 
+        # Contains a reference to the newest summoned pet for use in
+        # FRIEND_SUMMON abilities
+        self.new_summoned_pet: Optional['PetState'] = None
+
     def start_new_round(self):
         self.prev_health = self.health
         self.prev_pets = deepcopy(self.pets)
@@ -69,15 +73,35 @@ class PlayerState:
 
         self.shop_pets = []
         for _ in range(round_config.NUM_SHOP_PETS):
-            pet_config = PET_CONFIG[self._get_random_pet_type(round_config.MAX_SHOP_TIER)]
-            health = pet_config.BASE_HEALTH + self.shop_perm_health_bonus
-            attack = pet_config.BASE_ATTACK + self.shop_perm_attack_bonus
-            self.shop_pets.append(PetState(health, attack, pet_config))
+            shop_pet = self._create_shop_pet(self._get_random_pet_type(round_config.MAX_SHOP_TIER))
+            self.shop_pets.append(shop_pet)
 
         self.shop_foods = []
         for _ in range(round_config.NUM_SHOP_FOODS):
             food_config = FOOD_CONFIG[self._get_random_food_type(round_config.MAX_SHOP_TIER)]
             self.shop_foods.append(food_config)
+
+    def add_level_up_shop_pet(self):
+        round_config = RoundConfig.get_round_config(self.state.round)
+        tier = min(round_config.MAX_SHOP_TIER + 1, MAX_SHOP_TIER)
+        pet_type = choice(TIER_PETS[tier - 1])
+        shop_pet = self._create_shop_pet(pet_type)
+        self.shop_pets.append(shop_pet)
+
+    def friend_summoned(self, new_pet: 'PetState'):
+        pet_list: List[Optional['PetState']] = []
+        if self.state.in_battle_stage:
+            pet_list = self.battle_pets
+        else:
+            pet_list = self.pets
+
+        self.new_summoned_pet = new_pet
+        for pet in pet_list:
+            if pet is not None and pet != new_pet:
+                pet.proc_ability(AbilityType.FRIEND_SUMMONED)
+
+        # Clear the reference now its not needed
+        self.new_summoned_pet = None
 
     def is_alive(self) -> bool:
         return self.health > 0
@@ -108,6 +132,12 @@ class PlayerState:
                 self.next_battle_index = i
                 self.challenger = challenger
                 return
+
+    def _create_shop_pet(self, pet_type: 'PetType') -> 'PetState':
+        pet_config = PET_CONFIG[pet_type]
+        health = pet_config.BASE_HEALTH + self.shop_perm_health_bonus
+        attack = pet_config.BASE_ATTACK + self.shop_perm_attack_bonus
+        return PetState(health, attack, pet_config)
 
     def _get_random_pet_type(self, max_shop_tier: int) -> 'PetType':
         return self._get_random_from_config_tiers(TIER_PETS, max_shop_tier)

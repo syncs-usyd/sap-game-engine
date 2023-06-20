@@ -12,7 +12,7 @@ class PetState:
         self.perm_attack = attack
         self.pet_config = pet_config
         self.carried_food: 'FoodConfig' = None 
-        self.sub_level = 1
+        self.sub_level = 0
         self.player = player
         self.state = state
 
@@ -28,8 +28,7 @@ class PetState:
         self.health = self.perm_health
         self.attack = self.perm_attack
 
-        if self.pet_config.ABILITY_TYPE == AbilityType.BUY_ROUND_START:
-            self.pet_config.ABILITY_FUNC(self, self.player, self.state)
+        self.proc_ability(AbilityType.BUY_ROUND_START)
 
     def start_next_battle_turn(self):
         self.hurt_already = False
@@ -50,6 +49,22 @@ class PetState:
             return self.sub_level - LEVEL_2_CUTOFF
         else:
             return self.sub_level
+
+    def level_up(self, other_pet: 'PetState'):
+        old_level = self.get_level() 
+
+        self.sub_level += other_pet.sub_level + 1
+        max_sub_level = LEVEL_2_CUTOFF + LEVEL_3_CUTOFF
+        self.sub_level = min(self.sub_level, max_sub_level)
+
+        new_level = self.get_level()
+
+        self.perm_increase_health(1)
+        self.perm_increase_attack(1)
+
+        if old_level < new_level:
+            self.player.add_level_up_shop_pet()
+            self.proc_ability(AbilityType.LEVEL_UP)
 
     def damage_enemy(self, enemy_pet: 'PetState'):
         enemy_was_alive = enemy_pet.is_alive() 
