@@ -10,17 +10,17 @@ class FoodConfig:
         self.TIER = tier
         self.BASE_BUY_COST = base_buy_cost
 
-class Food(Enum):
+class FoodType(Enum):
     APPLE = 1
 
 FOOD_CONFIG = {
-    Food.APPLE: FoodConfig(food_name = "Apple",
+    FoodType.APPLE: FoodConfig(food_name = "Apple",
                            tier = 1,
                            base_buy_cost = 1)
 }
 
 TIER_FOOD = [
-    [Food.APPLE],
+    [FoodType.APPLE],
     [],
     [],
     [],

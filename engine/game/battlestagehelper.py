@@ -14,7 +14,7 @@ class BattleStageHelper:
         self.log = log
 
     def run(self, player: 'PlayerState'):
-        challenger = player.get_challenger(self.state)
+        challenger = player.get_challenger()
         player_lost = self._determine_winner(player, challenger)
 
         round_config = RoundConfig.get_round_config(self.state.round)
@@ -38,6 +38,7 @@ class BattleStageHelper:
 
             # Probably move this into a method on pet state
             # to better handle attacking non-infront enemies
+
             player_front.health -= challenger_front.attack
             challenger_front.health -= player_front.attack
 

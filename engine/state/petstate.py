@@ -1,23 +1,32 @@
 from engine.config.foodconfig import FoodConfig
 from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF
 from engine.config.petconfig import PetConfig
+from engine.game.abilitytype import AbilityType
+from engine.state.gamestate import GameState
+from engine.state.playerstate import PlayerState
 
 
 class PetState:
-    def __init__(self, health: int, attack: int, pet_config: 'PetConfig'):
+    def __init__(self, health: int, attack: int, pet_config: 'PetConfig', player: 'PlayerState', state: 'GameState'):
         self.perm_health = health
         self.perm_attack = attack
         self.pet_config = pet_config
         self.carried_food: 'FoodConfig' = None 
         self.sub_level = 1
+        self.player = player
+        self.state = state
 
-    def start_new_round(self, round: int):
+    def start_new_round(self):
         self.prev_health = self.perm_health
         self.prev_attack = self.perm_attack
         self.prev_carried_food = self.carried_food
         self.prev_level = self.get_level()
+
         self.health = self.perm_health
         self.attack = self.perm_attack
+
+        if self.pet_config.ABILITY_TYPE == AbilityType.BUY_ROUND_START:
+            self.pet_config.ABILITY_FUNC(self, self.player, self.state)
 
     def get_level(self):
         if self.sub_level == LEVEL_3_CUTOFF:
@@ -35,6 +44,11 @@ class PetState:
             return self.sub_level - LEVEL_2_CUTOFF
         else:
             return self.sub_level
+
+    def take_damage(self, amount: int):
+        self.health -= amount
+        if self.pet_config.ABILITY_TYPE == AbilityType.HURT:
+            pass
 
     def perm_increase_health(self, amount: int):
         self.health += amount
