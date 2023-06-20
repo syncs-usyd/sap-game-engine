@@ -71,6 +71,7 @@ class BuyStageHelper:
 
         # For carried food, the effects are hard-coded
         if food.IS_CARRIED:
+            assert pet is not None
             pet.carried_food = food
         else:
             food.EFFECT_FUNC(pet, player, self.state)
