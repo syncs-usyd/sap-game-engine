@@ -25,7 +25,7 @@ class BattleStageHelper:
 
     def _determine_winner(self, player: 'PlayerState', challenger: 'PlayerState') -> Optional[bool]:
         player_pets = self._clear_dead_and_empty(deepcopy(player.pets))
-        challenger_pets = self._clear_dead_and_empty(deepcopy(player.pets))
+        challenger_pets = self._clear_dead_and_empty(deepcopy(challenger.pets))
 
         # TODO: go through battle start abilities
 
