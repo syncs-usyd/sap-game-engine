@@ -40,6 +40,10 @@ class BuyStageHelper:
                 self._freeze_pet(player, input)
             elif input.move_type == MoveType.FREEZE_FOOD:
                 self._freeze_food(player, input)
+            elif input.move_type == MoveType.UNFREEZE_PET:
+                self._unfreeze_pet(player, input)
+            elif input.move_type == MoveType.UNFREEZE_FOOD:
+                self._unfreeze_food(player, input)
             elif input.move_type == MoveType.SWAP_PET:
                 self._swap_pet(player, input)
             elif input.move_type == MoveType.END_TURN:
@@ -63,18 +67,18 @@ class BuyStageHelper:
     def _buy_food(self, player: 'PlayerState', input: 'PlayerInput'):
         food = player.shop_foods[input.index_from]
         player.shop_foods.remove(food)
-        player.coins -= food.BUY_COST
+        player.coins -= food.food_config.BUY_COST
 
         pet: Optional['PetState'] = None
-        if food.IS_TARGETED:
+        if food.food_config.IS_TARGETED:
             pet = player.pets[input.index_to]
 
         # For carried food, the effects are hard-coded
-        if food.IS_CARRIED:
+        if food.food_config.IS_CARRIED:
             assert pet is not None
-            pet.carried_food = food
+            pet.carried_food = food.food_config
         else:
-            food.EFFECT_FUNC(pet, player, self.state)
+            food.food_config.EFFECT_FUNC(pet, player, self.state)
 
     def _upgrade_pet_from_pets(self, player: 'PlayerState', input: 'PlayerInput'):
         from_pet = player.pets[input.index_from]
@@ -105,13 +109,20 @@ class BuyStageHelper:
         player.coins -= REROLL_COST
 
     def _freeze_pet(self, player: 'PlayerState', input: 'PlayerInput'):
-        pet_to_freeze = player.shop_pets[input.index_from]
-        # pet_to_freeze.is_frozen = True
+        pet = player.shop_pets[input.index_from]
+        pet.is_frozen = True
 
     def _freeze_food(self, player: 'PlayerState', input: 'PlayerInput'):
-        # Freeze food specified
-        food_to_freeze = player.shop_foods[input.index_from]
-        # food_to_freeze.is_frozen = True
+        food = player.shop_foods[input.index_from]
+        food.is_frozen = True
+
+    def _unfreeze_pet(self, player: 'PlayerState', input: 'PlayerInput'):
+        pet = player.shop_pets[input.index_from]
+        pet.is_frozen = False
+
+    def _unfreeze_food(self, player: 'PlayerState', input: 'PlayerInput'):
+        food = player.shop_foods[input.index_from]
+        food.is_frozen = False
 
     def _swap_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         player.pets[input.index_from], player.pets[input.index_to]\

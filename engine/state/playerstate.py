@@ -2,11 +2,12 @@ from copy import deepcopy
 from random import choice, randint, shuffle
 from typing import List, Optional
 
-from engine.config.foodconfig import FOOD_CONFIG, TIER_FOOD, FoodType, FoodConfig
+from engine.config.foodconfig import FOOD_CONFIG, TIER_FOOD, FoodType
 from engine.config.gameconfig import MAX_SHOP_TIER, NUM_PLAYERS, PET_POSITIONS, STARTING_COINS, STARTING_HEALTH
 from engine.config.petconfig import PET_CONFIG, TIER_PETS, PetType
 from engine.config.roundconfig import RoundConfig
 from engine.game.abilitytype import AbilityType
+from engine.state.foodstate import FoodState
 from engine.state.gamestate import GameState
 from engine.state.petstate import PetState
 
@@ -20,7 +21,7 @@ class PlayerState:
         self.pets: List[Optional['PetState']] = [None] * PET_POSITIONS
 
         self.shop_pets: List['PetState'] = []
-        self.shop_foods: List['FoodConfig'] = []
+        self.shop_foods: List['FoodState'] = []
         self.shop_perm_health_bonus = 0
         self.shop_perm_attack_bonus = 0
 
@@ -75,15 +76,17 @@ class PlayerState:
     def reset_shop_options(self):
         round_config = RoundConfig.get_round_config(self.state.round)
 
-        self.shop_pets = []
-        for _ in range(round_config.NUM_SHOP_PETS):
+        self.shop_pets = [pet for pet in self.shop_pets if pet.is_frozen]
+        pets_to_add = round_config.NUM_SHOP_PETS - len(self.shop_pets)
+        for _ in range(pets_to_add):
             shop_pet = self._create_shop_pet(self._get_random_pet_type(round_config.MAX_SHOP_TIER))
             self.shop_pets.append(shop_pet)
 
-        self.shop_foods = []
-        for _ in range(round_config.NUM_SHOP_FOODS):
+        self.shop_foods = [food for food in self.shop_foods if food.is_frozen]
+        foods_to_add = round_config.NUM_SHOP_FOODS - len(self.shop_foods)
+        for _ in range(foods_to_add):
             food_config = FOOD_CONFIG[self._get_random_food_type(round_config.MAX_SHOP_TIER)]
-            self.shop_foods.append(food_config)
+            self.shop_foods.append(FoodState(food_config))
 
     def add_level_up_shop_pet(self):
         round_config = RoundConfig.get_round_config(self.state.round)
@@ -124,7 +127,7 @@ class PlayerState:
             "coins": self.coins,
             "pets": [pet.get_view_for_self() if pet is not None else None for pet in self.pets],
             "shop_pets": [pet.get_view_for_shop() for pet in self.shop_pets],
-            "shop_foods": [food.FOOD_NAME for food in self.shop_foods]
+            "shop_foods": [food.get_view_for_shop() for food in self.shop_foods]
         }
 
     def get_view_for_others(self) -> dict:

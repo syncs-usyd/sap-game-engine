@@ -10,13 +10,18 @@ from engine.state.playerstate import PlayerState
 
 class PetState:
     def __init__(self, health: int, attack: int, pet_config: 'PetConfig', player: 'PlayerState', state: 'GameState'):
-        self.perm_health = health
-        self.perm_attack = attack
-        self.pet_config = pet_config
-        self.carried_food: Optional['FoodConfig'] = None 
-        self.sub_level = 0
         self.player = player
         self.state = state
+
+        self.pet_config = pet_config
+        self.perm_health = health
+        self.perm_attack = attack
+
+        self.carried_food: Optional['FoodConfig'] = None 
+        self.sub_level = 0
+
+        # If the pet is in the shop, represents whether it is frozen or not
+        self.is_frozen = False
 
         # Represents whether the pet has already been hurt in the current battle turn
         self.hurt_already = False
@@ -110,6 +115,7 @@ class PetState:
             "type": self.pet_config.PET_NAME,
             "health": self.health,
             "attack": self.attack,
+            "is_frozen": self.is_frozen
         }
 
     def get_view_for_others(self) -> dict:
