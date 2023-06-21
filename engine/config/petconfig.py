@@ -94,9 +94,6 @@ PET_CONFIG = {
                         ability_type= AbilityType.FRIEND_SUMMONED,
                         ability_func= PetAbilities.horse_ability),
     
-    # Animal: Crab 
-    # Ability: Start of combat, gain 0.5L health from the healthiest friend
-    # Implementation: In-battle number changing
     PetType.CRAB: PetConfig(pet_name = "Crab",
                         tier = 2,
                         base_attack = 4,
@@ -104,9 +101,6 @@ PET_CONFIG = {
                         ability_type= AbilityType.BATTLE_ROUND_START,
                         ability_func= PetAbilities.crab_ability),
  
-    # Animal: Swan 
-    # Ability: Start of turn (buy period), gain L hold
-    # Implementation: Check at the start of each turn for swan and its level
     PetType.SWAN: PetConfig(pet_name = "Swan",
                         tier = 2,
                         base_attack = 1,
@@ -115,7 +109,7 @@ PET_CONFIG = {
                         ability_func= PetAbilities.swan_ability),
     
     # Animal: Hedgehog 
-    # Ability: On faint, deal 2L damage to all 
+
     # Implementation: Faint ability is mostly battle, but need to cover pill usage
     PetType.HEDGEHOG: PetConfig(pet_name = "Hedgehog",
                         tier = 2,
@@ -125,7 +119,7 @@ PET_CONFIG = {
                         ability_func= PetAbilities.hedgehog_ability),
     
     # Animal: Peacock 
-    # Ability: When hurt, gain 4L attack permanently 
+    
     # Implementation: In-battle number changing; will have edge case where someone pills a pet with a hurting faint
     PetType.PEACOCK: PetConfig(pet_name = "Peacock",
                         tier = 2,
@@ -135,7 +129,7 @@ PET_CONFIG = {
                         ability_func= PetAbilities.peacock_ability),
     
     # Animal: Flamingo 
-    # Ability: On faint, give L health and attack to two nearest pets behind
+    
     # Implementation: Faint ability is mostly battle, but need to cover pill usage
     PetType.FLAMINGO: PetConfig(pet_name = "Flamingo",
                         tier = 2,
@@ -145,7 +139,7 @@ PET_CONFIG = {
                         ability_func= PetAbilities.flamingo_ability),
     
     # Animal: Kangaroo 
-    # Ability: Friend ahead attacks, gain L helath and damage
+    
     # Implementation: After every attack, check if it is at the second position (Only position where friend in front would attack)
     PetType.KANGAROO: PetConfig(pet_name = "Kangaroo",
                         tier = 2,
@@ -155,7 +149,7 @@ PET_CONFIG = {
                         ability_func= PetAbilities.kangaroo_ability),
 
     # Animal: Spider 
-    # Ability: On faint, summon a tier 3 pet with L health and attack
+    
     # Implementation: Faint ability is mostly battle, but need to cover pill usage. 
                      # May need to create a new pet from Pet_config since he stats are different
     PetType.SPIDER: PetConfig(pet_name = "Spider",

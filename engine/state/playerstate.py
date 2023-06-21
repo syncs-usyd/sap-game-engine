@@ -58,8 +58,9 @@ class PlayerState:
                 pet.start_new_round()
 
     def start_battle_stage(self):
-        for pet in self.pets:
-            pet.proc_ability(AbilityType.BUY_ROUND_END)     
+        if not self.pets == None:
+            for pet in self.pets:
+                pet.proc_ability(AbilityType.BUY_ROUND_END)     
         self._update_challenger()
 
     # We copy the battle pets so we can make irreversible changes
