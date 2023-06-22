@@ -44,10 +44,10 @@ class PetAbilities:
    # Ability: On faint, give L attack and helath to a random friend
     def ant_ability(ant: 'PetState', player: 'PlayerState', state: 'GameState'):
         pets = player.battle_pets if state.in_battle_stage else player.pets
-        other_pets = [pet for pet in pets if pet != ant]
+        other_pets = [pet for pet in pets if pet != None] 
 
         # If there are no other pets we're done
-        if other_pets == 0: return
+        if len(other_pets) == 0: return
 
         pet_to_upgrade = choice(other_pets)
         pet_to_upgrade.attack += ant.get_level()
@@ -100,8 +100,9 @@ class PetAbilities:
         pass
     
     @staticmethod
-    # Ability: When hurt, gain 4L attack permanently 
+    # Ability: When hurt, gain 4L attack for battle
     def peacock_ability(peacock: 'PetState', player: 'PlayerState', state: 'GameState'):
+        
         pass
     
     @staticmethod
