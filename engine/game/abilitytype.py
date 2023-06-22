@@ -15,3 +15,5 @@ class AbilityType(Enum):
     AFTER_ATTACK = 11 # Triggers after you attack an enemy
     KILLED_ENEMY = 12 # Triggers when you kill an enemy pet
     FAINTED = 13 # Triggers when the pet dies
+    BUY_ROUND_END = 14 # Triggers when the buy round ends
+    
