@@ -43,6 +43,10 @@ class PetType(Enum):
     SHEEP = 21
     ELEPHANT = 22
     CAMEL = 23
+    RAM = 24
+    BEE = 25
+    ZOMBIE_CRICKET = 26
+    
 
 PET_CONFIG = {
 
@@ -160,7 +164,6 @@ PET_CONFIG = {
                         ability_func= PetAbilities.spider_ability),
 
     # Animal: Dodo 
-    # Ability: Start of battle, give 0.5L attack to the nearest friend ahead
     # Implementation: Just to the attack valuie to Position - 1, unless they're at the start of the lime
     PetType.DODO: PetConfig(pet_name = "Dodo",
                         tier = 3,
@@ -169,7 +172,6 @@ PET_CONFIG = {
                         ability_type= AbilityType.BATTLE_ROUND_START,
                         ability_func= PetAbilities.dodo_ability),
     # Animal: Badger 
-    # Ability: Before faint, deal 0.5L attack damage to the adjacent pets
     # Implementation: Attack the pet behind it and do a normal attack on the pet at the start of the other team; mayber pretend to have an instance of thi pet on the other side attacking?
     PetType.BADGER: PetConfig(pet_name = "Badger",
                         tier = 3,
@@ -179,7 +181,6 @@ PET_CONFIG = {
                         ability_func= PetAbilities.badger_ability),
     
     # Animal: Dolphin 
-    # Ability: Start of battle, deal 3 damage to L random pets on the other team
     # Implementation: Pre round ability, should be straightforward
     PetType.DOLPHIN: PetConfig(pet_name = "Dolphin",
                         tier = 3,
@@ -189,7 +190,6 @@ PET_CONFIG = {
                         ability_func= PetAbilities.dolphin_ability),
     
     # Animal: Giraffe 
-    # Ability: End of turn (buy phase), give 1 health and attack to L friends in front of it
     # Implementation: Can give position - [1:L] the stats
     PetType.GIRAFFE: PetConfig(pet_name = "Giraffe",
                         tier = 3,
@@ -199,7 +199,6 @@ PET_CONFIG = {
                         ability_func= PetAbilities.giraffe_ability),
     
     # Animal: Elephant 
-    # Ability: After attack, deal 1 damage to the friend behind L times
     # Implementation: Loop the times you attack by the level of the elephant and maybe treat it as an attack to the pet behind. Need to check if it is alive after every fight. and then do the effect
     PetType.ELEPHANT: PetConfig(pet_name = "Elephant",
                         tier = 3,
@@ -209,7 +208,6 @@ PET_CONFIG = {
                         ability_func= PetAbilities.elephant_ability),
 
     # Animal: Camel 
-    # Ability: When hurt, give nearest friend 2L attack and health
     # Implementation: Save the old helath temporarily. After every battle/attack, check and see if there is a negative change. Also do the ability on faint. Shouldn't have a case during buy period
     PetType.CAMEL: PetConfig(pet_name = "Camel",
                         tier = 3,
@@ -219,7 +217,6 @@ PET_CONFIG = {
                         ability_func= PetAbilities.camel_ability),
     
     # Animal: Bunny 
-    # Ability: When a friendly eats food, give them +1 health (THIS CAN CHANGE)
     # Implementation: When giving food, check if there is a bunny in the roster
     PetType.BUNNY: PetConfig(pet_name = "Bunny",
                         tier = 3,
@@ -229,7 +226,6 @@ PET_CONFIG = {
                         ability_func= PetAbilities.bunny_ability),
     
     # Animal: Dog 
-    # Ability: When a friend is summoned, gain 2L attack and L health until end of battle (stacking and unlimited)
     # Implementation: Need to check for when summoning in buy phase as well as during battle. Can remove the extra stats every start of buy round
     PetType.DOG: PetConfig(pet_name = "Dog",
                         tier = 3,
@@ -238,15 +234,38 @@ PET_CONFIG = {
                         ability_type= AbilityType.FRIEND_SUMMONED,
                         ability_func= PetAbilities.dog_ability),
     # Animal: Sheep 
-    # Ability: On faint, summon 2 rams with 2L health and attack
     # Implementation: Faint ability is mostly battle, but need to cover pill usage. You will always be able to spwan one ram in, need to check if the amount on the lineup is <= 3 for second one
     PetType.SHEEP: PetConfig(pet_name = "Sheep",
                         tier = 3,
                         base_attack = 2,
                         base_health = 3,
                         ability_type= AbilityType.FAINTED,
-                        ability_func= PetAbilities.sheep_ability)
-
+                        ability_func= PetAbilities.sheep_ability),
+    
+    
+    PetType.BEE: PetConfig(pet_name = "Bee",
+                        tier = None,
+                        base_attack = 1,
+                        base_health = 1,
+                        ability_type= None,
+                        ability_func= None),
+    
+    PetType.RAM: PetConfig(pet_name = "Ram",
+                        tier = None,
+                        base_attack = None,
+                        base_health = None,
+                        ability_type= None,
+                        ability_func= None),
+    
+    PetType.ZOMBIE_CRICKET: PetConfig(pet_name = "Zombie Cricket",
+                        tier = None,
+                        base_attack = 1,
+                        base_health = 1,
+                        ability_type= None,
+                        ability_func= None),
+    
+    
+    
 }
 
 TIER_PETS = [
