@@ -44,19 +44,23 @@ class PetAbilities:
    # Ability: On faint, give L attack and helath to a random friend
     def ant_ability(ant: 'PetState', player: 'PlayerState', state: 'GameState'):
         pets = player.battle_pets if state.in_battle_stage else player.pets
-        other_pets = [pet for pet in pets if pet != None] 
+        other_pets = [pet for pet in pets if pet != ant and pet is not None]
 
         # If there are no other pets we're done
         if len(other_pets) == 0: return
 
         pet_to_upgrade = choice(other_pets)
-        pet_to_upgrade.attack += ant.get_level()
-        pet_to_upgrade.health += ant.get_level()
+        #Only temporary in battle state 
+        if state.in_battle_stage:
+            pet_to_upgrade.attack += ant.get_level()
+            pet_to_upgrade.health += ant.get_level()
+        else:
+            pet_to_upgrade.perm_increase_attack(ant.get_level())
+            pet_to_upgrade.perm_increase_health(ant.get_level())
 
     
     @staticmethod
     # Ability: At start of battle, deal 1 damage to L enemies
-    # TODO: Check if the interaction is correct
     def mosquito_ability(mosquito: 'PetState', player: 'PlayerState', state: 'GameState'):
         targets = player.opponent.battle_pets
 
@@ -81,7 +85,6 @@ class PetAbilities:
     
     @staticmethod
     # Ability: Start of combat, gain 0.5L health from the healthiest friend
-    # TODO: check if this is the right way to check health
     def crab_ability(crab: 'PetState', player: 'PlayerState', state: 'GameState'):
         highest_health = max([pet.health for pet in player.pets if pet != None and pet != crab])
                 
@@ -95,14 +98,21 @@ class PetAbilities:
         player.coins += level
     
     @staticmethod
-    # TODO: Ability: On faint, deal 2L damage to all 
+    # Ability: On faint, deal 2L damage to all 
     def hedgehog_ability(hedgehog: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pass
+        pets = player.battle_pets if state.in_battle_stage else player.pets
+        other_pets = [pet for pet in pets if pet != hedgehog and pet is not None]
+        opponent_pets = player.opponent.battle_pets if state.in_battle_stage else []
+        
+    
+        for pet in other_pets + opponent_pets: 
+            hedgehog.damage_enemy_with_ability(2 * hedgehog.get_level(), pet)
+        
     
     @staticmethod
-    # Ability: When hurt, gain 4L attack for battle
+    # TODO: Ability: When hurt, gain 4L attack for battle
     def peacock_ability(peacock: 'PetState', player: 'PlayerState', state: 'GameState'):
-        
+        peacock.attack += 4 
         pass
     
     @staticmethod
