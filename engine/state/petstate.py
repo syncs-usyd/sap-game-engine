@@ -1,7 +1,7 @@
 from typing import Optional
 
 from engine.config.foodconfig import FOOD_CONFIG, FoodConfig, FoodType
-from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF
+from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF, PET_BUY_COST
 from engine.config.petconfig import PET_CONFIG, PetConfig, PetType
 from engine.game.abilitytype import AbilityType
 from engine.state.gamestate import GameState
@@ -115,7 +115,8 @@ class PetState:
             "type": self.pet_config.PET_NAME,
             "health": self.health,
             "attack": self.attack,
-            "is_frozen": self.is_frozen
+            "is_frozen": self.is_frozen,
+            "cost": PET_BUY_COST
         }
 
     def get_view_for_others(self) -> dict:
