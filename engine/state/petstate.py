@@ -127,11 +127,18 @@ class PetState:
             "carried_food": self.prev_carried_food.FOOD_NAME if self.prev_carried_food is not None else None
         }
 
+    def on_death(self):
+        self.proc_ability(AbilityType.FAINTED)
+        if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
+            # self.player.summon_pets()
+            # TODO: summon beeeeeee
+            pass
+
     def _damage_enemy(self, attack: int, enemy_pet: 'PetState'):
         enemy_was_alive = enemy_pet.is_alive()
         enemy_pet._take_damage(attack)
         if enemy_was_alive and not enemy_pet.is_alive():
-            enemy_pet._on_death()
+            enemy_pet.on_death()
             self.proc_ability(AbilityType.KILLED_ENEMY)
 
     def _take_damage(self, amount: int):
@@ -142,9 +149,3 @@ class PetState:
         if not self.hurt_already:
             self.hurt_already = True
             self.proc_ability(AbilityType.HURT)
-
-    def _on_death(self):
-        self.proc_ability(AbilityType.FAINTED)
-        if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
-            # TODO: summon beeeeeee
-            pass

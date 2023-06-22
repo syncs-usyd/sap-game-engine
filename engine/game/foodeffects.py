@@ -17,7 +17,7 @@ class FoodEffects:
         i = player.pets.index(pet)
         player.pets[i] = None
         player.friend_ate_food(pet)
-        pet.proc_ability(AbilityType.FAINTED)
+        pet.on_death()
 
     @staticmethod
     def cupcake_effect(pet: 'PetState', player: 'PlayerState', state: 'GameState'):

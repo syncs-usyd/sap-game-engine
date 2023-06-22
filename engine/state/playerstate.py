@@ -98,6 +98,39 @@ class PlayerState:
         shop_pet = self._create_shop_pet(pet_type)
         self.shop_pets.append(shop_pet)
 
+    def summon_pets(self, original_pet: 'PetState', pets_to_summon: List['PetState']):
+        if self.state.in_battle_stage:
+            # We insert the pets at where the dying pet is
+            insert_at_index = self.battle_pets.index(original_pet)
+
+            # How many pets are we accepting
+            num_alive = len([pet for pet in self.battle_pets if pet.is_alive()])
+            num_summons = min(PET_POSITIONS - num_alive, len(pets_to_summon))
+
+            # List of pets we are summoning
+            pets_to_summon = pets_to_summon[:num_summons]
+            for pet in pets_to_summon:
+                self.battle_pets.insert(insert_at_index, pet)
+                self.friend_summoned(pet)
+
+        else:
+            # Clear the None slots
+            self.pets = [pet for pet in self.pets if pet is not None]
+
+            # How many pets are we accepting
+            num_summons = min(PET_POSITIONS - len(self.pets), len(pets_to_summon))
+
+            # List of pets we are summoning
+            pets_to_summon = pets_to_summon[:num_summons]
+            for pet in pets_to_summon:
+                self.battle_pets.append(pet)
+                self.friend_summoned(pet)
+
+            # Cleanup the pets list
+            num_remaining_slots = PET_POSITIONS - len(self.pets)
+            for _ in range(num_remaining_slots):
+                self.pets.append(None)
+
     def friend_summoned(self, new_pet: 'PetState'):
         pet_list: List[Optional['PetState']] = []
         if self.state.in_battle_stage:
