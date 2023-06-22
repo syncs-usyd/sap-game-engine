@@ -59,8 +59,8 @@ class PlayerState:
 
     def start_battle_stage(self):
         for pet in self.pets:
-            if not pet == None:
-                pet.proc_ability(AbilityType.BUY_ROUND_END)     
+            if pet is not None:
+                pet.proc_ability(AbilityType.BUY_ROUND_END)
         self._update_challenger()
 
     # We copy the battle pets so we can make irreversible changes

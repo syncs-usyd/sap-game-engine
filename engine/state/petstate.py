@@ -2,7 +2,7 @@ from typing import Optional
 
 from engine.config.foodconfig import FOOD_CONFIG, FoodConfig, FoodType
 from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF
-from engine.config.petconfig import PetConfig
+from engine.config.petconfig import PET_CONFIG, PetConfig, PetType
 from engine.game.abilitytype import AbilityType
 from engine.state.gamestate import GameState
 from engine.state.playerstate import PlayerState
@@ -130,9 +130,9 @@ class PetState:
     def on_death(self):
         self.proc_ability(AbilityType.FAINTED)
         if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
-            # self.player.summon_pets()
-            # TODO: summon beeeeeee
-            pass
+            bee_config = PET_CONFIG[PetType.BEE]
+            bee = PetState(bee_config.BASE_HEALTH, bee_config.BASE_ATTACK, bee_config, self.player, self.state)
+            self.player.summon_pets(self, [bee])
 
     def _damage_enemy(self, attack: int, enemy_pet: 'PetState'):
         enemy_was_alive = enemy_pet.is_alive()
