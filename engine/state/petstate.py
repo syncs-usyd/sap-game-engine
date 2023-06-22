@@ -2,7 +2,7 @@ from typing import Optional
 
 from engine.config.foodconfig import FOOD_CONFIG, FoodConfig, FoodType
 from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF
-from engine.config.petconfig import PetConfig
+from engine.config.petconfig import PET_CONFIG, PetConfig, PetType
 from engine.game.abilitytype import AbilityType
 from engine.state.gamestate import GameState
 from engine.state.playerstate import PlayerState
@@ -127,11 +127,18 @@ class PetState:
             "carried_food": self.prev_carried_food.FOOD_NAME if self.prev_carried_food is not None else None
         }
 
+    def on_death(self):
+        self.proc_ability(AbilityType.FAINTED)
+        if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
+            bee_config = PET_CONFIG[PetType.BEE]
+            bee = PetState(bee_config.BASE_HEALTH, bee_config.BASE_ATTACK, bee_config, self.player, self.state)
+            self.player.summon_pets(self, [bee])
+
     def _damage_enemy(self, attack: int, enemy_pet: 'PetState'):
         enemy_was_alive = enemy_pet.is_alive()
         enemy_pet._take_damage(attack)
         if enemy_was_alive and not enemy_pet.is_alive():
-            enemy_pet._on_death()
+            enemy_pet.on_death()
             self.proc_ability(AbilityType.KILLED_ENEMY)
 
     def _take_damage(self, amount: int):
@@ -142,9 +149,3 @@ class PetState:
         if not self.hurt_already:
             self.hurt_already = True
             self.proc_ability(AbilityType.HURT)
-
-    def _on_death(self):
-        self.proc_ability(AbilityType.FAINTED)
-        if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
-            # TODO: summon beeeeeee
-            pass

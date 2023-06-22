@@ -17,7 +17,7 @@ class FoodEffects:
         i = player.pets.index(pet)
         player.pets[i] = None
         player.friend_ate_food(pet)
-        pet.proc_ability(AbilityType.FAINTED)
+        pet.on_death()
 
     @staticmethod
     def cupcake_effect(pet: 'PetState', player: 'PlayerState', state: 'GameState'):
@@ -27,8 +27,10 @@ class FoodEffects:
 
     @staticmethod
     def salad_bowl_effect(unused: 'PetState', player: 'PlayerState', state: 'GameState'):
-        num_choose = 2 if len(player.pets) >= 2 else len(player.pets)
-        pets_to_upgrade = sample(player.pets, num_choose)
+        pets = [pet for pet in player.pets if pet is not None]
+
+        num_choose = 2 if len(pets) >= 2 else len(pets)
+        pets_to_upgrade = sample(pets, num_choose)
         for pet in pets_to_upgrade:
             pet.perm_increase_health(1)
             pet.perm_increase_attack(1)
