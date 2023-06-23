@@ -55,7 +55,8 @@ class BuyStageHelper:
 
     def _buy_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         new_pet = player.shop_pets[input.index_from]
-        player.shop_pets.remove(new_pet)
+        # player.shop_pets.remove(new_pet)
+        player.shop_pets[input.index_from] = None
         player.coins -= PET_BUY_COST
 
         player.pets[input.index_to] = new_pet
@@ -64,7 +65,8 @@ class BuyStageHelper:
 
     def _buy_food(self, player: 'PlayerState', input: 'PlayerInput'):
         food = player.shop_foods[input.index_from]
-        player.shop_foods.remove(food)
+        # player.shop_foods.remove(food)
+        player.shop_foods[input.index_from] = None
         player.coins -= food.food_config.BUY_COST
 
         pet: Optional['PetState'] = None
@@ -87,7 +89,8 @@ class BuyStageHelper:
 
     def _upgrade_pet_from_shop(self, player: 'PlayerState', input: 'PlayerInput'):
         shop_pet = player.shop_pets[input.index_from]
-        player.shop_pets.remove(shop_pet)
+        # player.shop_pets.remove(shop_pet)
+        player.shop_pets[input.index_from] = None
         player.coins -= PET_BUY_COST
 
         pet = player.pets[input.index_to]
