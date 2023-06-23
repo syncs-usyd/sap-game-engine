@@ -15,7 +15,7 @@ class GameEngine:
 
     def run(self):
         while not self.state.is_game_over():
-            print("New round!")
+            print(f"New round {self.state.round + 1}")
             self.state.start_new_round()
             self.log.write_start_state_logs()
             players = self.state.get_alive_players()

@@ -52,7 +52,7 @@ done
 python3 -m engine &
 engine_pid=$!
 
-sleep_time=300
+sleep_time=30
 echo "Game has started. Waiting $sleep_time seconds"
 sleep $sleep_time
 

@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import copy
 from random import choice, randint, shuffle
 from typing import TYPE_CHECKING, List, Optional
 
@@ -51,7 +51,7 @@ class PlayerState:
 
     def start_new_round(self):
         self.prev_health = self.health
-        self.prev_pets = deepcopy(self.pets)
+        self.prev_pets = self._get_pets_copy()
 
         self.coins = STARTING_COINS
         self.reset_shop_options()
@@ -69,7 +69,7 @@ class PlayerState:
     # during a battle
     def start_battle(self, opponent: 'PlayerState'):
         self.opponent = opponent
-        self.battle_pets = deepcopy(self.pets)
+        self.battle_pets = self._get_pets_copy()
         self.cleanup_battle_pets()
         for pet in self.battle_pets:
             pet.start_next_battle_turn()
@@ -179,7 +179,7 @@ class PlayerState:
         i = self.next_battle_index
         while True:
             challenger = self.state.players[self.battle_order[i]]
-            i = (i + 1) % NUM_PLAYERS
+            i = (i + 1) % (NUM_PLAYERS - 1)
 
             if challenger.is_alive():
                 self.next_battle_index = i
@@ -211,3 +211,6 @@ class PlayerState:
                 return config_tiers[tier][global_index]
             else:
                 global_index -= len(config_tiers[tier])
+
+    def _get_pets_copy(self) -> List['PetState']:
+        return [copy(pet) if pet is not None else None for pet in self.pets]
