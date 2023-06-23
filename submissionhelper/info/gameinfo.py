@@ -6,6 +6,9 @@ from submissionhelper.info.playerinfo import PlayerInfo
 
 class GameInfo:
     def __init__(self, dict: Dict):
+        # Refers to which round it is. Starts at 1
+        self.round_num: int = int(dict["round"])
+
         # Refers to the number of moves you are allowed to make
         # for the current buy round.
         # Note: this resets at the start of each buy round

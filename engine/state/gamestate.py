@@ -49,6 +49,7 @@ class GameState:
         other_players = [alive_player for alive_player in self.get_alive_players() if alive_player != player]
 
         return {
+            "round": self.round + 1,
             "remaining_moves": remaining_moves,
             "player_info": player.get_view_for_self(),
             "next_opponent_index": other_players.index(next_opponent),
