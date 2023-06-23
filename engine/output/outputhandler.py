@@ -2,13 +2,15 @@ import json
 import shutil
 import sys
 from traceback import TracebackException
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from engine.config.ioconfig import CORE_DIRECTORY
-from engine.output.gamelog import GameLog
 from engine.output.terminationtype import TerminationType
-from engine.state.gamestate import GameState
-from engine.state.playerstate import PlayerState
+
+if TYPE_CHECKING:
+    from engine.output.gamelog import GameLog
+    from engine.state.gamestate import GameState
+    from engine.state.playerstate import PlayerState
 
 
 class OutputHandler:
@@ -30,7 +32,7 @@ class OutputHandler:
         #End the game
         sys.exit(0)
 
-    def terminate_fail(self, termination_type: TerminationType, player: 'PlayerState', exception: Optional[Exception] = None, reason: Optional[str] = None):
+    def terminate_fail(self, termination_type: 'TerminationType', player: 'PlayerState', exception: Optional[Exception] = None, reason: Optional[str] = None):
         self._write_results(termination_type, faulty_player_num = player.player_num)
 
         # Write the game log for the faulty player
@@ -55,7 +57,7 @@ class OutputHandler:
         # End the game
         sys.exit(0)
 
-    def _write_results(self, termination_type: TerminationType, faulty_player_num: Optional[int] = None, player_ranking: Optional[List[int]] = None):
+    def _write_results(self, termination_type: 'TerminationType', faulty_player_num: Optional[int] = None, player_ranking: Optional[List[int]] = None):
         results: dict = None
         if termination_type == TerminationType.SUCCESS:
             results = {
@@ -75,7 +77,7 @@ class OutputHandler:
             json.dump(results, file)
 
     def _write_game_log(self, player_num: int, game_log: str):
-        with open(f"{CORE_DIRECTORY}/output/game_{player_num}.log", 'w') as file:
+        with open(f"{CORE_DIRECTORY}/output/game_{player_num}.md", 'w') as file:
             file.write(game_log)
 
     def _write_player_stderr(self, player_num: int, error: str):

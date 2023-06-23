@@ -24,7 +24,7 @@ class PetType(Enum):
     BEAVER = 2
     PIG = 3
     ANT = 4
-    MOZZIE = 5
+    MOSQUITO = 5
     CRICKET = 6
     HORSE = 7
     CRAB = 8
@@ -46,43 +46,42 @@ class PetType(Enum):
     RAM = 24
     BEE = 25
     ZOMBIE_CRICKET = 26
-    
 
 PET_CONFIG = {
-
-    
     PetType.FISH: PetConfig(pet_name = "Fish",
                         tier = 1,
                         base_attack = 2,
                         base_health = 3,
                         ability_type = AbilityType.LEVEL_UP,
                         ability_func = PetAbilities.fish_ability),
+
     PetType.BEAVER: PetConfig(pet_name = "Beaver",
                         tier = 1,
                         base_attack = 3,
                         base_health = 2,
                         ability_type= AbilityType.SELL,
                         ability_func= PetAbilities.beaver_ability),
+
     PetType.PIG: PetConfig(pet_name = "Pig",
                         tier = 1,
                         base_attack = 4,
                         base_health = 1,
                         ability_type = AbilityType.BUY_ROUND_START,
                         ability_func = PetAbilities.pig_ability,),
+
     PetType.ANT: PetConfig(pet_name = "Ant",
                         tier = 1,
                         base_attack = 2,
                         base_health = 2,
                         ability_type= AbilityType.FAINTED,
                         ability_func= PetAbilities.ant_ability),
-    
-    PetType.MOZZIE: PetConfig(pet_name = "Mosquito",
+
+    PetType.MOSQUITO: PetConfig(pet_name = "Mosquito",
                         tier = 1,
                         base_attack = 2,
                         base_health = 2,
                         ability_type= AbilityType.BATTLE_ROUND_START,
                         ability_func= PetAbilities.mosquito_ability),
-    
 
     PetType.CRICKET: PetConfig(pet_name = "Cricket",
                         tier = 1,
@@ -263,13 +262,10 @@ PET_CONFIG = {
                         base_health = 1,
                         ability_type= None,
                         ability_func= None),
-    
-    
-    
 }
 
 TIER_PETS = [
-    [PetType.FISH, PetType.BEAVER, PetType.HORSE, PetType.PIG, PetType.ANT, PetType.MOZZIE, PetType.CRICKET],
+    [PetType.FISH, PetType.BEAVER, PetType.HORSE, PetType.PIG, PetType.ANT, PetType.MOSQUITO, PetType.CRICKET],
     [PetType.CRAB, PetType.SWAN, PetType.HEDGEHOG, PetType.FLAMINGO, PetType.KANGAROO, PetType.SPIDER],
     [PetType.DODO, PetType.BADGER, PetType.DOLPHIN, PetType.GIRAFFE, PetType.ELEPHANT, PetType.CAMEL, PetType.BUNNY, PetType.DOG, PetType.SHEEP],
     []

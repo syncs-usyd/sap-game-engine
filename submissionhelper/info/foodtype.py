@@ -5,7 +5,7 @@ class FoodType(Enum):
     @staticmethod
     def get_food_type(food_name: str) -> 'FoodType':
         upper_snake_case = food_name.upper().replace(" ", "_")
-        return FoodType(upper_snake_case)
+        return FoodType[upper_snake_case]
 
     APPLE = 1
     HONEY = 2

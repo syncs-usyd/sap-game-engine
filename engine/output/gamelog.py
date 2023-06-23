@@ -1,11 +1,13 @@
-from typing import List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from engine.config.gameconfig import NUM_PLAYERS
 from engine.input.movetype import MoveType
-from engine.input.playerinput import PlayerInput
-from engine.state.gamestate import GameState
-from engine.state.petstate import PetState
-from engine.state.playerstate import PlayerState
+
+if TYPE_CHECKING:
+    from engine.input.playerinput import PlayerInput
+    from engine.state.gamestate import GameState
+    from engine.state.petstate import PetState
+    from engine.state.playerstate import PlayerState
 
 
 class GameLog:
@@ -110,6 +112,10 @@ class GameLog:
     def _get_round_start_state_log(self, round: int, player: 'PlayerState'):
         log = f"## Starting State\n\n"
 
+        if round >= len(self.start_state_logs):
+            log += f"Did not reach round {round}\n\n"
+            return log
+
         for player_num in range(NUM_PLAYERS):
             log += f"### P{player_num + 1} "
             if player_num == player.player_num:
@@ -123,6 +129,10 @@ class GameLog:
 
     def _get_round_buy_stage_log(self, round: int, player: 'PlayerState'):
         log = f"## Buy Stage\n"
+
+        if round >= len(self.buy_stage_logs):
+            log += f"Did not reach round {round}\n\n"
+            return log
 
         shop_log, buy_logs = self.buy_stage_logs[round][player.player_num]
 
@@ -139,6 +149,10 @@ class GameLog:
     
     def _get_round_battle_stage_log(self, round: int, player: 'PlayerState'):
         log = f"## Battle Stage\n"
+
+        if round >= len(self.battle_stage_logs):
+            log += f"Did not reach round {round}\n\n"
+            return log
 
         for player_num in range(NUM_PLAYERS):
             log += "- "

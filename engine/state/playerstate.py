@@ -1,6 +1,6 @@
 from copy import deepcopy
 from random import choice, randint, shuffle
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from engine.config.foodconfig import FOOD_CONFIG, TIER_FOOD, FoodType
 from engine.config.gameconfig import MAX_SHOP_TIER, NUM_PLAYERS, PET_POSITIONS, STARTING_COINS, STARTING_HEALTH
@@ -8,8 +8,10 @@ from engine.config.petconfig import PET_CONFIG, TIER_PETS, PetType
 from engine.config.roundconfig import RoundConfig
 from engine.game.abilitytype import AbilityType
 from engine.state.foodstate import FoodState
-from engine.state.gamestate import GameState
 from engine.state.petstate import PetState
+
+if TYPE_CHECKING:
+    from engine.state.gamestate import GameState
 
 
 class PlayerState:
@@ -53,6 +55,7 @@ class PlayerState:
 
         self.coins = STARTING_COINS
         self.reset_shop_options()
+        self._update_challenger()
         for pet in self.pets:
             if pet is not None:
                 pet.start_new_round()
@@ -61,7 +64,6 @@ class PlayerState:
         for pet in self.pets:
             if pet is not None:
                 pet.proc_ability(AbilityType.BUY_ROUND_END)
-        self._update_challenger()
 
     # We copy the battle pets so we can make irreversible changes
     # during a battle
@@ -188,7 +190,7 @@ class PlayerState:
         pet_config = PET_CONFIG[pet_type]
         health = pet_config.BASE_HEALTH + self.shop_perm_health_bonus
         attack = pet_config.BASE_ATTACK + self.shop_perm_attack_bonus
-        return PetState(health, attack, pet_config)
+        return PetState(health, attack, pet_config, self, self.state)
 
     def _get_random_pet_type(self, max_shop_tier: int) -> 'PetType':
         return self._get_random_from_config_tiers(TIER_PETS, max_shop_tier)

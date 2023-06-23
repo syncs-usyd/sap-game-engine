@@ -9,8 +9,8 @@ from submissionhelper.info.shoppetinfo import ShopPetInfo
 
 class BotBattle:
     def __init__(self):
-        self._from_engine = open("/io/from_engine.pipe", "r", encoding = "utf-8") 
-        self._to_engine = open("/io/to_engine.pipe", "w", encoding = "utf-8")
+        self._from_engine = open("./io/from_engine.pipe", "r", encoding = "utf-8") 
+        self._to_engine = open("./io/to_engine.pipe", "w", encoding = "utf-8")
         self._game_info: Optional['GameInfo'] = None
 
     def get_game_info(self) -> 'GameInfo':

@@ -13,7 +13,7 @@ class GameState:
         self.round += 1
         self.in_battle_stage = False
         for player in self.players:
-            player.start_new_round(self.round)
+            player.start_new_round()
             if not player.is_alive() and player not in self.dead_players:
                 self.dead_players.append(player)
 
@@ -45,7 +45,7 @@ class GameState:
         return player_ranking
 
     def get_view(self, player: 'PlayerState', remaining_moves: int) -> dict:
-        next_opponent = player.get_challenger(increment_index = False)
+        next_opponent = player.challenger
         other_players = [alive_player for alive_player in self.get_alive_players() if alive_player != player]
 
         return {

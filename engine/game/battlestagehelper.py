@@ -1,12 +1,13 @@
-from copy import deepcopy
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from engine.config.roundconfig import RoundConfig
 from engine.game.abilitytype import AbilityType
-from engine.output.gamelog import GameLog
-from engine.state.gamestate import GameState
-from engine.state.petstate import PetState
-from engine.state.playerstate import PlayerState
+
+if TYPE_CHECKING:
+    from engine.output.gamelog import GameLog
+    from engine.state.gamestate import GameState
+    from engine.state.petstate import PetState
+    from engine.state.playerstate import PlayerState
 
 
 class BattleStageHelper:
@@ -32,7 +33,7 @@ class BattleStageHelper:
         self._check_battle_round_start(challenger)
 
         # Go round by round until someone has no pets
-        while len(player.battle_pets) > 0 or len(challenger.battle_pets) > 0:
+        while len(player.battle_pets) > 0 and len(challenger.battle_pets) > 0:
             self._start_next_battle_turn(player)
             self._start_next_battle_turn(challenger)
 

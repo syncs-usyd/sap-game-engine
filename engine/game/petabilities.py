@@ -1,7 +1,10 @@
 from random import sample, choice
-from engine.state.gamestate import GameState
-from engine.state.petstate import PetState
-from engine.state.playerstate import PlayerState
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.state.petstate import PetState
+    from engine.state.gamestate import GameState
+    from engine.state.playerstate import PlayerState
 
 # Abilities are scaled per level, where L = level
 class PetAbilities:
@@ -77,7 +80,7 @@ class PetAbilities:
 
     @staticmethod
     # Ability: Friend summoned, give L temporary attack
-    def horse_ability(horse: 'PetState', player: 'PlayerState'):
+    def horse_ability(horse: 'PetState', player: 'PlayerState', state: 'GameState'):
         player.new_summoned_pet.attack += horse.get_level()
 
     @staticmethod
