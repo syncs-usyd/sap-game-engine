@@ -9,14 +9,14 @@ from submissionhelper.info.shoppetinfo import ShopPetInfo
 
 class BotBattle:
     def __init__(self):
-        self.from_engine = open("/io/from_engine.pipe", "r", encoding = "utf-8") 
-        self.to_engine = open("/io/to_engine.pipe", "w", encoding = "utf-8")
-        self.game_info: Optional['GameInfo'] = None
+        self._from_engine = open("/io/from_engine.pipe", "r", encoding = "utf-8") 
+        self._to_engine = open("/io/to_engine.pipe", "w", encoding = "utf-8")
+        self._game_info: Optional['GameInfo'] = None
 
     def get_game_info(self) -> 'GameInfo':
         dict_game_info = self._read_from_pipe()
-        self.game_info = GameInfo(dict_game_info)
-        return self.game_info
+        self._game_info = GameInfo(dict_game_info)
+        return self._game_info
 
     # Buy the provided shop pet and place it in your pet lineup at the
     # provided position
@@ -24,7 +24,7 @@ class BotBattle:
     def buy_pet(self, shop_pet: 'ShopPetInfo', position: int):
         dict_move = {
             "move_type": "BUY_PET",
-            "index_from": self.game_info.player_info.shop_pets.index(shop_pet),
+            "index_from": self._game_info.player_info.shop_pets.index(shop_pet),
             "index_to": position
         }
         self._write_to_pipe(dict_move)
@@ -35,8 +35,8 @@ class BotBattle:
     def buy_food(self, shop_food: 'ShopFoodInfo', target_pet: Optional['PlayerPetInfo'] = None):
         dict_move = {
             "move_type": "BUY_FOOD",
-            "index_from": self.game_info.player_info.shop_foods.index(shop_food),
-            "index_to": self.game_info.player_info.pets.index(target_pet) if target_pet is not None else None
+            "index_from": self._game_info.player_info.shop_foods.index(shop_food),
+            "index_to": self._game_info.player_info.pets.index(target_pet) if target_pet is not None else None
         }
         self._write_to_pipe(dict_move)
 
@@ -45,8 +45,8 @@ class BotBattle:
     def level_pet_from_shop(self, shop_pet: 'ShopPetInfo', pet_to_level_up: 'PlayerPetInfo'):
         dict_move = {
             "move_type": "UPGRADE_PET_FROM_SHOP",
-            "index_from": self.game_info.player_info.shop_pets.index(shop_pet),
-            "index_to": self.game_info.player_info.pets.index(pet_to_level_up)
+            "index_from": self._game_info.player_info.shop_pets.index(shop_pet),
+            "index_to": self._game_info.player_info.pets.index(pet_to_level_up)
         }
         self._write_to_pipe(dict_move)
 
@@ -55,8 +55,8 @@ class BotBattle:
     def level_pet_from_pets(self, pet_to_use: 'PlayerPetInfo', pet_to_level_up: 'PlayerPetInfo'):
         dict_move = {
             "move_type": "UPGRADE_PET_FROM_PETS",
-            "index_from": self.game_info.player_info.pets.index(pet_to_use),
-            "index_to": self.game_info.player_info.pets.index(pet_to_level_up)
+            "index_from": self._game_info.player_info.pets.index(pet_to_use),
+            "index_to": self._game_info.player_info.pets.index(pet_to_level_up)
         }
         self._write_to_pipe(dict_move)
 
@@ -64,7 +64,7 @@ class BotBattle:
     def sell_pet(self, pet: 'PlayerPetInfo'):
         dict_move = {
             "move_type": "SELL_PET",
-            "index_from": self.game_info.player_info.pets.index(pet),
+            "index_from": self._game_info.player_info.pets.index(pet),
             "index_to": None
         }
         self._write_to_pipe(dict_move)
@@ -85,7 +85,7 @@ class BotBattle:
     def freeze_pet(self, shop_pet: 'ShopPetInfo'):
         dict_move = {
             "move_type": "FREEZE_PET",
-            "index_from": self.game_info.player_info.shop_pets.index(shop_pet),
+            "index_from": self._game_info.player_info.shop_pets.index(shop_pet),
             "index_to": None
         }
         self._write_to_pipe(dict_move)
@@ -96,7 +96,7 @@ class BotBattle:
     def freeze_food(self, shop_food: 'ShopFoodInfo'):
         dict_move = {
             "move_type": "FREEZE_FOOD",
-            "index_from": self.game_info.player_info.shop_foods.index(shop_food),
+            "index_from": self._game_info.player_info.shop_foods.index(shop_food),
             "index_to": None
         }
         self._write_to_pipe(dict_move)
@@ -107,7 +107,7 @@ class BotBattle:
     def unfreeze_pet(self, shop_pet: 'ShopPetInfo'):
         dict_move = {
             "move_type": "UNFREEZE_PET",
-            "index_from": self.game_info.player_info.shop_pets.index(shop_pet),
+            "index_from": self._game_info.player_info.shop_pets.index(shop_pet),
             "index_to": None
         }
         self._write_to_pipe(dict_move)
@@ -118,7 +118,7 @@ class BotBattle:
     def unfreeze_pet(self, shop_food: 'ShopFoodInfo'):
         dict_move = {
             "move_type": "UNFREEZE_FOOD",
-            "index_from": self.game_info.player_info.shop_foods.index(shop_food),
+            "index_from": self._game_info.player_info.shop_foods.index(shop_food),
             "index_to": None
         }
         self._write_to_pipe(dict_move)
@@ -145,7 +145,7 @@ class BotBattle:
     def _read_from_pipe(self):
         json_game_info = ""
         while not json_game_info or json_game_info[-1] != ";":
-            json_game_info += self.from_engine.read(1)
+            json_game_info += self._from_engine.read(1)
 
         dict_game_info = loads(json_game_info[:-1])
         return dict_game_info
@@ -153,5 +153,5 @@ class BotBattle:
     def _write_to_pipe(self, dict_move):
         dict_move = dumps(dict_move)
         dict_move += ";"
-        self.to_engine.write(dict_move)
-        self.to_engine.flush()
+        self._to_engine.write(dict_move)
+        self._to_engine.flush()

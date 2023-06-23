@@ -6,6 +6,5 @@ class TerminationType(Enum):
     OPEN_TIMEOUT = 2
     WRITE_TIMEOUT = 3
     READ_TIMEOUT = 4
-    TOO_MANY_MOVES = 5
-    INVALID_MOVE = 6
-    CANNOT_PARSE_INPUT = 7
+    INVALID_MOVE = 5
+    CANNOT_PARSE_INPUT = 6

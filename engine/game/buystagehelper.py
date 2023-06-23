@@ -53,8 +53,6 @@ class BuyStageHelper:
 
             self.log.write_buy_stage_log(player, input)
 
-        self.output_handler.terminate_fail(TerminationType.TOO_MANY_MOVES, player, reason = f"Used more than the max number of moves in a single round. Note: the max is {MAX_MOVES_PER_ROUND}")
-
     def _buy_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         new_pet = player.shop_pets[input.index_from]
         player.shop_pets.remove(new_pet)
