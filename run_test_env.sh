@@ -87,6 +87,7 @@ cd $test_env
 
 mkdir output
 cp -r ../engine engine
+cp engine/__main__.py debug_engine.py
 
 echo ""
 submission_pids=()

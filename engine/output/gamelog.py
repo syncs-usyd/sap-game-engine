@@ -21,7 +21,7 @@ class GameLog:
         self.buy_stage_logs: List[List[Tuple[str, List[str]]]] = []
 
         # Per round, we store the outcomes of each battle
-        self.battle_stage_logs: List[List[str]] = []
+        self.battle_stage_logs: List[List[('PlayerState', str)]] = []
 
     def get_game_log(self, player: 'PlayerState') -> str:
         game_log = ""
@@ -97,7 +97,7 @@ class GameLog:
             if player.is_alive():
                 log += f"{player.health} health remaining"
             else:
-                log += f"Eliminated :("
+                log += f"Eliminated"
 
         elif player_lost is None:
             log += f"P{player.player_num + 1} tied with P{challenger.player_num + 1}; "
@@ -107,7 +107,7 @@ class GameLog:
             log += f"P{player.player_num + 1} beat P{challenger.player_num + 1}; "
             log += f"P{player.player_num + 1} has {player.health} health remaining"
 
-        self.battle_stage_logs[self.state.round].append(log)
+        self.battle_stage_logs[self.state.round].append((player, log))
 
     def _get_round_start_state_log(self, round: int, player: 'PlayerState'):
         log = f"## Starting State\n\n"
@@ -154,13 +154,11 @@ class GameLog:
             log += f"Did not reach round {round}\n\n"
             return log
 
-        for player_num in range(NUM_PLAYERS):
+        for log_player, log in self.battle_stage_logs[round]:
             log += "- "
-
-            if player_num == player.player_num: log += "*"
-            log += self.battle_stage_logs[round][player_num]
-            if player_num == player.player_num: log += "*"
-
+            if log_player == player: log += "**"
+            log += log
+            if log_player == player: log += "**"
             log += "\n"
 
         log += "\n"
