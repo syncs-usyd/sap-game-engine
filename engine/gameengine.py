@@ -20,17 +20,13 @@ class GameEngine:
             self.log.write_start_state_logs()
             players = self.state.get_alive_players()
 
-            print("Starting buy round")
             self.log.init_buy_stage_log()
             for player in players:
-                print(f"Running buy round for {player.player_num}")
                 self.buy_stage_helper.run(player)
 
-            print("Starting battle round")
             self.state.start_battle_stage()
             self.log.init_battle_stage_log()
             for player in players:
-                print(f"Running battle round for {player.player_num}")
                 self.battle_stage_helper.run(player)
 
         self.output_handler.terminate_success(self.state.get_player_ranking())

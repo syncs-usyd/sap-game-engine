@@ -15,3 +15,15 @@ class ShopFoodInfo:
 
         # The number of coins it costs to buy the food
         self.cost: int = int(dict["cost"])
+
+    def __repr__(self) -> str:
+        printable = "Shop Food Info:\n"
+        printable += "------------\n"
+
+        printable += f"Type: {self.type}\n"
+        printable += f"Is Frozen: {self.is_frozen}\n"
+        printable += f"Cost: {self.cost}\n"
+
+        printable += "------------"
+
+        return printable

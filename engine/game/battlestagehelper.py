@@ -18,7 +18,6 @@ class BattleStageHelper:
     def run(self, player: 'PlayerState'):
         player.start_battle(player.challenger)
         player.challenger.start_battle(player)
-        print("Deep copy done")
 
         # Actually run the battle
         player_lost = self._determine_winner(player, player.challenger)
@@ -33,13 +32,8 @@ class BattleStageHelper:
         self._check_battle_round_start(player)
         self._check_battle_round_start(challenger)
 
-        turn = 1
-
         # Go round by round until someone has no pets
         while len(player.battle_pets) > 0 and len(challenger.battle_pets) > 0:
-            print(f"Turn {turn} started")
-            turn += 1
-
             self._start_next_battle_turn(player)
             self._start_next_battle_turn(challenger)
 

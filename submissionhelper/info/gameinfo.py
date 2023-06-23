@@ -28,20 +28,26 @@ class GameInfo:
     def __repr__(self) -> str:
         printable = "Game Info:\n"
         printable += "------------\n"
+
         printable += f"Round Num: {self.round_num}\n"
         printable += f"Remaining Moves: {self.remaining_moves}\n"
-        printable += f"Player Info: {self.player_info}\n"
-        
+
+        printable += "Player Info: {\n"
+        for line in repr(self.player_info).splitlines():
+            printable += f"    {line}\n"
+        printable += "}\n"
+
         printable += "Other Players Info: {\n"
         for i, other_player_info in enumerate(self.other_players_info):
-            printable += f"    Player {i}: "
+            printable += f"    Player {i}"
+            if other_player_info == self.next_opponent_info: printable += f" (next opponent)"
+            printable += ": "
             printable += "{\n"
             for line in repr(other_player_info).splitlines():
                 printable += f"        {line}\n"
             printable += "    }\n"
         printable += "}\n"
-        
-        printable += f"Next Opponent Info: {self.next_opponent_info}\n"
+
         printable += "------------"
 
         return printable
