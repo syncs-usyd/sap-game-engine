@@ -151,8 +151,8 @@ class GameLog:
         for i, pet in enumerate(player.shop_pets):
             log += f"{i + 1}. "
             log += f"\"{pet.pet_config.PET_NAME}\"; "
-            log += f"{pet.perm_health} health; "
-            log += f"{pet.perm_attack} attack\n"
+            log += f"{pet.get_perm_health()} health; "
+            log += f"{pet.get_perm_attack()} attack\n"
 
         log += "\nShop foods:\n"
         for i, food in enumerate(player.shop_foods):
@@ -168,8 +168,8 @@ class GameLog:
             log += "None"
         else:
             log += f"\"{pet.pet_config.PET_NAME}\"; "
-            log += f"{pet.perm_health} health; "
-            log += f"{pet.perm_attack} attack; "
+            log += f"{pet.get_perm_health()} health; "
+            log += f"{pet.get_perm_attack()} attack; "
             log += f"Level {pet.get_level()}; "
             log += f"Sublevel progress {pet.get_sub_level_progress()}; "
 

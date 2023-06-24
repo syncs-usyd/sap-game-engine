@@ -56,8 +56,8 @@ class PetAbilities:
         pet_to_upgrade = choice(other_pets)
         #Only temporary in battle state
         if state.in_battle_stage:
-            pet_to_upgrade.attack += ant.get_level()
-            pet_to_upgrade.health += ant.get_level()
+            pet_to_upgrade.change_attack(ant.get_level())
+            pet_to_upgrade.change_health(ant.get_level())
         else:
             pet_to_upgrade.perm_increase_attack(ant.get_level())
             pet_to_upgrade.perm_increase_health(ant.get_level())
@@ -84,13 +84,13 @@ class PetAbilities:
     @staticmethod
     # Friend summoned, give L attack until the end of combat
     def horse_ability(horse: 'PetState', player: 'PlayerState', state: 'GameState'):
-        player.new_summoned_pet.attack += horse.get_level()
+        player.new_summoned_pet.change_attack(horse.get_level())
 
     @staticmethod
     # Start of combat, gain 0.5L health from the healthiest friend
     def crab_ability(crab: 'PetState', player: 'PlayerState', state: 'GameState'):
-        highest_health = max([pet.health for pet in player.pets if pet != crab and pet is not None])
-        crab.health += int(0.5 * highest_health)
+        highest_health = max([pet.get_health() for pet in player.pets if pet != crab and pet is not None])
+        crab.change_health(int(0.5 * highest_health))
 
     @staticmethod
     # Start of turn (buy period), gain L gold
@@ -115,15 +115,15 @@ class PetAbilities:
     # TODO: When hurt, gain 4L temporary attach
     def peacock_ability(peacock: 'PetState', player: 'PlayerState', state: 'GameState'):
         if state.in_battle_stage:
-            peacock.attack += 4 * peacock.get_level()
+            peacock.change_attack(4 * peacock.get_level())
         else:
             peacock.perm_increase_attack(4 * peacock.get_level())
 
     @staticmethod
     # Friend ahead attacks, gain L health and damage
     def kangaroo_ability(kangaroo: 'PetState', player: 'PlayerState', state: 'GameState'):
-        kangaroo.attack += kangaroo.get_level()
-        kangaroo.health += kangaroo.get_level()
+        kangaroo.change_attack(kangaroo.get_level())
+        kangaroo.change_health(kangaroo.get_level())
 
     @staticmethod
     # On faint, give L health and attack to two nearest pets behind
@@ -142,7 +142,7 @@ class PetAbilities:
     def dodo_ability(dodo: 'PetState', player: 'PlayerState', state: 'GameState'):
         dodo_index = player.battle_pets.index(dodo)
         if dodo_index != 0:
-            player.battle_pets[dodo_index - 1].attack += int(dodo.get_level() * 0.5)
+            player.battle_pets[dodo_index - 1].change_attack(int(dodo.get_level() * 0.5))
 
     @staticmethod
     # Before faint, deal 0.5L attack damage to the adjacent pets
@@ -178,30 +178,29 @@ class PetAbilities:
 
         # Will only look literally 
         buffed_pets = player.pets[(giraffe_index - buffed_pets_amount) : giraffe_index()]
-
         for pet in buffed_pets:
             if pet is not None:
-                pet.attack += giraffe.get_level()
-                pet.health += giraffe.get_level()
+                pet.change_attack(giraffe.get_level())
+                pet.change_health(giraffe.get_level())
 
     @staticmethod
     # When hurt, give nearest friend 2L attack and health; prioritise back
     # TODO: Same problem as but this has some assumptions 
+    # TODO: make this handle buy stage
     def camel_ability(camel: 'PetState', player: 'PlayerState', state: 'GameState'):
         # If the camel has something behind it or is not yet the last pet
         if player.battle_pets[-1] is not camel:
             buff_pet = player.battle_pets[player.battle_pets.index(camel) + 1]
-            buff_pet.attack += 2 * camel.get_level()
-            buff_pet.health += 2 * camel.get_level()
-            
+            buff_pet.change_attack(2 * camel.get_level())
+            buff_pet.change_health(2 * camel.get_level())
         else:
             # Perhaps no case where this would b
             # TODO: Cos case where it is last/only pet 
             if len(player.battle_pets) == 0: return 
 
             buff_pet = player.battle_pets[player.battle_pets.index(camel) - 1]
-            buff_pet.attack += 2 * camel.get_level()
-            buff_pet.health += 2 * camel.get_level()
+            buff_pet.change_attack(2 * camel.get_level())
+            buff_pet.change_health(2 * camel.get_level())
 
     @staticmethod
     # After attack, deal 1 damage to the friend behind L times
@@ -220,13 +219,13 @@ class PetAbilities:
     # When a friendly eats food, give them +L health (THIS CAN CHANGE)
     def bunny_ability(bunny: 'PetState', player: 'PlayerState', state: 'GameState'):
         target_friend = player.pet_that_ate_food
-        target_friend.health += bunny.get_level()
+        target_friend.change_health(bunny.get_level())
 
     @staticmethod
     # When a friend is summoned, gain 2L attack and L health until end of battle (stacking and unlimited)
     def dog_ability(dog: 'PetState', player: 'PlayerState', state: 'GameState'):
-        dog.health += dog.get_level()
-        dog.attack += 2 * dog.get_level()
+        dog.change_health(dog.get_level())
+        dog.change_attack(2 * dog.get_level())
 
     @staticmethod
     # On faint, summon 2 rams with 2L health and attack
