@@ -262,14 +262,12 @@ class PetAbilities:
         if level_3_friend:
             bison.perm_increase_health(2 * bison.get_level())
             bison.perm_increase_attack(2 * bison.get_level())
-        else:
-            return
 
     @staticmethod
     # On hurt -> Deal 3L damage to one random enemy
     def blowfish_ability(blowfish: 'PetState', player: 'PlayerState', state: 'GameState'):
         target_pet = choice(player.opponent.battle_pets)
-        blowfish.damage_enemy_with_ability(3 * blowfish.get_level())
+        blowfish.damage_enemy_with_ability(3 * blowfish.get_level(), target_pet)
 
     @staticmethod
     # Start of buy round -> discount all shop food by 1 coin
@@ -281,7 +279,7 @@ class PetAbilities:
     # End buy round -> Give two level 2+ friends L health and attack
     def penguin_ability(penguin: 'PetState', player: 'PlayerState', state: 'GameState'):
 
-        strong_pets = [pet for pet in player.pets if pet != penguin and (pet is not None ) and (pet.get_level() >= 2)]
+        strong_pets = [pet for pet in player.pets if pet != penguin and (pet is not None) and (pet.get_level() >= 2)]
         
         if len(strong_pets) == 0: return
         
