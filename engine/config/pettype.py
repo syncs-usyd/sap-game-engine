@@ -2,11 +2,6 @@ from enum import Enum
 
 
 class PetType(Enum):
-    @staticmethod
-    def get_pet_type(pet_name: str) -> 'PetType':
-        upper_snake_case = pet_name.upper().replace(" ", "_")
-        return PetType[upper_snake_case]
-
     FISH = 1
     BEAVER = 2
     PIG = 3
@@ -39,3 +34,10 @@ class PetType(Enum):
     RAM = 30
     BEE = 31
     ZOMBIE_CRICKET = 32
+
+TIER_PETS = [
+    [PetType.FISH, PetType.BEAVER, PetType.HORSE, PetType.PIG, PetType.ANT, PetType.MOSQUITO, PetType.CRICKET],
+    [PetType.CRAB, PetType.SWAN, PetType.HEDGEHOG, PetType.FLAMINGO, PetType.KANGAROO, PetType.SPIDER],
+    [PetType.DODO, PetType.BADGER, PetType.DOLPHIN, PetType.GIRAFFE, PetType.ELEPHANT, PetType.CAMEL, PetType.BUNNY, PetType.DOG, PetType.SHEEP],
+    [PetType.SKUNK, PetType.HIPPO, PetType.BISON, PetType.BLOWFISH, PetType.SQUIRREL, PetType.PENGUIN]
+]

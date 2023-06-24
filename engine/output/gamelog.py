@@ -82,7 +82,7 @@ class GameLog:
         log = f"## Starting State\n\n"
 
         if round >= len(self.start_state_logs):
-            log += f"Did not reach round {round}\n\n"
+            log += f"Did not reach round {round + 1}\n\n"
             return log
 
         for player_num in range(NUM_PLAYERS):
@@ -102,7 +102,7 @@ class GameLog:
         log = f"## Buy Stage\n"
 
         if round >= len(self.buy_stage_logs):
-            log += f"Did not reach round {round}\n\n"
+            log += f"Did not reach round {round + 1}\n\n"
             return log
 
         shop_log, buy_logs = self.buy_stage_logs[round][player.player_num]
@@ -124,7 +124,7 @@ class GameLog:
         log = f"## Battle Stage\n"
 
         if round >= len(self.battle_stage_logs):
-            log += f"Did not reach round {round}\n\n"
+            log += f"Did not reach round {round + 1}\n\n"
             return log
 
         for _player, _log in self.battle_stage_logs[round]:

@@ -1,8 +1,10 @@
 from typing import TYPE_CHECKING, Optional
 
-from engine.config.foodconfig import FOOD_CONFIG, FoodConfig, FoodType
+from engine.config.foodconfig import FOOD_CONFIG, FoodConfig
+from engine.config.foodtype import FoodType
 from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF, PET_BUY_COST
-from engine.config.petconfig import PET_CONFIG, PetConfig, PetType
+from engine.config.petconfig import PET_CONFIG, PetConfig
+from engine.config.pettype import PetType
 from engine.game.abilitytype import AbilityType
 
 if TYPE_CHECKING:

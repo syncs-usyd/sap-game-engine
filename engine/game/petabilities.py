@@ -1,7 +1,7 @@
 from random import sample, choice
 from typing import TYPE_CHECKING
 
-from engine.config.petconfig import PET_CONFIG, PetType, TIER_PETS
+from engine.config.pettype import TIER_PETS, PetType
 
 if TYPE_CHECKING:
     from engine.state.petstate import PetState
@@ -78,9 +78,8 @@ class PetAbilities:
     @staticmethod
     # On faint, spawn a zombie cricket with L attack and health
     def cricket_ability(cricket: 'PetState', player: 'PlayerState', state: 'GameState'):
-        zombie_config = PET_CONFIG[PetType.ZOMBIE_CRICKET]
-        zombie = PetState(cricket.get_level(), cricket.get_level(), zombie_config, player, state)
-        player.summon_pets(cricket, [zombie])
+        zombie_cricket = player.create_pet_to_summon(PetType.ZOMBIE_CRICKET, cricket.get_level(), cricket.get_level())
+        player.summon_pets(cricket, [zombie_cricket])
 
     @staticmethod
     # Friend summoned, give L attack until the end of combat
@@ -131,18 +130,15 @@ class PetAbilities:
     @staticmethod
     # On faint, summon a tier 3 pet with L health and attack
     def spider_ability(spider: 'PetState', player: 'PlayerState', state: 'GameState'):
-        #Find the config for a random tier 3 pet
         pet_type = choice(TIER_PETS[3])
-        new_pet = PetState(spider.get_level(), spider.get_level(), pet_type, player, state)
-        
-        player.summon_pets(spider, [new_pet])
+        pet = player.create_pet_to_summon(pet_type, spider.get_level(), spider.get_level())
+        player.summon_pets(spider, [pet])
 
     @staticmethod
     # Start of battle, give 0.5L attack to the nearest friend ahead
     def dodo_ability(dodo: 'PetState', player: 'PlayerState', state: 'GameState'):
         dodo_index = player.battle_pets.index(dodo)
-
-        if dodo_index is not 0:
+        if dodo_index != 0:
             player.battle_pets[dodo_index - 1].attack += int(dodo.get_level() * 0.5)
 
     @staticmethod
@@ -232,8 +228,10 @@ class PetAbilities:
     @staticmethod
     # On faint, summon 2 rams with 2L health and attack
     def sheep_ability(sheep: 'PetState', player: 'PlayerState', state: 'GameState'):
-        new_pet = PetState(sheep.get_level(), sheep.get_level(), PET_CONFIG[PetType.RAM], player, state)
-        player.summon_pets(sheep, [new_pet, new_pet])
+        stat = 2 * sheep.get_level()
+        ram_a = player.create_pet_to_summon(PetType.RAM, stat, stat)
+        ram_b = player.create_pet_to_summon(PetType.RAM, stat, stat)
+        player.summon_pets(sheep, [ram_a, ram_b])
 
     @staticmethod
     # Battle round start -> Reduce the highest health enemy's health by 0.33*L
