@@ -125,6 +125,7 @@ echo ""
 
 if [[ "$debug_engine" == false ]]
 then
+    echo "Starting game engine"
     python3 -m engine &
     engine_pid=$!
 fi

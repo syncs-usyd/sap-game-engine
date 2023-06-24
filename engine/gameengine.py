@@ -29,4 +29,6 @@ class GameEngine:
             for player in players:
                 self.battle_stage_helper.run(player)
 
+            self.state.end_round()
+
         self.output_handler.terminate_success(self.state.get_player_ranking())

@@ -117,9 +117,11 @@ class GameLog:
             return log
 
         for player_num in range(NUM_PLAYERS):
-            log += f"### P{player_num + 1} "
-            if player_num == player.player_num:
-                log += "(self) "
+            log += f"### "
+
+            if player_num == player.player_num: log += "**"
+            log += f"P{player_num + 1} "
+            if player_num == player.player_num: log += "(self)** "
 
             round_start_log = self.start_state_logs[round][player_num]
             log += round_start_log
@@ -154,11 +156,13 @@ class GameLog:
             log += f"Did not reach round {round}\n\n"
             return log
 
-        for log_player, log in self.battle_stage_logs[round]:
+        for _player, _log in self.battle_stage_logs[round]:
             log += "- "
-            if log_player == player: log += "**"
-            log += log
-            if log_player == player: log += "**"
+
+            if _player == player: log += "**"
+            log += _log
+            if _player == player: log += "**"
+
             log += "\n"
 
         log += "\n"

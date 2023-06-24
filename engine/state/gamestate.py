@@ -14,13 +14,16 @@ class GameState:
         self.in_battle_stage = False
         for player in self.players:
             player.start_new_round()
-            if not player.is_alive() and player not in self.dead_players:
-                self.dead_players.append(player)
 
     def start_battle_stage(self):
         self.in_battle_stage = True
         for player in self.get_alive_players():
             player.start_battle_stage()
+
+    def end_round(self):
+        for player in self.players:
+            if not player.is_alive() and player not in self.dead_players:
+                self.dead_players.append(player)
 
     def get_alive_players(self) -> List['PlayerState']:
         return [player for player in self.players if player.is_alive()]
