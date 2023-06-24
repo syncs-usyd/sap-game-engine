@@ -18,10 +18,10 @@ class PetState:
         self.state = state
 
         self.pet_config = pet_config
-        self.perm_health = health
-        self.perm_attack = attack
-        self.health = health
-        self.attack = attack
+        self._perm_health = health
+        self._perm_attack = attack
+        self._health = health
+        self._attack = attack
         self.prev_health = health
         self.prev_attack = attack
 
@@ -38,13 +38,13 @@ class PetState:
         self.hurt_already = False
 
     def start_new_round(self):
-        self.prev_health = self.perm_health
-        self.prev_attack = self.perm_attack
+        self.prev_health = self._perm_health
+        self.prev_attack = self._perm_attack
         self.prev_carried_food = self.carried_food
         self.prev_level = self.get_level()
 
-        self.health = self.perm_health
-        self.attack = self.perm_attack
+        self._health = self._perm_health
+        self._attack = self._perm_attack
 
         self.proc_ability(AbilityType.BUY_ROUND_START)
 
@@ -85,7 +85,7 @@ class PetState:
             self.proc_ability(AbilityType.LEVEL_UP)
 
     def damage_enemy_with_attack(self, enemy_pet: 'PetState'):
-        self._damage_enemy(self.attack + self.get_bonus_attack(), enemy_pet)
+        self._damage_enemy(self._attack + self.get_bonus_attack(), enemy_pet)
 
     def damage_enemy_with_ability(self, attack, enemy_pet: 'PetState'):
         self._damage_enemy(attack, enemy_pet)
@@ -95,12 +95,20 @@ class PetState:
             self.pet_config.ABILITY_FUNC(self, self.player, self.state)
 
     def perm_increase_health(self, amount: int):
-        self.health += amount
-        self.perm_health += amount
+        self.change_health(amount)
+        self._change_perm_health(amount)
 
     def perm_increase_attack(self, amount: int):
-        self.attack += amount
-        self.perm_attack += amount
+        self.change_attack(amount)
+        self._change_perm_attack(amount)
+
+    def change_health(self, amount: int):
+        self._health += amount
+        self._health = min(max(0, self._health), 50)
+
+    def change_attack(self, amount: int):
+        self._attack += amount
+        self._attack = min(max(0, self._attack), 50)
 
     def get_bonus_attack(self) -> int:
         if self.carried_food == FOOD_CONFIG[FoodType.MEAT_BONE]:
@@ -108,14 +116,23 @@ class PetState:
         else:
             return 0
 
+    def get_health(self) -> int:
+        return self._health
+
+    def get_perm_health(self) -> int:
+        return self._perm_health
+
+    def get_perm_attack(self) -> int:
+        return self._perm_attack
+
     def is_alive(self) -> bool:
-        return self.health > 0
+        return self._health > 0
 
     def get_view_for_self(self) -> dict:
         return {
             "type": self.pet_config.PET_NAME,
-            "health": self.health,
-            "attack": self.attack,
+            "health": self._health,
+            "attack": self._attack,
             "level": self.get_level(),
             "sub_level": self.get_sub_level_progress(),
             "carried_food": self.carried_food.FOOD_NAME if self.carried_food is not None else None
@@ -124,8 +141,8 @@ class PetState:
     def get_view_for_shop(self) -> dict:
         return {
             "type": self.pet_config.PET_NAME,
-            "health": self.health,
-            "attack": self.attack,
+            "health": self._health,
+            "attack": self._attack,
             "is_frozen": self.is_frozen,
             "cost": PET_BUY_COST
         }
@@ -146,6 +163,14 @@ class PetState:
             bee = PetState(bee_config.BASE_HEALTH, bee_config.BASE_ATTACK, bee_config, self.player, self.state)
             self.player.summon_pets(self, [bee])
 
+    def _change_perm_health(self, amount: int):
+        self._perm_health += amount
+        self._perm_health = min(max(0, self._perm_health), 50)
+
+    def _change_perm_attack(self, amount: int):
+        self._perm_attack += amount
+        self._perm_attack = min(max(0, self._perm_attack), 50)
+
     def _damage_enemy(self, attack: int, enemy_pet: 'PetState'):
         enemy_was_alive = enemy_pet.is_alive()
         enemy_pet._take_damage(attack)
@@ -157,7 +182,7 @@ class PetState:
         if self.carried_food == FOOD_CONFIG[FoodType.GARLIC]:
             amount = max(amount - 2, 1)
 
-        self.health -= amount
+        self.change_health(-amount)
         if not self.hurt_already:
             self.hurt_already = True
             self.proc_ability(AbilityType.HURT)
