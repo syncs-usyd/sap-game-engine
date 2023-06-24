@@ -1,14 +1,18 @@
-from json import dumps
+from json import dumps, loads
 from signal import SIGALRM, alarm, signal
+from typing import TYPE_CHECKING
 
+from engine.config.gameconfig import NUM_PLAYERS
 from engine.config.ioconfig import CORE_DIRECTORY, OPEN_PIPE_TIMEOUT_SECONDS, READ_PIPE_TIMEOUT_SECONDS, WRITE_PIPE_TIMEOUT_SECONDS
 from engine.input.inputvalidator import InputValidator
 from engine.input.movetype import MoveType
-from engine.input.playerinput import PlayerInput
-from engine.output.outputhandler import OutputHandler
 from engine.output.terminationtype import TerminationType
-from engine.state.gamestate import GameState
-from engine.state.playerstate import PlayerState
+from engine.input.playerinput import PlayerInput
+
+if TYPE_CHECKING:
+    from engine.output.outputhandler import OutputHandler
+    from engine.state.gamestate import GameState
+    from engine.state.playerstate import PlayerState
 
 
 class InputHelper:
@@ -25,7 +29,7 @@ class InputHelper:
         self.from_engine_pipes = []
         self.to_engine_pipes = []
 
-        for curr_player_num in range(5):
+        for curr_player_num in range(NUM_PLAYERS):
             alarm(OPEN_PIPE_TIMEOUT_SECONDS) # Enable timer
             self.from_engine_pipes.append(open(self._get_pipe_path(curr_player_num, from_engine = True), 'w'))
             self.to_engine_pipes.append(open(self._get_pipe_path(curr_player_num, from_engine = False), 'r'))
@@ -74,7 +78,7 @@ class InputHelper:
         json = json[:-1]
 
         try:
-            input_dict = json.loads(json)
+            input_dict = loads(json)
             move_type = MoveType[input_dict["move_type"]]
             return PlayerInput(move_type, input_dict)
         except Exception as exception:

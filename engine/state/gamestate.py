@@ -13,14 +13,17 @@ class GameState:
         self.round += 1
         self.in_battle_stage = False
         for player in self.players:
-            player.start_new_round(self.round)
-            if not player.is_alive() and player not in self.dead_players:
-                self.dead_players.append(player)
+            player.start_new_round()
 
     def start_battle_stage(self):
         self.in_battle_stage = True
         for player in self.get_alive_players():
             player.start_battle_stage()
+
+    def end_round(self):
+        for player in self.players:
+            if not player.is_alive() and player not in self.dead_players:
+                self.dead_players.append(player)
 
     def get_alive_players(self) -> List['PlayerState']:
         return [player for player in self.players if player.is_alive()]
@@ -45,10 +48,11 @@ class GameState:
         return player_ranking
 
     def get_view(self, player: 'PlayerState', remaining_moves: int) -> dict:
-        next_opponent = player.get_challenger(increment_index = False)
+        next_opponent = player.challenger
         other_players = [alive_player for alive_player in self.get_alive_players() if alive_player != player]
 
         return {
+            "round": self.round + 1,
             "remaining_moves": remaining_moves,
             "player_info": player.get_view_for_self(),
             "next_opponent_index": other_players.index(next_opponent),

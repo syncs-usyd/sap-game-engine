@@ -1,7 +1,10 @@
 from random import sample, choice
-from engine.state.gamestate import GameState
-from engine.state.petstate import PetState
-from engine.state.playerstate import PlayerState
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.state.petstate import PetState
+    from engine.state.gamestate import GameState
+    from engine.state.playerstate import PlayerState
 from engine.config.petconfig import PET_CONFIG, PetConfig, PetType, TIER_PETS
 
 # Abilities are scaled per level, where L = level

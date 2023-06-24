@@ -1,6 +1,6 @@
-from copy import deepcopy
+from copy import copy
 from random import choice, randint, shuffle
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from engine.config.foodconfig import FOOD_CONFIG, TIER_FOOD, FoodType
 from engine.config.gameconfig import MAX_SHOP_TIER, NUM_PLAYERS, PET_POSITIONS, STARTING_COINS, STARTING_HEALTH
@@ -8,8 +8,10 @@ from engine.config.petconfig import PET_CONFIG, TIER_PETS, PetType
 from engine.config.roundconfig import RoundConfig
 from engine.game.abilitytype import AbilityType
 from engine.state.foodstate import FoodState
-from engine.state.gamestate import GameState
 from engine.state.petstate import PetState
+
+if TYPE_CHECKING:
+    from engine.state.gamestate import GameState
 
 
 class PlayerState:
@@ -49,10 +51,11 @@ class PlayerState:
 
     def start_new_round(self):
         self.prev_health = self.health
-        self.prev_pets = deepcopy(self.pets)
+        self.prev_pets = self._get_pets_copy()
 
         self.coins = STARTING_COINS
         self.reset_shop_options()
+        self._update_challenger()
         for pet in self.pets:
             if pet is not None:
                 pet.start_new_round()
@@ -61,13 +64,12 @@ class PlayerState:
         for pet in self.pets:
             if pet is not None:
                 pet.proc_ability(AbilityType.BUY_ROUND_END)
-        self._update_challenger()
 
     # We copy the battle pets so we can make irreversible changes
     # during a battle
     def start_battle(self, opponent: 'PlayerState'):
         self.opponent = opponent
-        self.battle_pets = deepcopy(self.pets)
+        self.battle_pets = self._get_pets_copy()
         self.cleanup_battle_pets()
         for pet in self.battle_pets:
             pet.start_next_battle_turn()
@@ -177,7 +179,7 @@ class PlayerState:
         i = self.next_battle_index
         while True:
             challenger = self.state.players[self.battle_order[i]]
-            i = (i + 1) % NUM_PLAYERS
+            i = (i + 1) % (NUM_PLAYERS - 1)
 
             if challenger.is_alive():
                 self.next_battle_index = i
@@ -188,7 +190,7 @@ class PlayerState:
         pet_config = PET_CONFIG[pet_type]
         health = pet_config.BASE_HEALTH + self.shop_perm_health_bonus
         attack = pet_config.BASE_ATTACK + self.shop_perm_attack_bonus
-        return PetState(health, attack, pet_config)
+        return PetState(health, attack, pet_config, self, self.state)
 
     def _get_random_pet_type(self, max_shop_tier: int) -> 'PetType':
         return self._get_random_from_config_tiers(TIER_PETS, max_shop_tier)
@@ -209,3 +211,9 @@ class PlayerState:
                 return config_tiers[tier][global_index]
             else:
                 global_index -= len(config_tiers[tier])
+
+    def _get_pets_copy(self) -> List['PetState']:
+        return [copy(pet) if pet is not None else None for pet in self.pets]
+
+    def __repr__(self) -> str:
+        return f"Player {self.player_num + 1}"

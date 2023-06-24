@@ -1,11 +1,13 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from engine.config.foodconfig import FOOD_CONFIG, FoodConfig, FoodType
-from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF
+from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF, PET_BUY_COST
 from engine.config.petconfig import PET_CONFIG, PetConfig, PetType
 from engine.game.abilitytype import AbilityType
-from engine.state.gamestate import GameState
-from engine.state.playerstate import PlayerState
+
+if TYPE_CHECKING:
+    from engine.state.gamestate import GameState
+    from engine.state.playerstate import PlayerState
 
 
 class PetState:
@@ -16,9 +18,16 @@ class PetState:
         self.pet_config = pet_config
         self.perm_health = health
         self.perm_attack = attack
+        self.health = health
+        self.attack = attack
+        self.prev_health = health
+        self.prev_attack = attack
 
-        self.carried_food: Optional['FoodConfig'] = None 
+        self.carried_food: Optional['FoodConfig'] = None
+        self.prev_carried_food: Optional['FoodConfig'] = None
+
         self.sub_level = 0
+        self.prev_level = 1
 
         # If the pet is in the shop, represents whether it is frozen or not
         self.is_frozen = False
@@ -115,7 +124,8 @@ class PetState:
             "type": self.pet_config.PET_NAME,
             "health": self.health,
             "attack": self.attack,
-            "is_frozen": self.is_frozen
+            "is_frozen": self.is_frozen,
+            "cost": PET_BUY_COST
         }
 
     def get_view_for_others(self) -> dict:
@@ -149,3 +159,7 @@ class PetState:
         if not self.hurt_already:
             self.hurt_already = True
             self.proc_ability(AbilityType.HURT)
+
+    def __repr__(self) -> str:
+        # TODO: add id to this as well
+        return self.pet_config.PET_NAME
