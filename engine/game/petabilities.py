@@ -239,29 +239,54 @@ class PetAbilities:
     @staticmethod
     # Battle round start -> Reduce the highest health enemy's health by 0.33*L
     def skunk_ability(skunk: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pass
+        highest_health_pet = max(player.opponent.battle_pets, key=lambda pet: pet.health)
+        
+        highest_health_pet.health =  int(highest_health_pet.health * (1 - (0.33 * skunk.get_level())))
 
     @staticmethod
     # Knockout -> Gain 3L health and attack
     def hippo_ability(hippo: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pass
+        hippo.health += 3 * hippo.get_level()
+        hippo.attack += 3 * hippo.get_level()
 
     @staticmethod
     # End buy round -> If this has a level 3 friend, gain L attack and 2L health
     def bison_ability(bison: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pass
+        level_3_friend = False
+        
+        for pet in player.pets:
+            if pet.get_level == 3:
+                level_3_friend = True
+                break
+            
+        if level_3_friend:
+            bison.perm_increase_health(2 * bison.get_level())
+            bison.perm_increase_attack(2 * bison.get_level())
+        else:
+            return
 
     @staticmethod
     # On hurt -> Deal 3L damage to one random enemy
     def blowfish_ability(blowfish: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pass
+        target_pet = choice(player.opponent.battle_pets)
+        blowfish.damage_enemy_with_ability(3 * blowfish.get_level())
 
     @staticmethod
     # Start of buy round -> discount all shop food by 1 coin
     def squirrel_ability(squirrel: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pass
+        for food in player.shop_foods:
+            food.cost -= squirrel.get_level()
 
     @staticmethod
     # End buy round -> Give two level 2+ friends L health and attack
     def penguin_ability(penguin: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pass
+
+        strong_pets = [pet for pet in player.pets if pet != penguin and (pet is not None ) and (pet.get_level() >= 2)]
+        
+        if len(strong_pets) == 0: return
+        
+        num_choose = 2 if len(strong_pets) >= 2 else 1
+        pets_to_upgrade = sample(strong_pets, num_choose)
+        for pet in pets_to_upgrade:
+            pet.perm_increase_health(penguin.get_level())
+            pet.perm_increase_attack(penguin.get_level())

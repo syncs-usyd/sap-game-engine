@@ -68,7 +68,7 @@ class BuyStageHelper:
     def _buy_food(self, player: 'PlayerState', input: 'PlayerInput'):
         food = player.shop_foods[input.index_from]
         player.shop_foods.remove(food)
-        player.coins -= food.food_config.BUY_COST
+        player.coins -= food.cost
 
         log = f"Bought {food}"
 
