@@ -2,9 +2,11 @@ from copy import copy
 from random import choice, randint, shuffle
 from typing import TYPE_CHECKING, List, Optional
 
-from engine.config.foodconfig import FOOD_CONFIG, TIER_FOOD, FoodType
+from engine.config.foodconfig import FOOD_CONFIG
+from engine.config.foodtype import TIER_FOOD, FoodType
 from engine.config.gameconfig import MAX_SHOP_TIER, NUM_PLAYERS, PET_POSITIONS, STARTING_COINS, STARTING_HEALTH
-from engine.config.petconfig import PET_CONFIG, TIER_PETS, PetType
+from engine.config.petconfig import PET_CONFIG
+from engine.config.pettype import TIER_PETS, PetType
 from engine.config.roundconfig import RoundConfig
 from engine.game.abilitytype import AbilityType
 from engine.state.foodstate import FoodState
@@ -99,6 +101,11 @@ class PlayerState:
         pet_type = choice(TIER_PETS[tier - 1])
         shop_pet = self._create_shop_pet(pet_type)
         self.shop_pets.append(shop_pet)
+
+    def create_pet_to_summon(self, pet_type: 'PetType', health: int, attack: int):
+        pet_config = PET_CONFIG[pet_type]
+        pet = PetState(health, attack, pet_config, self, self.state)
+        return pet
 
     def summon_pets(self, original_pet: 'PetState', pets_to_summon: List['PetState']):
         if self.state.in_battle_stage:

@@ -16,7 +16,7 @@ class GameLog:
         self.start_state_logs: List[List[str]] = []
 
         # Per round, per player, we store the shop log + buy round moves
-        self.buy_stage_logs: List[List[Tuple[str, List[str]]]] = []
+        self.buy_stage_logs: List[List[Tuple[bool, str, List[str]]]] = []
 
         # Per round, we store the outcomes of each battle
         self.battle_stage_logs: List[List[('PlayerState', str)]] = []
@@ -48,10 +48,11 @@ class GameLog:
         self.start_state_logs.append(logs_per_player)
 
     def init_buy_stage_log(self):
-        self.buy_stage_logs.append([(self._write_shop_log(self.state.players[player_num]), []) for player_num in range(NUM_PLAYERS)])
+        buy_stage_log = [(self.state.players[player_num].is_alive(), self._write_shop_log(self.state.players[player_num]), []) for player_num in range(NUM_PLAYERS)]
+        self.buy_stage_logs.append(buy_stage_log)
 
     def write_buy_stage_log(self, player: 'PlayerState', log: str):
-        _, logs = self.buy_stage_logs[self.state.round][player.player_num]
+        _, _, logs = self.buy_stage_logs[self.state.round][player.player_num]
         logs.append(log)
 
     def init_battle_stage_log(self):
@@ -82,7 +83,7 @@ class GameLog:
         log = f"## Starting State\n\n"
 
         if round >= len(self.start_state_logs):
-            log += f"Did not reach round {round}\n\n"
+            log += f"Did not reach round {round + 1}\n\n"
             return log
 
         for player_num in range(NUM_PLAYERS):
@@ -102,10 +103,14 @@ class GameLog:
         log = f"## Buy Stage\n"
 
         if round >= len(self.buy_stage_logs):
-            log += f"Did not reach round {round}\n\n"
+            log += f"Did not reach round {round + 1}\n\n"
             return log
 
-        shop_log, buy_logs = self.buy_stage_logs[round][player.player_num]
+        player_alive, shop_log, buy_logs = self.buy_stage_logs[round][player.player_num]
+
+        # Return nothing if the player is already eliminated
+        if not player_alive:
+            return ""
 
         log += "### Shop\n"
         log += shop_log
@@ -124,7 +129,7 @@ class GameLog:
         log = f"## Battle Stage\n"
 
         if round >= len(self.battle_stage_logs):
-            log += f"Did not reach round {round}\n\n"
+            log += f"Did not reach round {round + 1}\n\n"
             return log
 
         for _player, _log in self.battle_stage_logs[round]:

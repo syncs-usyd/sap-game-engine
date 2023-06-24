@@ -15,12 +15,13 @@ while True:
     # before making a move. It provides the information
     # required to make a sensible move
     game_info = bot_battle.get_game_info()
-    print(game_info, flush = True)
-    print("", flush = True)
+    # print(game_info, flush = True)
+    # print("", flush = True)
 
     # How to detect whether it is a new round
     new_round = prev_round_num != game_info.round_num
     if new_round:
+        print(f"Round {game_info.round_num}\n\n")
         prev_round_num = game_info.round_num
 
     # Now let's go through a very simple (and poorly written!)

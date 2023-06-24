@@ -134,9 +134,11 @@ if [[ "$debug_engine" == false && "$debug_submission" == false ]]
 then
     sleep_time=1
     echo "Game has started. Waiting $sleep_time seconds"
+    echo ""
     sleep $sleep_time
 else
     echo "Waiting for input before cleanup..."
+    echo ""
     read
 fi
 

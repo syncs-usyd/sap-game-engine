@@ -1,6 +1,8 @@
 from typing import List
+
 from engine.config.gameconfig import NUM_PLAYERS
 from engine.state.playerstate import PlayerState
+
 
 class GameState:
     def __init__(self):
