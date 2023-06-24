@@ -255,13 +255,13 @@ class PetAbilities:
         level_3_friend = False
         
         for pet in player.pets:
-            if pet.get_level == 3:
+            if pet.get_level() == 3:
                 level_3_friend = True
                 break
             
         if level_3_friend:
             bison.perm_increase_health(2 * bison.get_level())
-            bison.perm_increase_attack(2 * bison.get_level())
+            bison.perm_increase_attack(bison.get_level())
 
     @staticmethod
     # On hurt -> Deal 3L damage to one random enemy
