@@ -101,9 +101,12 @@ class PetAbilities:
     @staticmethod
     # On faint, deal 2L damage to all 
     def hedgehog_ability(hedgehog: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pets = [pet for pet in player.pets if pet != hedgehog and pet is not None]
+        pets = []
         if state.in_battle_stage:
+            pets += player.battle_pets
             pets += player.opponent.battle_pets
+        else:
+            pets += [pet for pet in player.pets if pet is not None]
 
         for pet in pets: 
             hedgehog.damage_enemy_with_ability(2 * hedgehog.get_level(), pet)
@@ -114,7 +117,7 @@ class PetAbilities:
         if state.in_battle_stage:
             peacock.attack += 4 * peacock.get_level()
         else:
-            peacock.perm_increase_attack(4*peacock.get_level)
+            peacock.perm_increase_attack(4 * peacock.get_level())
 
     @staticmethod
     # Friend ahead attacks, gain L health and damage
