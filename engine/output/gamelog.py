@@ -1,10 +1,8 @@
 from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from engine.config.gameconfig import NUM_PLAYERS
-from engine.input.movetype import MoveType
 
 if TYPE_CHECKING:
-    from engine.input.playerinput import PlayerInput
     from engine.state.gamestate import GameState
     from engine.state.petstate import PetState
     from engine.state.playerstate import PlayerState
@@ -52,36 +50,7 @@ class GameLog:
     def init_buy_stage_log(self):
         self.buy_stage_logs.append([(self._write_shop_log(self.state.players[player_num]), []) for player_num in range(NUM_PLAYERS)])
 
-    def write_buy_stage_log(self, player: 'PlayerState', input: 'PlayerInput'):
-        log = ""
-
-        if input.move_type == MoveType.BUY_PET:
-            log = ""
-        elif input.move_type == MoveType.BUY_FOOD:
-            log = ""
-        elif input.move_type == MoveType.UPGRADE_PET_FROM_PETS:
-            log = ""
-        elif input.move_type == MoveType.UPGRADE_PET_FROM_SHOP:
-            log = ""
-        elif input.move_type == MoveType.SELL_PET:
-            log = ""
-        elif input.move_type == MoveType.REROLL:
-            log = ""
-        elif input.move_type == MoveType.FREEZE_PET:
-            log = ""
-        elif input.move_type == MoveType.FREEZE_FOOD:
-            log = ""
-        elif input.move_type == MoveType.UNFREEZE_PET:
-            log = ""
-        elif input.move_type == MoveType.UNFREEZE_FOOD:
-            log = ""
-        elif input.move_type == MoveType.SWAP_PET:
-            log = ""
-        elif input.move_type == MoveType.END_TURN:
-            return
-        else:
-            raise Exception(f'Invalid move type: {input.move_type}')
-
+    def write_buy_stage_log(self, player: 'PlayerState', log: str):
         _, logs = self.buy_stage_logs[self.state.round][player.player_num]
         logs.append(log)
 
@@ -138,9 +107,11 @@ class GameLog:
 
         shop_log, buy_logs = self.buy_stage_logs[round][player.player_num]
 
+        log += "### Shop\n"
         log += shop_log
         log += "\n"
 
+        log += "### Moves\n"
         for i, buy_log in enumerate(buy_logs):
             log += f"{i + 1}. "
             log += buy_log
@@ -176,9 +147,9 @@ class GameLog:
             log += f"{i + 1}. "
             log += f"\"{pet.pet_config.PET_NAME}\"; "
             log += f"{pet.perm_health} health; "
-            log += f"{pet.perm_attack} attack\n\n"
+            log += f"{pet.perm_attack} attack\n"
 
-        log += "Shop foods:\n"
+        log += "\nShop foods:\n"
         for i, food in enumerate(player.shop_foods):
             log += f"{i + 1}. "
             log += f"\"{food.food_config.FOOD_NAME}\"\n"

@@ -214,3 +214,6 @@ class PlayerState:
 
     def _get_pets_copy(self) -> List['PetState']:
         return [copy(pet) if pet is not None else None for pet in self.pets]
+
+    def __repr__(self) -> str:
+        return f"Player {self.player_num + 1}"

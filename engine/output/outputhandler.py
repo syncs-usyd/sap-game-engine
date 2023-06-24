@@ -19,6 +19,7 @@ class OutputHandler:
         self.log = log
 
     def terminate_success(self, player_ranking: List[int]):
+        print(f"Player {player_ranking[0] + 1} won!")
         self._write_results(TerminationType.SUCCESS, player_ranking = player_ranking)
 
         # Write the game log for each player
