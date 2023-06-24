@@ -15,3 +15,7 @@ class FoodState:
             "is_frozen": self.is_frozen,
             "cost": self.food_config.BUY_COST
         }
+
+    def __repr__(self) -> str:
+        # TODO: add id to this as well
+        return self.food_config.FOOD_NAME

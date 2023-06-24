@@ -159,3 +159,7 @@ class PetState:
         if not self.hurt_already:
             self.hurt_already = True
             self.proc_ability(AbilityType.HURT)
+
+    def __repr__(self) -> str:
+        # TODO: add id to this as well
+        return self.pet_config.PET_NAME
