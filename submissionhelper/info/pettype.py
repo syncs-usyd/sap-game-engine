@@ -5,13 +5,13 @@ class PetType(Enum):
     @staticmethod
     def get_pet_type(pet_name: str) -> 'PetType':
         upper_snake_case = pet_name.upper().replace(" ", "_")
-        return PetType(upper_snake_case)
+        return PetType[upper_snake_case]
 
     FISH = 1
     BEAVER = 2
     PIG = 3
     ANT = 4
-    MOZZIE = 5
+    MOSQUITO = 5
     CRICKET = 6
     HORSE = 7
     CRAB = 8

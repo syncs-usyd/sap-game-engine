@@ -1,16 +1,17 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from engine.config.gameconfig import MAX_MOVES_PER_ROUND, PET_BUY_COST, REROLL_COST
 from engine.game.abilitytype import AbilityType
 from engine.input.inputhelper import InputHelper
 from engine.input.movetype import MoveType
-from engine.input.playerinput import PlayerInput
-from engine.output.gamelog import GameLog
-from engine.output.outputhandler import OutputHandler
-from engine.output.terminationtype import TerminationType
-from engine.state.gamestate import GameState
-from engine.state.petstate import PetState
-from engine.state.playerstate import PlayerState
+
+if TYPE_CHECKING:
+    from engine.input.playerinput import PlayerInput
+    from engine.output.gamelog import GameLog
+    from engine.output.outputhandler import OutputHandler
+    from engine.state.gamestate import GameState
+    from engine.state.petstate import PetState
+    from engine.state.playerstate import PlayerState
 
 
 class BuyStageHelper:

@@ -1,4 +1,7 @@
-from engine.config.foodconfig import FoodConfig
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.config.foodconfig import FoodConfig
 
 
 class FoodState:
@@ -8,7 +11,7 @@ class FoodState:
 
     def get_view_for_shop(self) -> dict:
         return {
-            "type": self.food.FOOD_NAME,
+            "type": self.food_config.FOOD_NAME,
             "is_frozen": self.is_frozen,
             "cost": self.food_config.BUY_COST
         }

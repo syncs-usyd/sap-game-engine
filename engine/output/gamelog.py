@@ -1,11 +1,13 @@
-from typing import List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from engine.config.gameconfig import NUM_PLAYERS
 from engine.input.movetype import MoveType
-from engine.input.playerinput import PlayerInput
-from engine.state.gamestate import GameState
-from engine.state.petstate import PetState
-from engine.state.playerstate import PlayerState
+
+if TYPE_CHECKING:
+    from engine.input.playerinput import PlayerInput
+    from engine.state.gamestate import GameState
+    from engine.state.petstate import PetState
+    from engine.state.playerstate import PlayerState
 
 
 class GameLog:
@@ -19,7 +21,7 @@ class GameLog:
         self.buy_stage_logs: List[List[Tuple[str, List[str]]]] = []
 
         # Per round, we store the outcomes of each battle
-        self.battle_stage_logs: List[List[str]] = []
+        self.battle_stage_logs: List[List[('PlayerState', str)]] = []
 
     def get_game_log(self, player: 'PlayerState') -> str:
         game_log = ""
@@ -95,7 +97,7 @@ class GameLog:
             if player.is_alive():
                 log += f"{player.health} health remaining"
             else:
-                log += f"Eliminated :("
+                log += f"Eliminated"
 
         elif player_lost is None:
             log += f"P{player.player_num + 1} tied with P{challenger.player_num + 1}; "
@@ -105,15 +107,21 @@ class GameLog:
             log += f"P{player.player_num + 1} beat P{challenger.player_num + 1}; "
             log += f"P{player.player_num + 1} has {player.health} health remaining"
 
-        self.battle_stage_logs[self.state.round].append(log)
+        self.battle_stage_logs[self.state.round].append((player, log))
 
     def _get_round_start_state_log(self, round: int, player: 'PlayerState'):
         log = f"## Starting State\n\n"
 
+        if round >= len(self.start_state_logs):
+            log += f"Did not reach round {round}\n\n"
+            return log
+
         for player_num in range(NUM_PLAYERS):
-            log += f"### P{player_num + 1} "
-            if player_num == player.player_num:
-                log += "(self) "
+            log += f"### "
+
+            if player_num == player.player_num: log += "**"
+            log += f"P{player_num + 1} "
+            if player_num == player.player_num: log += "(self)** "
 
             round_start_log = self.start_state_logs[round][player_num]
             log += round_start_log
@@ -123,6 +131,10 @@ class GameLog:
 
     def _get_round_buy_stage_log(self, round: int, player: 'PlayerState'):
         log = f"## Buy Stage\n"
+
+        if round >= len(self.buy_stage_logs):
+            log += f"Did not reach round {round}\n\n"
+            return log
 
         shop_log, buy_logs = self.buy_stage_logs[round][player.player_num]
 
@@ -140,12 +152,16 @@ class GameLog:
     def _get_round_battle_stage_log(self, round: int, player: 'PlayerState'):
         log = f"## Battle Stage\n"
 
-        for player_num in range(NUM_PLAYERS):
+        if round >= len(self.battle_stage_logs):
+            log += f"Did not reach round {round}\n\n"
+            return log
+
+        for _player, _log in self.battle_stage_logs[round]:
             log += "- "
 
-            if player_num == player.player_num: log += "*"
-            log += self.battle_stage_logs[round][player_num]
-            if player_num == player.player_num: log += "*"
+            if _player == player: log += "**"
+            log += _log
+            if _player == player: log += "**"
 
             log += "\n"
 

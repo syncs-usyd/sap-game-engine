@@ -1,9 +1,10 @@
 from random import sample
+from typing import TYPE_CHECKING
 
-from engine.game.abilitytype import AbilityType
-from engine.state.gamestate import GameState
-from engine.state.petstate import PetState
-from engine.state.playerstate import PlayerState
+if TYPE_CHECKING:
+    from engine.state.gamestate import GameState
+    from engine.state.petstate import PetState
+    from engine.state.playerstate import PlayerState
 
 class FoodEffects:
     @staticmethod
