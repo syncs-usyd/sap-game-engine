@@ -1,6 +1,6 @@
 from typing import Optional
 
-from engine.config.gameconfig import MAX_MOVES_PER_ROUND, PET_BUY_COST, REROLL_COST, FREEZE_COST
+from engine.config.gameconfig import MAX_MOVES_PER_ROUND, PET_BUY_COST, REROLL_COST
 from engine.game.abilitytype import AbilityType
 from engine.input.inputhelper import InputHelper
 from engine.input.movetype import MoveType
@@ -112,12 +112,10 @@ class BuyStageHelper:
     def _freeze_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         pet = player.shop_pets[input.index_from]
         pet.is_frozen = True
-        player.coins -= FREEZE_COST
 
     def _freeze_food(self, player: 'PlayerState', input: 'PlayerInput'):
         food = player.shop_foods[input.index_from]
         food.is_frozen = True
-        player.coins -= FREEZE_COST
 
     def _unfreeze_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         pet = player.shop_pets[input.index_from]

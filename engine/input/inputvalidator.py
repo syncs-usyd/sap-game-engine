@@ -7,9 +7,10 @@ from engine.state.playerstate import PlayerState
 
 from engine.config.roundconfig import ROUND_CONFIG
 from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF, PET_BUY_COST
-from engine.config.gameconfig import PET_POSITIONS, REROLL_COST, FREEZE_COST
+from engine.config.gameconfig import PET_POSITIONS, REROLL_COST
 
 class InputValidator:
+
     @staticmethod
     def validate_input(input: 'PlayerInput', player: 'PlayerState', state: 'GameState') -> Tuple[bool, str]:
 
@@ -19,8 +20,8 @@ class InputValidator:
         return_message = "" 
         error_raised = False
 
-        #ISSUE: just realised we are removing things from shop pets meaning that indexing in not abs
-        #TODO: Ask Oliver if he wants multiple error messages or?
+        # ISSUE: just realised we are removing things from shop pets meaning that indexing in not abs
+        # TODO: Ask Oliver if he wants multiple error messages or?
 
         # Get the current round config
         round_conf = ROUND_CONFIG[state.round]
@@ -177,10 +178,6 @@ class InputValidator:
                 error_raised = True
                 return_message += f"Pet in shop slot number {input.index_from}, already frozen.\n"
 
-            if(player.coins < FREEZE_COST):
-                error_raised = True
-                return_message += f"Not enough currency to freeze pet. Required {FREEZE_COST}, available {player.coins}\n"
-
             if error_raised:
                 return False, return_message
 
@@ -200,10 +197,6 @@ class InputValidator:
             elif(player.shop_foods[input.index_from].is_frozen):
                 error_raised = True
                 return_message += f"Food item in shop slot number {input.index_from}, already frozen.\n"
-
-            if(player.coins < FREEZE_COST):
-                error_raised = True
-                return_message += f"Not enough currency to freeze pet. Required {FREEZE_COST}, available {player.coins}\n"
 
             if error_raised:
                 return False, return_message
