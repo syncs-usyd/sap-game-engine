@@ -24,7 +24,7 @@ class Battle:
     def run(self) -> bool:
         self.start_battle()
 
-        while len(self.player.battle_pets) > 0 and len(self.challenger.battle_order) > 0:
+        while len(self.player.battle_pets) > 0 and len(self.challenger.battle_pets) > 0:
             self.run_attack_turn()
 
         player_lost = self._determine_winner()
@@ -42,6 +42,9 @@ class Battle:
         self._proc_battle_round_start()
         self._proc_hurt_and_faint()
 
+        self.player.cleanup_battle_pets()
+        self.challenger.cleanup_battle_pets()
+
     def run_attack_turn(self):
         self.hurt_and_faint = []
         self.knockout = None
@@ -53,7 +56,7 @@ class Battle:
 
         player_front.damage_enemy_with_attack(challenger_front)
         challenger_front.damage_enemy_with_attack(player_front)
-        self._add_to_knockout()
+        self._add_to_knockout(player_front, challenger_front)
 
         self._proc_after_attack(player_front, challenger_front)
         self._proc_friend_ahead_attacked()
@@ -70,7 +73,7 @@ class Battle:
 
     # Higher level and stat pets get to go first
     def _priority_sort(self, pets: List['PetState']) -> List['PetState']:
-        pets.sort(key=lambda pet: (pet.level, pet.health + pet.attack), reverse = True)
+        pets.sort(key = lambda pet: (pet.sub_level, pet.get_health() + pet.get_attack()), reverse = True)
         return pets
 
     def _determine_winner(self) -> bool:
@@ -84,10 +87,10 @@ class Battle:
     def _proc_battle_round_start(self):
         battle_round_start: List['PetState'] = []
         battle_round_start += [pet for pet in self.player.battle_pets if pet.pet_config.ABILITY_TYPE == AbilityType.BATTLE_ROUND_START]
-        battle_round_start += [pet for pet in self.opponent.battle_pets if pet.pet_config.ABILITY_TYPE == AbilityType.BATTLE_ROUND_START]
+        battle_round_start += [pet for pet in self.challenger.battle_pets if pet.pet_config.ABILITY_TYPE == AbilityType.BATTLE_ROUND_START]
 
         for pet in self._priority_sort(battle_round_start):
-            pet.pet_config.ABILITY_FUNC()
+            pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
 
     def _proc_hurt_and_faint(self):
         while len(self.hurt_and_faint) > 0:
@@ -96,7 +99,7 @@ class Battle:
             self.hurt_and_faint = []
 
             for pet in hurt_and_faint:
-                pet.pet_config.ABILITY_FUNC()
+                pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
 
     def _proc_before_attack(self, player_front: 'PetState', challenger_front: 'PetState'):
         before_attack: List['PetState'] = []
@@ -106,7 +109,7 @@ class Battle:
             before_attack.append(challenger_front)
 
         for pet in self._priority_sort(before_attack):
-            pet.pet_config.ABILITY_FUNC()
+            pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
 
     def _proc_after_attack(self, player_front: 'PetState', challenger_front: 'PetState'):
         after_attack: List['PetState'] = []
@@ -116,7 +119,7 @@ class Battle:
             after_attack.append(challenger_front)
 
         for pet in self._priority_sort(after_attack):
-            pet.pet_config.ABILITY_FUNC()
+            pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
 
     def _proc_friend_ahead_attacked(self):
         friend_ahead_attack: List['PetState'] = []
@@ -130,7 +133,7 @@ class Battle:
                 friend_ahead_attack.append(pet)
 
         for pet in self._priority_sort(friend_ahead_attack):
-            pet.pet_config.ABILITY_FUNC()
+            pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
 
     def _add_to_knockout(self, player_front: 'PetState', challenger_front: 'PetState'):
         if player_front.is_alive() and not challenger_front.is_alive():
@@ -140,7 +143,7 @@ class Battle:
 
     def _proc_knockout(self):
         if self.knockout is not None:
-            self.knockout.pet_config.ABILITY_FUNC()
+            self.knockout.pet_config.ABILITY_FUNC(self.knockout, self.knockout.player, self.state)
 
     def _summon_bees(self):
         for original_pet, bee in self.bees:

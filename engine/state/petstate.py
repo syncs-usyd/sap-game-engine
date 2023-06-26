@@ -112,6 +112,9 @@ class PetState:
     def get_health(self) -> int:
         return self._health
 
+    def get_attack(self) -> int:
+        return self._attack
+
     def get_perm_health(self) -> int:
         return self._perm_health
 
@@ -151,8 +154,11 @@ class PetState:
 
     def on_death(self):
         if self.state.in_battle_stage:
-            self.player.battle.add_hurt_or_fainted(self)
+            if self.pet_config.ABILITY_TYPE == AbilityType.FAINTED:
+                self.player.battle.add_hurt_or_fainted(self)
         else:
+            index = self.player.pets.index(self)
+            self.player.pets[index] = None
             self.proc_on_demand_ability(AbilityType.FAINTED)
 
         if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
@@ -181,7 +187,8 @@ class PetState:
         self.change_health(-amount)
 
         if self.state.in_battle_stage:
-            self.player.battle.add_hurt_or_fainted(self)
+            if self.pet_config.ABILITY_TYPE == AbilityType.HURT:
+                self.player.battle.add_hurt_or_fainted(self)
         else:
             self.proc_on_demand_ability(AbilityType.HURT)
 
