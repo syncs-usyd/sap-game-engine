@@ -1,4 +1,4 @@
-from engine.game.battlestagehelper import BattleStageHelper
+from engine.game.battle import Battle
 from engine.game.buystagehelper import BuyStageHelper
 from engine.output.gamelog import GameLog
 from engine.output.outputhandler import OutputHandler
@@ -11,7 +11,6 @@ class GameEngine:
         self.log = GameLog(self.state)
         self.output_handler = OutputHandler(self.state, self.log)
         self.buy_stage_helper = BuyStageHelper(self.state, self.log, self.output_handler)
-        self.battle_stage_helper = BattleStageHelper(self.state, self.log)
 
     def run(self):
         while not self.state.is_game_over():
@@ -27,7 +26,10 @@ class GameEngine:
             self.state.start_battle_stage()
             self.log.init_battle_stage_log()
             for player in players:
-                self.battle_stage_helper.run(player)
+                battle = Battle(player, player.challenger, self.state, self.log)
+                player.battle = battle
+                player.challenger.battle = battle
+                battle.run()
 
             self.state.end_round()
 

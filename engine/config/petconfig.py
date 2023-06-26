@@ -191,7 +191,7 @@ PET_CONFIG = {
                         tier = 4,
                         base_attack = 4,
                         base_health = 5,
-                        ability_type= AbilityType.KILLED_ENEMY,
+                        ability_type= AbilityType.KNOCKOUT,
                         ability_func= PetAbilities.hippo_ability),
 
     PetType.BISON: PetConfig(pet_name = "Bison",
