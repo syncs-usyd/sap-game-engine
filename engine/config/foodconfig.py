@@ -32,13 +32,6 @@ FOOD_CONFIG = {
                             is_carried = True,
                             effect_func = None),
 
-    FoodType.SLEEPING_PILL: FoodConfig(food_name = "Sleeping Pill",
-                            tier = 2,
-                            buy_cost = 1,
-                            is_targeted = True,
-                            is_carried = False,
-                            effect_func = FoodEffects.sleeping_pill_effect),
-
     FoodType.MEAT_BONE: FoodConfig(food_name = "Meat Bone",
                             tier = 2,
                             buy_cost = 3,

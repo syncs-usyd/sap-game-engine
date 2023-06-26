@@ -9,16 +9,13 @@ class GameState:
         self.round = -1
         self.players = [PlayerState(i, self) for i in range(NUM_PLAYERS)]
         self.dead_players: List['PlayerState'] = []
-        self.in_battle_stage = False
 
     def start_new_round(self):
         self.round += 1
-        self.in_battle_stage = False
         for player in self.players:
             player.start_new_round()
 
     def start_battle_stage(self):
-        self.in_battle_stage = True
         for player in self.get_alive_players():
             player.start_battle_stage()
 
