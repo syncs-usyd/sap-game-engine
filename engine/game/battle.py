@@ -142,7 +142,7 @@ class Battle:
             self.knockout = challenger_front
 
     def _proc_knockout(self):
-        if self.knockout is not None:
+        if self.knockout is not None and self.knockout.pet_config.ABILITY_TYPE == AbilityType.KNOCKOUT:
             self.knockout.pet_config.ABILITY_FUNC(self.knockout, self.knockout.player, self.state)
 
     def _summon_bees(self):

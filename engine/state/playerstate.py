@@ -151,7 +151,7 @@ class PlayerState:
 
         self.new_summoned_pet = new_pet
         for pet in pet_list:
-            if pet is not None and pet != new_pet:
+            if pet is not None and pet != new_pet and pet.is_alive():
                 pet.proc_on_demand_ability(AbilityType.FRIEND_SUMMONED)
 
         # Clear the reference now its not needed
