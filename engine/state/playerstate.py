@@ -13,6 +13,7 @@ from engine.state.foodstate import FoodState
 from engine.state.petstate import PetState
 
 if TYPE_CHECKING:
+    from engine.game.battle import Battle
     from engine.state.gamestate import GameState
 
 
@@ -43,6 +44,9 @@ class PlayerState:
         shuffle(self.battle_order)
         self.next_battle_index = 0
 
+        # Represents the current battle the player is in
+        self.battle: Optional['Battle'] = None
+
         # Contains a reference to the newest summoned pet for use in
         # FRIEND_SUMMON abilities
         self.new_summoned_pet: Optional['PetState'] = None
@@ -65,7 +69,7 @@ class PlayerState:
     def start_battle_stage(self):
         for pet in self.pets:
             if pet is not None:
-                pet.proc_ability(AbilityType.BUY_ROUND_END)
+                pet.proc_on_demand_ability(AbilityType.BUY_ROUND_END)
 
     # We copy the battle pets so we can make irreversible changes
     # during a battle
@@ -73,8 +77,6 @@ class PlayerState:
         self.opponent = opponent
         self.battle_pets = self._get_pets_copy()
         self.cleanup_battle_pets()
-        for pet in self.battle_pets:
-            pet.start_next_battle_turn()
 
     # Remove dead pets and empty slots
     def cleanup_battle_pets(self):
@@ -149,8 +151,8 @@ class PlayerState:
 
         self.new_summoned_pet = new_pet
         for pet in pet_list:
-            if pet is not None and pet != new_pet:
-                pet.proc_ability(AbilityType.FRIEND_SUMMONED)
+            if pet is not None and pet != new_pet and pet.is_alive():
+                pet.proc_on_demand_ability(AbilityType.FRIEND_SUMMONED)
 
         # Clear the reference now its not needed
         self.new_summoned_pet = None
@@ -158,7 +160,7 @@ class PlayerState:
     def friend_ate_food(self, fat_pet: 'PetState'):
         self.pet_that_ate_food = fat_pet
         for pet in self.pets:
-            pet.proc_ability(AbilityType.FRIEND_ATE_FOOD)
+            pet.proc_on_demand_ability(AbilityType.FRIEND_ATE_FOOD)
 
         # Clear the reference now its not needed
         self.pet_that_ate_food = None

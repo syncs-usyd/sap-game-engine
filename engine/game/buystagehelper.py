@@ -59,7 +59,7 @@ class BuyStageHelper:
         player.coins -= PET_BUY_COST
 
         player.pets[input.index_to] = new_pet
-        new_pet.proc_ability(AbilityType.BUY)
+        new_pet.proc_on_demand_ability(AbilityType.BUY)
         player.friend_summoned(new_pet)
 
         log = f"Bought {new_pet} for position {input.index_to + 1}"
@@ -103,7 +103,7 @@ class BuyStageHelper:
 
         pet = player.pets[input.index_to]
         pet.level_up(shop_pet)
-        pet.proc_ability(AbilityType.BUY)
+        pet.proc_on_demand_ability(AbilityType.BUY)
         player.friend_summoned(pet)
 
         log = f"Leveled up {pet} by buying {shop_pet}"
@@ -113,7 +113,7 @@ class BuyStageHelper:
         pet = player.pets[input.index_from]
         player.pets[input.index_from] = None
 
-        pet.proc_ability(AbilityType.SELL)
+        pet.proc_on_demand_ability(AbilityType.SELL)
         player.coins += pet.get_level()
 
         log = f"Sold {pet}"
