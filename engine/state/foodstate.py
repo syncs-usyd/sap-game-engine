@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 class FoodState:
     def __init__(self, food_config: 'FoodConfig'):
         self.food_config = food_config
+        self.cost = food_config.BUY_COST
         self.is_frozen = False
 
     def get_view_for_shop(self) -> dict:
