@@ -179,7 +179,7 @@ class PetState:
         self._perm_attack = min(max(0, self._perm_attack), 50)
 
     def _take_damage(self, amount: int):
-        was_alive = self.is_alive()
+        if not self.is_alive(): return
 
         if self.carried_food == FOOD_CONFIG[FoodType.GARLIC]:
             amount = max(amount - 2, 1)
@@ -192,7 +192,7 @@ class PetState:
         else:
             self.proc_on_demand_ability(AbilityType.HURT)
 
-        if not self.is_alive() and was_alive:
+        if not self.is_alive():
             self.on_death()
 
     def __repr__(self) -> str:
