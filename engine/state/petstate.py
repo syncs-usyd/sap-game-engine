@@ -10,14 +10,14 @@ from engine.game.abilitytype import AbilityType
 if TYPE_CHECKING:
     from engine.state.gamestate import GameState
     from engine.state.playerstate import PlayerState
-from engine.state.countablestates import CountableStates
 
-class PetState(CountableStates):
+
+class PetState():
     def __init__(self, health: int, attack: int, pet_config: 'PetConfig', player: 'PlayerState', state: 'GameState'):
-        super()
         self.player = player
         self.state = state
 
+        self.id = self.state.get_id()
         self.pet_config = pet_config
         self._perm_health = health
         self._perm_attack = attack
@@ -188,5 +188,4 @@ class PetState(CountableStates):
             self.on_death()
 
     def __repr__(self) -> str:
-        # TODO: add id to this as well
-        return self.pet_config.PET_NAME
+        return f"{self.pet_config.PET_NAME}:{self.id}"

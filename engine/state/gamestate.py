@@ -9,6 +9,7 @@ class GameState:
         self.round = -1
         self.players = [PlayerState(i, self) for i in range(NUM_PLAYERS)]
         self.dead_players: List['PlayerState'] = []
+        self._next_id = 0
 
     def start_new_round(self):
         self.round += 1
@@ -57,3 +58,8 @@ class GameState:
             "next_opponent_index": other_players.index(next_opponent),
             "other_players_info": [other_player.get_view_for_others() for other_player in other_players] 
         }
+
+    def get_id(self) -> int:
+        id = self._next_id
+        self._next_id += 1
+        return id
