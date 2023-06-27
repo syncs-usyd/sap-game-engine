@@ -62,7 +62,7 @@ class InputValidator:
         if return_message != "": return return_message
 
         food = player.shop_foods[input.index_from]
-        return_message += InputValidator._check_food_has_target(player, food)
+        return_message += InputValidator._check_food_has_target(player, food, input.index_to)
         return_message += InputValidator._check_sufficient_coins_for_food(player, food)
 
         return return_message
