@@ -5,6 +5,8 @@ from submissionhelper.info.pettype import PetType
 
 class ShopPetInfo:
     def __init__(self, dict: Dict):
+        self.id: int = int(dict["id"])
+
         # Says the type of the pet
         # Check the game engine for more complex config
         self.type: 'PetType' = PetType.get_pet_type(dict["type"])
@@ -27,6 +29,7 @@ class ShopPetInfo:
         printable = "Shop Pet Info:\n"
         printable += "------------\n"
 
+        printable += f"Id: {self.id}\n"
         printable += f"Type: {self.type}\n"
         printable += f"Health: {self.health}\n"
         printable += f"Attack: {self.attack}\n"

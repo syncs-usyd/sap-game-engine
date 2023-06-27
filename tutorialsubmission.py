@@ -15,6 +15,8 @@ while True:
     # before making a move. It provides the information
     # required to make a sensible move
     game_info = bot_battle.get_game_info()
+
+    # Feel free to uncomment these lines if you want to inspect the info!
     # print(game_info, flush = True)
     # print("", flush = True)
 
@@ -70,7 +72,7 @@ while True:
                     game_info = bot_battle.get_game_info()
 
                     # We have to get the new shop pet index because the game info has changed and no longer
-                    # references the same object
+                    # references the same object. Note: we could also use the shop pet's unique id
                     shop_pet = game_info.player_info.shop_pets[shop_pet_index]
                     bot_battle.buy_pet(shop_pet, pet_index)
                     return
@@ -97,6 +99,4 @@ while True:
     # 5. LEVEL YOUR PETS UP! Once you start getting a lineup you like, leveling up a pet can gurantee a victory.
 
     # This only scratches the surface and there's a lot of clever tricks you can do in the game
-    # (HINT: For example, sleeping pill often causes permanent changes and potentially upgrades)
-
     # If you have any problems or questions, remember to hit us up on the discord.

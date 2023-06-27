@@ -17,6 +17,7 @@ class PetState:
         self.player = player
         self.state = state
 
+        self.id = self.state.get_id()
         self.pet_config = pet_config
         self._perm_health = health
         self._perm_attack = attack
@@ -126,6 +127,7 @@ class PetState:
 
     def get_view_for_self(self) -> dict:
         return {
+            "id": self.id,
             "type": self.pet_config.PET_NAME,
             "health": self._health,
             "attack": self._attack,
@@ -136,6 +138,7 @@ class PetState:
 
     def get_view_for_shop(self) -> dict:
         return {
+            "id": self.id,
             "type": self.pet_config.PET_NAME,
             "health": self._health,
             "attack": self._attack,
@@ -145,6 +148,7 @@ class PetState:
 
     def get_view_for_others(self) -> dict:
         return {
+            "id": self.id,
             "type": self.pet_config.PET_NAME,
             "health": self.prev_health,
             "attack": self.prev_attack,
@@ -184,5 +188,4 @@ class PetState:
             self.on_death()
 
     def __repr__(self) -> str:
-        # TODO: add id to this as well
-        return self.pet_config.PET_NAME
+        return f"{self.pet_config.PET_NAME}:{self.id}"

@@ -95,7 +95,7 @@ class PlayerState:
         foods_to_add = round_config.NUM_SHOP_FOODS - len(self.shop_foods)
         for _ in range(foods_to_add):
             food_config = FOOD_CONFIG[self._get_random_food_type(round_config.MAX_SHOP_TIER)]
-            self.shop_foods.append(FoodState(food_config))
+            self.shop_foods.append(FoodState(food_config, self.state))
 
     def add_level_up_shop_pet(self):
         round_config = RoundConfig.get_round_config(self.state.round)

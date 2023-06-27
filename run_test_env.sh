@@ -132,7 +132,7 @@ fi
 
 if [[ "$debug_engine" == false && "$debug_submission" == false ]]
 then
-    sleep_time=1
+    sleep_time=2
     echo "Game has started. Waiting $sleep_time seconds"
     echo ""
     sleep $sleep_time
