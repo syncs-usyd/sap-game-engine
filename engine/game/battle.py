@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from engine.state.petstate import PetState
     from engine.state.playerstate import PlayerState
 
+
 class Battle:
     def __init__(self, player: 'PlayerState', challenger: 'PlayerState', state: 'GameState', log: 'GameLog'):
         self.player = player
@@ -48,6 +49,7 @@ class Battle:
     def run_attack_turn(self):
         self.hurt_and_faint = []
         self.knockout = None
+        self.bees = []
 
         player_front = self.player.battle_pets[0]
         challenger_front = self.challenger.battle_pets[0]

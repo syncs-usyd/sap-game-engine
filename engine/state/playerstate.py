@@ -110,48 +110,24 @@ class PlayerState:
         return pet
 
     def summon_pets(self, original_pet: 'PetState', pets_to_summon: List['PetState']):
-        if self.state.in_battle_stage:
-            # We insert the pets at where the dying pet is
-            insert_at_index = self.battle_pets.index(original_pet)
+        # We insert the pets at where the dying pet is
+        insert_at_index = self.battle_pets.index(original_pet)
 
-            # How many pets are we accepting
-            num_alive = len([pet for pet in self.battle_pets if pet.is_alive()])
-            num_summons = min(PET_POSITIONS - num_alive, len(pets_to_summon))
+        # How many pets are we accepting
+        num_alive = len([pet for pet in self.battle_pets if pet.is_alive()])
+        num_summons = min(PET_POSITIONS - num_alive, len(pets_to_summon))
 
-            # List of pets we are summoning
-            pets_to_summon = pets_to_summon[:num_summons]
-            for pet in pets_to_summon:
-                self.battle_pets.insert(insert_at_index, pet)
-                self.friend_summoned(pet)
-
-        else:
-            # Clear the None slots
-            self.pets = [pet for pet in self.pets if pet is not None]
-
-            # How many pets are we accepting
-            num_summons = min(PET_POSITIONS - len(self.pets), len(pets_to_summon))
-
-            # List of pets we are summoning
-            pets_to_summon = pets_to_summon[:num_summons]
-            for pet in pets_to_summon:
-                self.battle_pets.append(pet)
-                self.friend_summoned(pet)
-
-            # Cleanup the pets list
-            num_remaining_slots = PET_POSITIONS - len(self.pets)
-            for _ in range(num_remaining_slots):
-                self.pets.append(None)
+        # List of pets we are summoning
+        pets_to_summon = pets_to_summon[:num_summons]
+        for pet in pets_to_summon:
+            self.battle_pets.insert(insert_at_index, pet)
+            self.friend_summoned(pet)
 
     def friend_summoned(self, new_pet: 'PetState'):
-        pet_list: List[Optional['PetState']] = []
-        if self.state.in_battle_stage:
-            pet_list = self.battle_pets
-        else:
-            pet_list = self.pets
-
         self.new_summoned_pet = new_pet
-        for pet in pet_list:
-            if pet is not None and pet != new_pet and pet.is_alive():
+
+        for pet in self.battle_pets:
+            if pet != new_pet and pet.is_alive():
                 pet.proc_on_demand_ability(AbilityType.FRIEND_SUMMONED)
 
         # Clear the reference now its not needed

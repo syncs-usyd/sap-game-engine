@@ -14,13 +14,6 @@ class FoodEffects:
         player.friend_ate_food(pet)
 
     @staticmethod
-    def sleeping_pill_effect(pet: 'PetState', player: 'PlayerState', state: 'GameState'):
-        i = player.pets.index(pet)
-        player.pets[i] = None
-        player.friend_ate_food(pet)
-        pet.on_death()
-
-    @staticmethod
     def cupcake_effect(pet: 'PetState', player: 'PlayerState', state: 'GameState'):
         pet.change_health(3)
         pet.change_attack(3)

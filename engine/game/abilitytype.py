@@ -3,7 +3,6 @@ from enum import Enum
 
 # Different abilities have different priority
 #   - Battle abilities have a set order of execution that can be seen in the battle stage helper
-#     Note: battle abilities are treated as on-demand if they are executed in the buy stage
 #   - On-demand abilities are executed as soon as they are valid. If multiple on-demand abilities
 #     should be executed for the same event, it is done in pet order
 class AbilityType(Enum):

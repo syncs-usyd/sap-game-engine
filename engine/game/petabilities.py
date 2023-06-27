@@ -47,20 +47,14 @@ class PetAbilities:
     @staticmethod
     # On faint, give L attack and health to a random friend
     def ant_ability(ant: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pets = player.battle_pets if state.in_battle_stage else player.pets
-        other_pets = [pet for pet in pets if pet != ant and pet is not None]
+        other_pets = [pet for pet in player.battle_pets if pet != ant and pet is not None]
 
         # If there are no other pets we're done
         if len(other_pets) == 0: return
 
         pet_to_upgrade = choice(other_pets)
-        #Only temporary in battle state
-        if state.in_battle_stage:
-            pet_to_upgrade.change_attack(ant.get_level())
-            pet_to_upgrade.change_health(ant.get_level())
-        else:
-            pet_to_upgrade.perm_increase_attack(ant.get_level())
-            pet_to_upgrade.perm_increase_health(ant.get_level())
+        pet_to_upgrade.change_attack(ant.get_level())
+        pet_to_upgrade.change_health(ant.get_level())
 
     @staticmethod
     # At start of battle, deal 1 damage to L enemies
@@ -101,23 +95,13 @@ class PetAbilities:
     @staticmethod
     # On faint, deal 2L damage to all
     def hedgehog_ability(hedgehog: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pets = []
-        if state.in_battle_stage:
-            pets += player.battle_pets
-            pets += player.opponent.battle_pets
-        else:
-            pets += [pet for pet in player.pets if pet is not None]
-
-        for pet in pets: 
+        for pet in player.battle_pets + player.opponent.battle_pets:
             hedgehog.damage_enemy_with_ability(2 * hedgehog.get_level(), pet)
 
     @staticmethod
     # When hurt, gain 4L attack
     def peacock_ability(peacock: 'PetState', player: 'PlayerState', state: 'GameState'):
-        if state.in_battle_stage:
-            peacock.change_attack(4 * peacock.get_level())
-        else:
-            peacock.perm_increase_attack(4 * peacock.get_level())
+        peacock.change_attack(4 * peacock.get_level())
 
     @staticmethod
     # Friend ahead attacks, gain L health and damage
@@ -128,17 +112,15 @@ class PetAbilities:
     @staticmethod
     # On faint, give L health and attack to two nearest pets behind
     def flamingo_ability(flamingo: 'PetState', player: 'PlayerState', state: 'GameState'):
-        if state.in_battle_stage:
-            index = player.battle_pets.index(flamingo)
-            if len(player.battle_pets) > index + 1:
-                player.battle_pets[index + 1].change_attack(flamingo.get_level())
-                player.battle_pets[index + 1].change_health(flamingo.get_level())
-            if len(player.battle_pets) > index + 2:
-                player.battle_pets[index + 2].change_attack(flamingo.get_level())
-                player.battle_pets[index + 2].change_health(flamingo.get_level())
-        else:
-            # TODO
-            pass
+        index = player.battle_pets.index(flamingo)
+
+        if len(player.battle_pets) > index + 1:
+            player.battle_pets[index + 1].change_attack(flamingo.get_level())
+            player.battle_pets[index + 1].change_health(flamingo.get_level())
+
+        if len(player.battle_pets) > index + 2:
+            player.battle_pets[index + 2].change_attack(flamingo.get_level())
+            player.battle_pets[index + 2].change_health(flamingo.get_level())
 
     @staticmethod
     # On faint, summon a tier 3 pet with 2L health and attack
@@ -158,18 +140,15 @@ class PetAbilities:
     # Before faint, deal 0.5L attack damage to the adjacent pets. Includes your own pets
     def badger_ability(badger: 'PetState', player: 'PlayerState', state: 'GameState'):
         attack = int(0.5 * badger.get_attack() * badger.get_level())
-        if state.in_battle_stage:
-            index = player.battle_pets.index(badger)
-            if index == 0:
-                badger.damage_enemy_with_ability(attack, player.opponent.battle_pets[0])
-            else:
-                badger.damage_enemy_with_ability(attack, player.battle_pets[index - 1])
+        index = player.battle_pets.index(badger)
 
-            if len(player.battle_pets) > index + 1:
-                badger.damage_enemy_with_ability(attack, player.battle_pets[index + 1])
+        if index == 0:
+            badger.damage_enemy_with_ability(attack, player.opponent.battle_pets[0])
         else:
-            # TODO
-            pass
+            badger.damage_enemy_with_ability(attack, player.battle_pets[index - 1])
+
+        if len(player.battle_pets) > index + 1:
+            badger.damage_enemy_with_ability(attack, player.battle_pets[index + 1])
 
     @staticmethod
     # Start of battle, deal 3 damage to the lowest health enemy. Triggers L times
@@ -200,15 +179,11 @@ class PetAbilities:
     @staticmethod
     # When hurt, give nearest friend behind 2L attack and health
     def camel_ability(camel: 'PetState', player: 'PlayerState', state: 'GameState'):
-        if state.in_battle_stage:
-            # If the camel has something behind it or is not yet the last pet
-            if player.battle_pets[-1] != camel:
-                buff_pet = player.battle_pets[player.battle_pets.index(camel) + 1]
-                buff_pet.change_attack(2 * camel.get_level())
-                buff_pet.change_health(2 * camel.get_level())
-        else:
-            # TODO
-            pass
+        # If the camel has something behind it or is not yet the last pet
+        if player.battle_pets[-1] != camel:
+            buff_pet = player.battle_pets[player.battle_pets.index(camel) + 1]
+            buff_pet.change_attack(2 * camel.get_level())
+            buff_pet.change_health(2 * camel.get_level())
 
     @staticmethod
     # After attack, deal 1 damage to the friend behind L times
@@ -274,8 +249,6 @@ class PetAbilities:
     @staticmethod
     # On hurt -> Deal 3L damage to one random enemy
     def blowfish_ability(blowfish: 'PetState', player: 'PlayerState', state: 'GameState'):
-        if not state.in_battle_stage: return
-
         target_pet = choice(player.opponent.battle_pets)
         blowfish.damage_enemy_with_ability(3 * blowfish.get_level(), target_pet)
 
