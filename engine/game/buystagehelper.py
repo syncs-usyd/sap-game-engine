@@ -1,16 +1,17 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from engine.config.gameconfig import MAX_MOVES_PER_ROUND, PET_BUY_COST, REROLL_COST
 from engine.game.abilitytype import AbilityType
 from engine.input.inputhelper import InputHelper
 from engine.input.movetype import MoveType
-from engine.input.playerinput import PlayerInput
-from engine.output.gamelog import GameLog
-from engine.output.outputhandler import OutputHandler
-from engine.output.terminationtype import TerminationType
-from engine.state.gamestate import GameState
-from engine.state.petstate import PetState
-from engine.state.playerstate import PlayerState
+
+if TYPE_CHECKING:
+    from engine.input.playerinput import PlayerInput
+    from engine.output.gamelog import GameLog
+    from engine.output.outputhandler import OutputHandler
+    from engine.state.gamestate import GameState
+    from engine.state.petstate import PetState
+    from engine.state.playerstate import PlayerState
 
 
 class BuyStageHelper:
@@ -47,11 +48,10 @@ class BuyStageHelper:
             elif input.move_type == MoveType.SWAP_PET:
                 self._swap_pet(player, input)
             elif input.move_type == MoveType.END_TURN:
+                self.log.write_buy_stage_log(player, "End turn")
                 return
             else:
                 raise Exception(f'Invalid move type: {input.move_type}')
-
-            self.log.write_buy_stage_log(player, input)
 
     def _buy_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         new_pet = player.shop_pets[input.index_from]
@@ -59,17 +59,23 @@ class BuyStageHelper:
         player.coins -= PET_BUY_COST
 
         player.pets[input.index_to] = new_pet
-        new_pet.proc_ability(AbilityType.BUY)
+        new_pet.proc_on_demand_ability(AbilityType.BUY)
         player.friend_summoned(new_pet)
+
+        log = f"Bought {new_pet} for position {input.index_to + 1}"
+        self.log.write_buy_stage_log(player, log)
 
     def _buy_food(self, player: 'PlayerState', input: 'PlayerInput'):
         food = player.shop_foods[input.index_from]
         player.shop_foods.remove(food)
-        player.coins -= food.food_config.BUY_COST
+        player.coins -= food.cost
+
+        log = f"Bought {food}"
 
         pet: Optional['PetState'] = None
         if food.food_config.IS_TARGETED:
             pet = player.pets[input.index_to]
+            log += f" for {pet}"
 
         # For carried food, the effects are hard-coded
         if food.food_config.IS_CARRIED:
@@ -78,12 +84,17 @@ class BuyStageHelper:
         else:
             food.food_config.EFFECT_FUNC(pet, player, self.state)
 
+        self.log.write_buy_stage_log(player, log)
+
     def _upgrade_pet_from_pets(self, player: 'PlayerState', input: 'PlayerInput'):
         from_pet = player.pets[input.index_from]
         player.pets[input.index_from] = None
 
         to_pet = player.pets[input.index_to]
         to_pet.level_up(from_pet)
+
+        log = f"Leveled up {to_pet} using {from_pet}"
+        self.log.write_buy_stage_log(player, log)
 
     def _upgrade_pet_from_shop(self, player: 'PlayerState', input: 'PlayerInput'):
         shop_pet = player.shop_pets[input.index_from]
@@ -92,36 +103,69 @@ class BuyStageHelper:
 
         pet = player.pets[input.index_to]
         pet.level_up(shop_pet)
-        pet.proc_ability(AbilityType.BUY)
+        pet.proc_on_demand_ability(AbilityType.BUY)
         player.friend_summoned(pet)
+
+        log = f"Leveled up {pet} by buying {shop_pet}"
+        self.log.write_buy_stage_log(player, log)
 
     def _sell_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         pet = player.pets[input.index_from]
         player.pets[input.index_from] = None
 
-        pet.proc_ability(AbilityType.SELL)
+        pet.proc_on_demand_ability(AbilityType.SELL)
         player.coins += pet.get_level()
+
+        log = f"Sold {pet}"
+        self.log.write_buy_stage_log(player, log)
 
     def _reroll(self, player: 'PlayerState', input: 'PlayerInput'):
         player.reset_shop_options()
         player.coins -= REROLL_COST
 
+        log = f"Rerolled shop"
+        self.log.write_buy_stage_log(player, log)
+
     def _freeze_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         pet = player.shop_pets[input.index_from]
         pet.is_frozen = True
+
+        log = f"Froze {pet}"
+        self.log.write_buy_stage_log(player, log)
 
     def _freeze_food(self, player: 'PlayerState', input: 'PlayerInput'):
         food = player.shop_foods[input.index_from]
         food.is_frozen = True
 
+        log = f"Froze {food}"
+        self.log.write_buy_stage_log(player, log)
+
     def _unfreeze_pet(self, player: 'PlayerState', input: 'PlayerInput'):
         pet = player.shop_pets[input.index_from]
         pet.is_frozen = False
+
+        log = f"Unfroze {pet}"
+        self.log.write_buy_stage_log(player, log)
 
     def _unfreeze_food(self, player: 'PlayerState', input: 'PlayerInput'):
         food = player.shop_foods[input.index_from]
         food.is_frozen = False
 
+        log = f"Unfroze {food}"
+        self.log.write_buy_stage_log(player, log)
+
     def _swap_pet(self, player: 'PlayerState', input: 'PlayerInput'):
-        player.pets[input.index_from], player.pets[input.index_to]\
-                = player.pets[input.index_to], player.pets[input.index_from]
+        pet_a = player.pets[input.index_from]
+        pet_b = player.pets[input.index_to]
+
+        player.pets[input.index_from] = pet_b 
+        player.pets[input.index_to] = pet_a
+
+        log = ""
+        if pet_a is not None and pet_b is not None:
+            log = f"Swapped {pet_a} and {pet_b} positions"
+        elif pet_a is not None:
+            log = f"Moved {pet_a} to position {input.index_to}"
+        else:
+            log = f"Moved {pet_b} to position {input.index_from}"
+        self.log.write_buy_stage_log(player, log)

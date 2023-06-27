@@ -1,9 +1,10 @@
 from random import sample
+from typing import TYPE_CHECKING
 
-from engine.game.abilitytype import AbilityType
-from engine.state.gamestate import GameState
-from engine.state.petstate import PetState
-from engine.state.playerstate import PlayerState
+if TYPE_CHECKING:
+    from engine.state.gamestate import GameState
+    from engine.state.petstate import PetState
+    from engine.state.playerstate import PlayerState
 
 class FoodEffects:
     @staticmethod
@@ -13,16 +14,9 @@ class FoodEffects:
         player.friend_ate_food(pet)
 
     @staticmethod
-    def sleeping_pill_effect(pet: 'PetState', player: 'PlayerState', state: 'GameState'):
-        i = player.pets.index(pet)
-        player.pets[i] = None
-        player.friend_ate_food(pet)
-        pet.on_death()
-
-    @staticmethod
     def cupcake_effect(pet: 'PetState', player: 'PlayerState', state: 'GameState'):
-        pet.health += 3
-        pet.attack += 3
+        pet.change_health(3)
+        pet.change_attack(3)
         player.friend_ate_food(pet)
 
     @staticmethod

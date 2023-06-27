@@ -1,5 +1,4 @@
-from enum import Enum
-
+from engine.config.foodtype import FoodType
 from engine.game.foodeffects import FoodEffects
 
 
@@ -18,17 +17,6 @@ class FoodConfig:
         self.IS_CARRIED = is_carried
         self.EFFECT_FUNC = effect_func
 
-class FoodType(Enum):
-    APPLE = 1
-    HONEY = 2
-    SLEEPING_PILL = 3
-    MEAT_BONE = 4
-    CUPCAKE = 5
-    SALAD_BOWL = 6
-    GARLIC = 7
-    CANNED_FOOD = 8
-    PEAR = 9
-
 FOOD_CONFIG = {
     FoodType.APPLE: FoodConfig(food_name = "Apple",
                             tier = 1,
@@ -43,13 +31,6 @@ FOOD_CONFIG = {
                             is_targeted = True,
                             is_carried = True,
                             effect_func = None),
-
-    FoodType.SLEEPING_PILL: FoodConfig(food_name = "Sleeping Pill",
-                            tier = 2,
-                            buy_cost = 1,
-                            is_targeted = True,
-                            is_carried = False,
-                            effect_func = FoodEffects.sleeping_pill_effect),
 
     FoodType.MEAT_BONE: FoodConfig(food_name = "Meat Bone",
                             tier = 2,
@@ -93,10 +74,3 @@ FOOD_CONFIG = {
                             is_carried = False,
                             effect_func = FoodEffects.pear_effect),
 }
-
-TIER_FOOD = [
-    [FoodType.APPLE, FoodType.HONEY],
-    [FoodType.SLEEPING_PILL, FoodType.MEAT_BONE, FoodType.CUPCAKE],
-    [FoodType.SALAD_BOWL, FoodType.GARLIC],
-    [FoodType.CANNED_FOOD, FoodType.PEAR]
-]

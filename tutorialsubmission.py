@@ -15,10 +15,13 @@ while True:
     # before making a move. It provides the information
     # required to make a sensible move
     game_info = bot_battle.get_game_info()
+    # print(game_info, flush = True)
+    # print("", flush = True)
 
     # How to detect whether it is a new round
     new_round = prev_round_num != game_info.round_num
     if new_round:
+        print(f"Round {game_info.round_num}\n\n")
         prev_round_num = game_info.round_num
 
     # Now let's go through a very simple (and poorly written!)
@@ -50,8 +53,8 @@ while True:
 
         # 2. We have a full pet lineup. That's not toooo bad,
         # but why not check if there's a better pet in the shop
-        for shop_pet in game_info.player_info.shop_pets:
-            for i, pet in enumerate(game_info.player_info.pets):
+        for shop_pet_index, shop_pet in enumerate(game_info.player_info.shop_pets):
+            for pet_index, pet in enumerate(game_info.player_info.pets):
                 if pet.health < shop_pet.health and pet.attack < shop_pet.attack and shop_pet.cost <= game_info.player_info.coins:
                     # We can't just immediately buy the pet because we have no free slots :(
                     # First we have to sell the mediocre pet AND THEN we can buy the shop pet
@@ -62,9 +65,14 @@ while True:
                         return
 
                     bot_battle.sell_pet(pet)
+
                     # We always have to call get_game_info() before making a second move
-                    _ = bot_battle.get_game_info()
-                    bot_battle.buy_pet(shop_pet, i)
+                    game_info = bot_battle.get_game_info()
+
+                    # We have to get the new shop pet index because the game info has changed and no longer
+                    # references the same object
+                    shop_pet = game_info.player_info.shop_pets[shop_pet_index]
+                    bot_battle.buy_pet(shop_pet, pet_index)
                     return
 
         # And, for this simple example, if we get here, there's no more moves to make

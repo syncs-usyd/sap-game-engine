@@ -31,3 +31,18 @@ class PlayerPetInfo:
         # Represents the pet's carried food
         # Note: this can be None 
         self.carried_food: Optional['FoodType'] = FoodType.get_food_type(dict["carried_food"]) if dict["carried_food"] is not None else None
+
+    def __repr__(self) -> str:
+        printable = "Player Pet Info:\n"
+        printable += "------------\n"
+
+        printable += f"Type: {self.type}\n"
+        printable += f"Health: {self.health}\n"
+        printable += f"Attack: {self.attack}\n"
+        printable += f"Level: {self.level}\n"
+        printable += f"Sub Level: {self.sub_level}\n"
+        printable += f"Carried Food: {self.carried_food}\n"
+
+        printable += "------------"
+
+        return printable

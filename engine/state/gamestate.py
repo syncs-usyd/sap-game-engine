@@ -1,26 +1,28 @@
 from typing import List
+
 from engine.config.gameconfig import NUM_PLAYERS
 from engine.state.playerstate import PlayerState
+
 
 class GameState:
     def __init__(self):
         self.round = -1
         self.players = [PlayerState(i, self) for i in range(NUM_PLAYERS)]
         self.dead_players: List['PlayerState'] = []
-        self.in_battle_stage = False
 
     def start_new_round(self):
         self.round += 1
-        self.in_battle_stage = False
         for player in self.players:
-            player.start_new_round(self.round)
-            if not player.is_alive() and player not in self.dead_players:
-                self.dead_players.append(player)
+            player.start_new_round()
 
     def start_battle_stage(self):
-        self.in_battle_stage = True
         for player in self.get_alive_players():
             player.start_battle_stage()
+
+    def end_round(self):
+        for player in self.players:
+            if not player.is_alive() and player not in self.dead_players:
+                self.dead_players.append(player)
 
     def get_alive_players(self) -> List['PlayerState']:
         return [player for player in self.players if player.is_alive()]
@@ -45,7 +47,7 @@ class GameState:
         return player_ranking
 
     def get_view(self, player: 'PlayerState', remaining_moves: int) -> dict:
-        next_opponent = player.get_challenger(increment_index = False)
+        next_opponent = player.challenger
         other_players = [alive_player for alive_player in self.get_alive_players() if alive_player != player]
 
         return {

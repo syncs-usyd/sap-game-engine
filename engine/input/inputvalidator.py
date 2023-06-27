@@ -1,9 +1,11 @@
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 
 from engine.input.movetype import MoveType
-from engine.input.playerinput import PlayerInput
-from engine.state.gamestate import GameState
-from engine.state.playerstate import PlayerState
+
+if TYPE_CHECKING:
+    from engine.input.playerinput import PlayerInput
+    from engine.state.gamestate import GameState
+    from engine.state.playerstate import PlayerState
 
 from engine.config.roundconfig import ROUND_CONFIG
 from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF, PET_BUY_COST

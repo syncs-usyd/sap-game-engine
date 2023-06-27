@@ -1,11 +1,11 @@
-from typing import List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from engine.config.gameconfig import NUM_PLAYERS
-from engine.input.movetype import MoveType
-from engine.input.playerinput import PlayerInput
-from engine.state.gamestate import GameState
-from engine.state.petstate import PetState
-from engine.state.playerstate import PlayerState
+
+if TYPE_CHECKING:
+    from engine.state.gamestate import GameState
+    from engine.state.petstate import PetState
+    from engine.state.playerstate import PlayerState
 
 
 class GameLog:
@@ -16,10 +16,10 @@ class GameLog:
         self.start_state_logs: List[List[str]] = []
 
         # Per round, per player, we store the shop log + buy round moves
-        self.buy_stage_logs: List[List[Tuple[str, List[str]]]] = []
+        self.buy_stage_logs: List[List[Tuple[bool, str, List[str]]]] = []
 
         # Per round, we store the outcomes of each battle
-        self.battle_stage_logs: List[List[str]] = []
+        self.battle_stage_logs: List[List[('PlayerState', str)]] = []
 
     def get_game_log(self, player: 'PlayerState') -> str:
         game_log = ""
@@ -48,39 +48,11 @@ class GameLog:
         self.start_state_logs.append(logs_per_player)
 
     def init_buy_stage_log(self):
-        self.buy_stage_logs.append([(self._write_shop_log(self.state.players[player_num]), []) for player_num in range(NUM_PLAYERS)])
+        buy_stage_log = [(self.state.players[player_num].is_alive(), self._write_shop_log(self.state.players[player_num]), []) for player_num in range(NUM_PLAYERS)]
+        self.buy_stage_logs.append(buy_stage_log)
 
-    def write_buy_stage_log(self, player: 'PlayerState', input: 'PlayerInput'):
-        log = ""
-
-        if input.move_type == MoveType.BUY_PET:
-            log = ""
-        elif input.move_type == MoveType.BUY_FOOD:
-            log = ""
-        elif input.move_type == MoveType.UPGRADE_PET_FROM_PETS:
-            log = ""
-        elif input.move_type == MoveType.UPGRADE_PET_FROM_SHOP:
-            log = ""
-        elif input.move_type == MoveType.SELL_PET:
-            log = ""
-        elif input.move_type == MoveType.REROLL:
-            log = ""
-        elif input.move_type == MoveType.FREEZE_PET:
-            log = ""
-        elif input.move_type == MoveType.FREEZE_FOOD:
-            log = ""
-        elif input.move_type == MoveType.UNFREEZE_PET:
-            log = ""
-        elif input.move_type == MoveType.UNFREEZE_FOOD:
-            log = ""
-        elif input.move_type == MoveType.SWAP_PET:
-            log = ""
-        elif input.move_type == MoveType.END_TURN:
-            return
-        else:
-            raise Exception(f'Invalid move type: {input.move_type}')
-
-        _, logs = self.buy_stage_logs[self.state.round][player.player_num]
+    def write_buy_stage_log(self, player: 'PlayerState', log: str):
+        _, _, logs = self.buy_stage_logs[self.state.round][player.player_num]
         logs.append(log)
 
     def init_battle_stage_log(self):
@@ -95,7 +67,7 @@ class GameLog:
             if player.is_alive():
                 log += f"{player.health} health remaining"
             else:
-                log += f"Eliminated :("
+                log += f"Eliminated"
 
         elif player_lost is None:
             log += f"P{player.player_num + 1} tied with P{challenger.player_num + 1}; "
@@ -105,15 +77,21 @@ class GameLog:
             log += f"P{player.player_num + 1} beat P{challenger.player_num + 1}; "
             log += f"P{player.player_num + 1} has {player.health} health remaining"
 
-        self.battle_stage_logs[self.state.round].append(log)
+        self.battle_stage_logs[self.state.round].append((player, log))
 
     def _get_round_start_state_log(self, round: int, player: 'PlayerState'):
         log = f"## Starting State\n\n"
 
+        if round >= len(self.start_state_logs):
+            log += f"Did not reach round {round + 1}\n\n"
+            return log
+
         for player_num in range(NUM_PLAYERS):
-            log += f"### P{player_num + 1} "
-            if player_num == player.player_num:
-                log += "(self) "
+            log += f"### "
+
+            if player_num == player.player_num: log += "**"
+            log += f"P{player_num + 1} "
+            if player_num == player.player_num: log += "(self)** "
 
             round_start_log = self.start_state_logs[round][player_num]
             log += round_start_log
@@ -124,11 +102,21 @@ class GameLog:
     def _get_round_buy_stage_log(self, round: int, player: 'PlayerState'):
         log = f"## Buy Stage\n"
 
-        shop_log, buy_logs = self.buy_stage_logs[round][player.player_num]
+        if round >= len(self.buy_stage_logs):
+            log += f"Did not reach round {round + 1}\n\n"
+            return log
 
+        player_alive, shop_log, buy_logs = self.buy_stage_logs[round][player.player_num]
+
+        # Return nothing if the player is already eliminated
+        if not player_alive:
+            return ""
+
+        log += "### Shop\n"
         log += shop_log
         log += "\n"
 
+        log += "### Moves\n"
         for i, buy_log in enumerate(buy_logs):
             log += f"{i + 1}. "
             log += buy_log
@@ -140,12 +128,16 @@ class GameLog:
     def _get_round_battle_stage_log(self, round: int, player: 'PlayerState'):
         log = f"## Battle Stage\n"
 
-        for player_num in range(NUM_PLAYERS):
+        if round >= len(self.battle_stage_logs):
+            log += f"Did not reach round {round + 1}\n\n"
+            return log
+
+        for _player, _log in self.battle_stage_logs[round]:
             log += "- "
 
-            if player_num == player.player_num: log += "*"
-            log += self.battle_stage_logs[round][player_num]
-            if player_num == player.player_num: log += "*"
+            if _player == player: log += "**"
+            log += _log
+            if _player == player: log += "**"
 
             log += "\n"
 
@@ -159,10 +151,10 @@ class GameLog:
         for i, pet in enumerate(player.shop_pets):
             log += f"{i + 1}. "
             log += f"\"{pet.pet_config.PET_NAME}\"; "
-            log += f"{pet.perm_health} health; "
-            log += f"{pet.perm_attack} attack\n\n"
+            log += f"{pet.get_perm_health()} health; "
+            log += f"{pet.get_perm_attack()} attack\n"
 
-        log += "Shop foods:\n"
+        log += "\nShop foods:\n"
         for i, food in enumerate(player.shop_foods):
             log += f"{i + 1}. "
             log += f"\"{food.food_config.FOOD_NAME}\"\n"
@@ -176,8 +168,8 @@ class GameLog:
             log += "None"
         else:
             log += f"\"{pet.pet_config.PET_NAME}\"; "
-            log += f"{pet.perm_health} health; "
-            log += f"{pet.perm_attack} attack; "
+            log += f"{pet.get_perm_health()} health; "
+            log += f"{pet.get_perm_attack()} attack; "
             log += f"Level {pet.get_level()}; "
             log += f"Sublevel progress {pet.get_sub_level_progress()}; "
 

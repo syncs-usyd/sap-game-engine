@@ -32,3 +32,42 @@ class PlayerInfo:
         # Note: if you buy all the foods in the shop, this will be an empty list
         # Also, as the rounds progress, the number of foods in the shop also increases
         self.shop_foods: List['ShopFoodInfo'] = [ShopFoodInfo(food_dict) for food_dict in dict["shop_foods"]]
+
+
+    def __repr__(self) -> str:
+        printable = "Player Info:\n"
+        printable += "------------\n"
+
+        printable += f"Health: {self.health}\n"
+        printable += f"Coins: {self.coins}\n"
+
+        printable += "Pets: {\n"
+        for i, pet in enumerate(self.pets):
+            printable += f"    Pet {i}: "
+            printable += "{\n"
+            for line in repr(pet).splitlines():
+                printable += f"        {line}\n"
+            printable += "    }\n"
+        printable += "}\n"
+
+        printable += "Shop Pets: {\n"
+        for i, shop_pet in enumerate(self.shop_pets):
+            printable += f"    Pet {i}: "
+            printable += "{\n"
+            for line in repr(shop_pet).splitlines():
+                printable += f"        {line}\n"
+            printable += "    }\n"
+        printable += "}\n"
+
+        printable += "Shop Foods: {\n"
+        for i, shop_food in enumerate(self.shop_foods):
+            printable += f"    Pet {i}: "
+            printable += "{\n"
+            for line in repr(shop_food).splitlines():
+                printable += f"        {line}\n"
+            printable += "    }\n"
+        printable += "}\n"
+
+        printable += "------------"
+
+        return printable
