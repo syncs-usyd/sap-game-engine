@@ -6,10 +6,11 @@ from engine.config.petconfig import PET_CONFIG, PetConfig, PetType
 from engine.game.abilitytype import AbilityType
 from engine.state.gamestate import GameState
 from engine.state.playerstate import PlayerState
+from engine.state.countablestates import CountableStates
 
-
-class PetState:
+class PetState(CountableStates):
     def __init__(self, health: int, attack: int, pet_config: 'PetConfig', player: 'PlayerState', state: 'GameState'):
+        super()
         self.player = player
         self.state = state
 
@@ -102,6 +103,7 @@ class PetState:
 
     def get_view_for_self(self) -> dict:
         return {
+            "id": self.id,
             "type": self.pet_config.PET_NAME,
             "health": self.health,
             "attack": self.attack,
@@ -112,6 +114,7 @@ class PetState:
 
     def get_view_for_shop(self) -> dict:
         return {
+            "id": self.id,
             "type": self.pet_config.PET_NAME,
             "health": self.health,
             "attack": self.attack,
@@ -121,6 +124,7 @@ class PetState:
 
     def get_view_for_others(self) -> dict:
         return {
+            "id": self.id,
             "type": self.pet_config.PET_NAME,
             "health": self.prev_health,
             "attack": self.prev_attack,
