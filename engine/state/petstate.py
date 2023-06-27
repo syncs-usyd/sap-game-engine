@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from engine.state.playerstate import PlayerState
 
 
-class PetState():
+class PetState:
     def __init__(self, health: int, attack: int, pet_config: 'PetConfig', player: 'PlayerState', state: 'GameState'):
         self.player = player
         self.state = state

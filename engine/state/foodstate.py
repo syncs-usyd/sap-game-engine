@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from engine.state.gamestate import GameState
 
 
-class FoodState():
+class FoodState:
     def __init__(self, food_config: 'FoodConfig', state: 'GameState'):
         self.id = state.get_id()
         self.food_config = food_config
