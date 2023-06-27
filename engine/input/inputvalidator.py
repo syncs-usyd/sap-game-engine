@@ -16,9 +16,6 @@ class InputValidator:
     @staticmethod
     def validate_input(input: 'PlayerInput', player: 'PlayerState', state: 'GameState') -> Tuple[bool, str]:
 
-        # TODO Handle completely invalid input
-        # Check with Oliver 
-        
         return_message = "" 
 
         # Get the current round config
