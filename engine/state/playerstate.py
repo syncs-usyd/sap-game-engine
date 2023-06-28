@@ -76,11 +76,6 @@ class PlayerState:
     def start_battle(self, opponent: 'PlayerState'):
         self.opponent = opponent
         self.battle_pets = self._get_pets_copy()
-        self.cleanup_battle_pets()
-
-    # Remove dead pets and empty slots
-    def cleanup_battle_pets(self):
-        self.battle_pets = [pet for pet in self.battle_pets if pet is not None and pet.is_alive()]
 
     def reset_shop_options(self):
         round_config = RoundConfig.get_round_config(self.state.round)
