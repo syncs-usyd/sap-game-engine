@@ -102,7 +102,10 @@ class Battle:
 
             for pet in hurt_and_faint:
                 pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
-
+                self.player.cleanup_battle_pets()
+                self.challenger.cleanup_battle_pets()
+                
+        
     def _proc_before_attack(self, player_front: 'PetState', challenger_front: 'PetState'):
         before_attack: List['PetState'] = []
         if player_front.pet_config.ABILITY_TYPE == AbilityType.BEFORE_ATTACK:
