@@ -86,7 +86,7 @@ class PetState:
 
     def proc_on_demand_ability(self, ability_type: AbilityType):
         if self.pet_config.ABILITY_TYPE == ability_type:
-            self.pet_config.ABILITY_FUNC(self, self.player, self.state)
+            self.pet_config.ABILITY_FUNC(self, self.player)
 
     def perm_increase_health(self, amount: int):
         self.change_health(amount)

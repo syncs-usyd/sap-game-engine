@@ -39,12 +39,12 @@ class Battle:
         # Set opponent + create copy of pets (player.battle_pets)
         self.player.start_battle(self.challenger)
         self.challenger.start_battle(self.player)
+        self._cleanup_battle_pets()
 
         self._proc_battle_round_start()
         self._proc_hurt_and_faint()
 
-        self.player.cleanup_battle_pets()
-        self.challenger.cleanup_battle_pets()
+        self._cleanup_battle_pets()
 
     def run_attack_turn(self):
         self.hurt_and_faint = []
@@ -66,12 +66,16 @@ class Battle:
         self._proc_hurt_and_faint()
         self._summon_bees()
 
-        self.player.cleanup_battle_pets()
-        self.challenger.cleanup_battle_pets()
+        self._cleanup_battle_pets()
 
     def add_hurt_or_fainted(self, pet: 'PetState'):
         if pet not in self.hurt_and_faint:
             self.hurt_and_faint.append(pet)
+
+    # Remove dead pets and empty slots
+    def _cleanup_battle_pets(self):
+        self.player.battle_pets = [pet for pet in self.player.battle_pets if pet is not None and (pet.is_alive() or pet in self.hurt_and_faint)]
+        self.challenger.battle_pets = [pet for pet in self.challenger.battle_pets if pet is not None and (pet.is_alive() or pet in self.hurt_and_faint)]
 
     # Higher level and stat pets get to go first
     def _priority_sort(self, pets: List['PetState']) -> List['PetState']:
@@ -92,16 +96,17 @@ class Battle:
         battle_round_start += [pet for pet in self.challenger.battle_pets if pet.pet_config.ABILITY_TYPE == AbilityType.BATTLE_ROUND_START]
 
         for pet in self._priority_sort(battle_round_start):
-            pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
+            pet.pet_config.ABILITY_FUNC(pet, pet.player)
 
     def _proc_hurt_and_faint(self):
         while len(self.hurt_and_faint) > 0:
             hurt_and_faint = self._priority_sort(copy(self.hurt_and_faint))
-            # Clear the list so second-order events trigger
-            self.hurt_and_faint = []
+            self.hurt_and_faint = [] # Clear the list so second-order events trigger
 
             for pet in hurt_and_faint:
-                pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
+                pet.pet_config.ABILITY_FUNC(pet, pet.player)
+
+            self._cleanup_battle_pets()
 
     def _proc_before_attack(self, player_front: 'PetState', challenger_front: 'PetState'):
         before_attack: List['PetState'] = []
@@ -111,7 +116,7 @@ class Battle:
             before_attack.append(challenger_front)
 
         for pet in self._priority_sort(before_attack):
-            pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
+            pet.pet_config.ABILITY_FUNC(pet, pet.player)
 
     def _proc_after_attack(self, player_front: 'PetState', challenger_front: 'PetState'):
         after_attack: List['PetState'] = []
@@ -121,7 +126,7 @@ class Battle:
             after_attack.append(challenger_front)
 
         for pet in self._priority_sort(after_attack):
-            pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
+            pet.pet_config.ABILITY_FUNC(pet, pet.player)
 
     def _proc_friend_ahead_attacked(self):
         friend_ahead_attack: List['PetState'] = []
@@ -135,7 +140,7 @@ class Battle:
                 friend_ahead_attack.append(pet)
 
         for pet in self._priority_sort(friend_ahead_attack):
-            pet.pet_config.ABILITY_FUNC(pet, pet.player, self.state)
+            pet.pet_config.ABILITY_FUNC(pet, pet.player)
 
     def _add_to_knockout(self, player_front: 'PetState', challenger_front: 'PetState'):
         if player_front.is_alive() and not challenger_front.is_alive():
@@ -145,7 +150,7 @@ class Battle:
 
     def _proc_knockout(self):
         if self.knockout is not None and self.knockout.pet_config.ABILITY_TYPE == AbilityType.KNOCKOUT:
-            self.knockout.pet_config.ABILITY_FUNC(self.knockout, self.knockout.player, self.state)
+            self.knockout.pet_config.ABILITY_FUNC(self.knockout, self.knockout.player)
 
     def _summon_bees(self):
         for original_pet, bee in self.bees:
