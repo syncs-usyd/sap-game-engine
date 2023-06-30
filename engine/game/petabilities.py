@@ -5,7 +5,6 @@ from engine.config.pettype import TIER_PETS, PetType
 
 if TYPE_CHECKING:
     from engine.state.petstate import PetState
-    from engine.state.gamestate import GameState
     from engine.state.playerstate import PlayerState
 
 
