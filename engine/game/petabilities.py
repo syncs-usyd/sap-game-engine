@@ -195,7 +195,7 @@ class PetAbilities:
         elephant_index = player.battle_pets.index(elephant)
         target_friend = player.battle_pets[elephant_index + 1]
 
-        # TODO: Known bug: this wont retrigger other pets hurt ability multiple times
+        # Known bug: this wont retrigger other pets hurt ability multiple times
         for _ in range(elephant.get_level()):
             elephant.damage_enemy_with_ability(1, target_friend)
 
