@@ -115,7 +115,7 @@ class BotBattle:
     # Unfreeze the specified food
     # Note: this means this food WILL be refreshed at the end of the round
     # and when rerolling the shop
-    def unfreeze_pet(self, shop_food: 'ShopFoodInfo'):
+    def unfreeze_food(self, shop_food: 'ShopFoodInfo'):
         dict_move = {
             "move_type": "UNFREEZE_FOOD",
             "index_from": self._game_info.player_info.shop_foods.index(shop_food),
