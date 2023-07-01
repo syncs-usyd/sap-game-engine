@@ -22,76 +22,100 @@ state = GameState()
 log = GameLog(state)
 log.write_battle_stage_log = write_battle_log
 
+def spawner(health_inp : int, attack_inp: int, pet_config_inp : 'PET_CONFIG[PetType]', player_inp : PlayerState, state_inp : GameState, sub_level_inp : int):
+    new_pet = PetState(health_inp, attack_inp, pet_config_inp, player_inp, state_inp)
+    
+    new_pet.sub_level = sub_level_inp
+    
+    return new_pet
+
 player_a = PlayerState(0, state)
 player_a.pets = [
-    PetState(
-        health=2,
-        attack=2,
-        pet_config=PET_CONFIG[PetType.ANT],
-        player=player_a,
-        state=state
+    spawner(
+        health_inp=7,
+        attack_inp=4,
+        pet_config_inp=PET_CONFIG[PetType.PEACOCK],
+        player_inp=player_a,
+        state_inp=state,
+        sub_level_inp=1
     ),
-    PetState(
-        health=2,
-        attack=2,
-        pet_config=PET_CONFIG[PetType.ANT],
-        player=player_a,
-        state=state
+    spawner(
+        health_inp=3,
+        attack_inp=2,
+        pet_config_inp=PET_CONFIG[PetType.KANGAROO],
+        player_inp=player_a,
+        state_inp=state,
+        sub_level_inp=0
     ),
-    PetState(
-        health=2,
-        attack=2,
-        pet_config=PET_CONFIG[PetType.ANT],
-        player=player_a,
-        state=state
+    spawner(
+        health_inp=4,
+        attack_inp=4,
+        pet_config_inp=PET_CONFIG[PetType.SHEEP],
+        player_inp=player_a,
+        state_inp=state,
+        sub_level_inp=0
     ),
-    PetState(
-        health=2,
-        attack=2,
-        pet_config=PET_CONFIG[PetType.ANT],
-        player=player_a,
-        state=state
+    spawner(
+        health_inp=4,
+        attack_inp=5,
+        pet_config_inp=PET_CONFIG[PetType.HORSE],
+        player_inp=player_a,
+        state_inp=state,
+        sub_level_inp=3
     ),
-    PetState(
-        health=2,
-        attack=2,
-        pet_config=PET_CONFIG[PetType.ANT],
-        player=player_a,
-        state=state
+    spawner(
+        health_inp=5,
+        attack_inp=4,
+        pet_config_inp=PET_CONFIG[PetType.DOG],
+        player_inp=player_a,
+        state_inp=state,
+        sub_level_inp=2
     ),
 ]
 
 player_b = PlayerState(1, state)
 player_b.pets = [
-    PetState(
-        health=2,
-        attack=2,
-        pet_config=PET_CONFIG[PetType.ANT],
-        player=player_b,
-        state=state
+    spawner(
+        health_inp=4,
+        attack_inp=4,
+        pet_config_inp=PET_CONFIG[PetType.ANT],
+        player_inp=player_b,
+        state_inp=state,
+        sub_level_inp=2
     ),
-    PetState(
-        health=2,
-        attack=2,
-        pet_config=PET_CONFIG[PetType.ANT],
-        player=player_b,
-        state=state
+    spawner(
+        health_inp=5,
+        attack_inp=3,
+        pet_config_inp=PET_CONFIG[PetType.CAMEL],
+        player_inp=player_b,
+        state_inp=state,
+        sub_level_inp=0
     ),
-    PetState(
-        health=2,
-        attack=2,
-        pet_config=PET_CONFIG[PetType.ANT],
-        player=player_b,
-        state=state
+    spawner(
+        health_inp=10,
+        attack_inp=5,
+        pet_config_inp=PET_CONFIG[PetType.PEACOCK],
+        player_inp=player_b,
+        state_inp=state,
+        sub_level_inp=0
     ),
-    None,
-    PetState(
-        health=2,
-        attack=2,
-        pet_config=PET_CONFIG[PetType.ANT],
-        player=player_b,
-        state=state
+    spawner(
+        health_inp=5,
+        attack_inp=3,
+        pet_config_inp=PET_CONFIG[PetType.GIRAFFE],
+        player_inp=player_b,
+        state_inp=state,
+        sub_level_inp=2
     ),
+    spawner(
+        health_inp=3,
+        attack_inp=4,
+        pet_config_inp=PET_CONFIG[PetType.SPIDER],
+        player_inp=player_b,
+        state_inp=state,
+        sub_level_inp=0
+    ),
+
 ]
 
 
