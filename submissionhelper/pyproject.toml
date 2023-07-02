@@ -1,0 +1,24 @@
+[tool.setuptools]
+py-modules = [
+    "submissionhelper.botbattle",
+    "submissionhelper.info.foodtype",
+    "submissionhelper.info.gameinfo",
+    "submissionhelper.info.otherplayerinfo",
+    "submissionhelper.info.otherplayerpetinfo",
+    "submissionhelper.info.pettype",
+    "submissionhelper.info.playerinfo",
+    "submissionhelper.info.playerpetinfo",
+    "submissionhelper.info.shopfoodinfo",
+    "submissionhelper.info.shoppetinfo",
+]
+
+[project]
+name = "submissionhelper"
+description = "A helper package for student submission during SYNCS Bot Battle 2023"
+version = "1.0.0"
+readme = "README.md"
+requires-python = ">=3.10"
+
+classifiers = [
+    "Programming Language :: Python :: 3"
+]
