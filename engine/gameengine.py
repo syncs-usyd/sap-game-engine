@@ -1,3 +1,4 @@
+from engine.config.gameconfig import MAX_ROUNDS
 from engine.game.battle import Battle
 from engine.game.buystagehelper import BuyStageHelper
 from engine.output.gamelog import GameLog
@@ -14,6 +15,9 @@ class GameEngine:
 
     def run(self):
         while not self.state.is_game_over():
+            if self.state.round >= MAX_ROUNDS or len(self.state.get_alive_players()) == 0:
+                self.output_handler.terminate_cancel()
+
             print(f"New round {self.state.round + 1}")
             self.state.start_new_round()
             self.log.write_start_state_logs()

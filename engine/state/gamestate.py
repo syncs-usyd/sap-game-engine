@@ -31,7 +31,6 @@ class GameState:
     def is_game_over(self) -> bool:
         alive_players = self.get_alive_players()
         num_alive = len(alive_players)
-        assert num_alive > 0
         return num_alive == 1
 
     def get_player_ranking(self) -> List[int]:
