@@ -110,7 +110,7 @@ do
     chmod 0666 $to_engine
 
     cp ../../$submission_file submission.py
-    cp -r ../../submissionhelper submissionhelper
+    cp -r ../../submissionhelper/submissionhelper/ submissionhelper
 
     if [[ "$debug_submission_value" != "$i" ]]
     then
