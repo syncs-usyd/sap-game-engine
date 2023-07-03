@@ -103,7 +103,7 @@ class InputValidator:
         if return_message != "": return return_message
 
         if player.shop_pets[input.index_from].is_frozen:
-            return f"Shop Pet at index {input.index_from} is already frozen.\n"
+            return f"Shop Pet at index {input.index_from} is already frozen\n"
         else:
             return ""
 
@@ -113,7 +113,7 @@ class InputValidator:
         if return_message != "": return return_message
 
         if player.shop_foods[input.index_from].is_frozen:
-            return f"Shop Food at index {input.index_from} is already frozen.\n"
+            return f"Shop Food at index {input.index_from} is already frozen\n"
         else:
             return ""
 
@@ -123,7 +123,7 @@ class InputValidator:
         if return_message != "": return return_message
 
         if not player.shop_pets[input.index_from].is_frozen:
-            return f"Shop Pet at index {input.index_from} is already unfrozen.\n"
+            return f"Shop Pet at index {input.index_from} is already unfrozen\n"
         else:
             return ""
 
@@ -133,7 +133,7 @@ class InputValidator:
         if return_message != "": return return_message
 
         if not player.shop_foods[input.index_from].is_frozen:
-            return f"Shop Food at index {input.index_from} is already unfrozen.\n"
+            return f"Shop Food at index {input.index_from} is already unfrozen\n"
         else:
             return ""
 

@@ -22,6 +22,8 @@ class PlayerState:
         self.player_num = player_num
         self.state = state
 
+        self.cumulative_time: float = 0
+
         self.health = STARTING_HEALTH
         self.pets: List[Optional['PetState']] = [None] * PET_POSITIONS
 

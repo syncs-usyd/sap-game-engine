@@ -33,6 +33,10 @@ class OutputHandler:
         #End the game
         sys.exit(0)
 
+    def terminate_cancel(self):
+        self._write_results(TerminationType.CANCELLED_MATCH)
+        sys.exit(0) # End the game
+
     def terminate_fail(self, termination_type: 'TerminationType', player: 'PlayerState', exception: Optional[Exception] = None, reason: Optional[str] = None):
         self._write_results(termination_type, faulty_player_num = player.player_num)
 
@@ -60,11 +64,18 @@ class OutputHandler:
 
     def _write_results(self, termination_type: 'TerminationType', faulty_player_num: Optional[int] = None, player_ranking: Optional[List[int]] = None):
         results: dict = None
+
         if termination_type == TerminationType.SUCCESS:
             results = {
                 "result_type": termination_type.name,
                 "ranking": player_ranking
             }
+
+        elif termination_type == TerminationType.CANCELLED_MATCH:
+            results = {
+                "result_type": termination_type.name
+            }
+
         else:
             results = {
                 "result_type": termination_type.name,
