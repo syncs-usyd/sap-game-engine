@@ -32,7 +32,7 @@ There are 2 stages per round.
 	- A friend summoned trigger
 
 ##### Sell pets
-- Selling a pet will give you their level back in gold, 
+- Selling a pet will give you their level back in gold
 - This will also activate any ability with a sell trigger
 
 ##### Buy food to feed to pets
@@ -50,7 +50,8 @@ There are 2 stages per round.
 
 ##### Freeze/Unfreeze
 - Valid items can be frozen
-	- Frozen items and pets will remain in the shop after new rounds and after refreshes 
+	- Frozen items and pets will remain in the shop after new rounds and after refreshes
+	- You can keep track of pets and food between turns using their ids!
 
 
 ### Battle Stage
@@ -85,7 +86,7 @@ Out of the cast of pets available to be bought, all have an ability that is trig
 
 | Ability types | Context |
 | --- | --- |
-| Hurt  | During battle, when the pet is hurt from any form of damage |
+| Hurt  | During battle, when the pet is hurt from any form of damage. Also triggers when a pet faints. |
 | Faint | During battle, when the pet faints |
 | Buy/Sell | When a pet is bought or sold. |
 | Level Up | When a pet levels up. |
@@ -105,7 +106,7 @@ Out of the cast of pets available to be bought, all have an ability that is trig
 
 ## All pets
 
->Abilities are enhanced through the level of the pet. The scaling is denoted by L.
+>Abilities are enhanced through the level of the pet. The scaling is denoted by L where L is their level.
 
 ### Tier 1 
 
@@ -135,9 +136,9 @@ Out of the cast of pets available to be bought, all have an ability that is trig
 
 | Pet | Trigger | Ability |
 | --- | --- | --- |
-| Dodo | Battle stage end | Give 0.5L attack to the nearest friend ahead |
+| Dodo | Battle stage start | Give 0.5L attack to the nearest friend ahead |
 | Badger | Faint | Deal 0.5L attack damage to the adjacent pets. Includes your own pets |
-| Dolphin | Battle stage end | Deal 3 damage to the lowest health enemy. Triggers L times |
+| Dolphin | Battle stage start | Deal 3 damage to the lowest health enemy. Triggers L times |
 | Giraffe |  Buy stage end | Give 1 health and attack to L friends in front of it |
 | Camel | Hurt | Give nearest friend behind 2L attack and health | 
 | Elephant | After attack | Deal 1 damage to the friend behind L times |
@@ -152,7 +153,7 @@ Out of the cast of pets available to be bought, all have an ability that is trig
 | Hippo | Knock Out | Gain 3L health and attack |
 | Bison  | Buy stage end | If this has a level 3 friend, gain L attack and 2L health|
 | Blowfish | Hurt | Deal 3L damage to one random enemy |
-| Squirrel | Buy stage start | Discount all shop food by 1 coin | 
+| Squirrel | Buy stage start | Discount all shop food by L coin | 
 | Penguin | Buy stage end | Give two level 2+ friends L health and attack |
 
 > All pets have a limit of 50 health and attack that cannot be surpassed 
@@ -167,7 +168,7 @@ The round progression will determine the pool of pets/food available.
 	- As of version 1, tier 4 is the final tier and all corresponding rounds will no longer iterate 
 
 - For each slot in the shop 
-	- EVERY AVAILIABLE PET/FOOD ITEM WILL HAVE AN EQUAL CHANCE TO APPEAR IN THAT SLOT
+	- EVERY AVAILABLE PET/FOOD ITEM WILL HAVE AN EQUAL CHANCE TO APPEAR IN THAT SLOT
 
 # Food 
 - Foods can be split into 2 categories 
@@ -181,34 +182,39 @@ The round progression will determine the pool of pets/food available.
 
 ### Tier 1
 
-| Food | Duration |  Ability |
-| --- | --- | --- |
-| Apple | Consumed | Increase the health and attack of a pet by 1 |
-| Honey | Held | Spawn a 1/1 bee after faint |
+| Food | Held/Consumed | Duration | Targeted |  Ability |
+| --- | --- | --- | --- | --- |
+| Apple | Consumed | Permanent | Yes | Increase the health and attack of a pet by 1 |
+| Honey | Held | Permanent | Yes | Spawn a 1/1 bee after faint |
+
 ### Tier 2
 
-| Food | Duration |  Ability |
-| --- | --- | --- |
-| Meat Bone | Held | Non-ability attacks will now deal +3 damage |
-| Cupcake | Temporary | Give target pet +3 health and attack until end of battle |
+| Food | Held/Consumed | Duration | Targeted | Ability |
+| --- | --- | --- | --- | --- |
+| Meat Bone | Held | Permanent | Yes | Non-ability attacks will now deal +3 damage |
+| Cupcake | Consumed | Temporary | Yes | Give target pet +3 health and attack until end of battle |
+
 ### Tier 3
 
-| Food | Duration |  Ability |
-| --- | --- | --- |
-| Garlic | Held | Pet will take 2 less damage from all sources |
-| Salad Bowl | Temporary | Give 2 random pets +1 health and attack |
+| Food | Held/Consumed | Duration | Targeted | Ability |
+| --- | --- | --- | --- | --- |
+| Garlic | Held | Permanent | Yes | Pet will take 2 less damage from all sources |
+| Salad Bowl | Consumed | Permanent | No | Give 2 random pets +1 health and attack |
+
 ### Tier 4 
 
-| Food | Duration |  Ability |
-| --- | --- | --- |
-| Canned Food | Consumed | Give all current and future shop pets +1 attack and health (will not need target pet) |
-| Pear | Consumed | Give target pet +2 health and attack |
+| Food | Held/Consumed | Duration | Targeted | Ability |
+| --- | --- | --- | --- | --- |
+| Canned Food | Consumed | Permanent | No | Give all current and future shop pets +1 attack and health (will not need target pet) |
+| Pear | Consumed | Permanent | Yes | Give target pet +2 health and attack |
 
-# Main differences from main game + known bugs
+# Known bugs currently
+- Repeated hurt effect actions will not occur in some circumstances 
+	- Elephant and Dolphin upgrade abilities are notably affected
+
+# Key differences from main game
 - The pet roster is reduced compared to the normal game. 
 - Sleeping pill has been removed via executive decision 
 	- All hurt and faint effects can only occur during battle
-- As of iteration 1: Repeated actions will not occur 
-	- Elephant and Dolphin upgrade abilities are notably affected
 - Applications of animal abilities will not be exactly like the game, but will consistently occur
 	- Can be clarified through exploring game engine for specifics

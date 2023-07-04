@@ -101,6 +101,11 @@ class PlayerState:
         shop_pet = self._create_shop_pet(pet_type)
         self.shop_pets.append(shop_pet)
 
+    def summon_bee(self, original_pet: 'PetState'):
+        bee_config = PET_CONFIG[PetType.BEE]
+        bee = PetState(bee_config.BASE_HEALTH, bee_config.BASE_ATTACK, bee_config, self, self.state)
+        self.summon_pets(original_pet, [bee])
+
     def create_pet_to_summon(self, pet_type: 'PetType', health: int, attack: int):
         pet_config = PET_CONFIG[pet_type]
         pet = PetState(health, attack, pet_config, self, self.state)
