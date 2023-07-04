@@ -158,12 +158,10 @@ class PetState:
 
     def on_death(self):
         if self.pet_config.ABILITY_TYPE == AbilityType.FAINTED:
-            self.player.battle.add_hurt_or_fainted(self)
+            self.player.battle.add_hurt_or_fainted_or_bee(self)
 
         if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
-            bee_config = PET_CONFIG[PetType.BEE]
-            bee = PetState(bee_config.BASE_HEALTH, bee_config.BASE_ATTACK, bee_config, self.player, self.state)
-            self.player.battle.bees.append((self, bee))
+            self.player.battle.add_hurt_or_fainted_or_bee(self)
 
     def _change_perm_health(self, amount: int):
         self._perm_health += amount
@@ -182,7 +180,7 @@ class PetState:
         self.change_health(-amount)
 
         if self.pet_config.ABILITY_TYPE == AbilityType.HURT:
-            self.player.battle.add_hurt_or_fainted(self)
+            self.player.battle.add_hurt_or_fainted_or_bee(self)
 
         if not self.is_alive():
             self.on_death()

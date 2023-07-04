@@ -1,7 +1,9 @@
 from copy import copy
-from typing import TYPE_CHECKING, List, Optional, Tuple
-from engine.config.roundconfig import RoundConfig
+from typing import TYPE_CHECKING, List, Optional
 
+from engine.config.foodconfig import FOOD_CONFIG
+from engine.config.foodtype import FoodType
+from engine.config.roundconfig import RoundConfig
 from engine.game.abilitytype import AbilityType
 
 if TYPE_CHECKING:
@@ -18,9 +20,8 @@ class Battle:
         self.state = state
         self.log = log
 
-        self.hurt_and_faint: List['PetState'] = []
+        self.hurt_and_faint_and_bee: List['PetState'] = []
         self.knockout: Optional['PetState'] = None
-        self.bees: List[Tuple['PetState', 'PetState']] = []
 
     def run(self) -> bool:
         self.start_battle()
@@ -47,9 +48,8 @@ class Battle:
         self._cleanup_battle_pets()
 
     def run_attack_turn(self):
-        self.hurt_and_faint = []
+        self.hurt_and_faint_and_bee = []
         self.knockout = None
-        self.bees = []
 
         player_front = self.player.battle_pets[0]
         challenger_front = self.challenger.battle_pets[0]
@@ -64,18 +64,17 @@ class Battle:
         self._proc_friend_ahead_attacked()
         self._proc_knockout()
         self._proc_hurt_and_faint()
-        self._summon_bees()
 
         self._cleanup_battle_pets()
 
-    def add_hurt_or_fainted(self, pet: 'PetState'):
-        if pet not in self.hurt_and_faint:
-            self.hurt_and_faint.append(pet)
+    def add_hurt_or_fainted_or_bee(self, pet: 'PetState'):
+        if pet not in self.hurt_and_faint_and_bee:
+            self.hurt_and_faint_and_bee.append(pet)
 
     # Remove dead pets and empty slots
     def _cleanup_battle_pets(self):
-        self.player.battle_pets = [pet for pet in self.player.battle_pets if pet is not None and (pet.is_alive() or pet in self.hurt_and_faint)]
-        self.challenger.battle_pets = [pet for pet in self.challenger.battle_pets if pet is not None and (pet.is_alive() or pet in self.hurt_and_faint)]
+        self.player.battle_pets = [pet for pet in self.player.battle_pets if pet is not None and (pet.is_alive() or pet in self.hurt_and_faint_and_bee)]
+        self.challenger.battle_pets = [pet for pet in self.challenger.battle_pets if pet is not None and (pet.is_alive() or pet in self.hurt_and_faint_and_bee)]
 
     # Higher level and stat pets get to go first
     def _priority_sort(self, pets: List['PetState']) -> List['PetState']:
@@ -99,12 +98,15 @@ class Battle:
             pet.pet_config.ABILITY_FUNC(pet, pet.player)
 
     def _proc_hurt_and_faint(self):
-        while len(self.hurt_and_faint) > 0:
-            hurt_and_faint = self._priority_sort(copy(self.hurt_and_faint))
-            self.hurt_and_faint = [] # Clear the list so second-order events trigger
+        while len(self.hurt_and_faint_and_bee) > 0:
+            hurt_and_faint_and_bee = self._priority_sort(copy(self.hurt_and_faint_and_bee))
+            self.hurt_and_faint_and_bee = [] # Clear the list so second-order events trigger
 
-            for pet in hurt_and_faint:
-                pet.pet_config.ABILITY_FUNC(pet, pet.player)
+            for pet in hurt_and_faint_and_bee:
+                if pet.pet_config.ABILITY_TYPE in [AbilityType.HURT, AbilityType.FAINTED]:
+                    pet.pet_config.ABILITY_FUNC(pet, pet.player)
+                if not pet.is_alive() and pet.carried_food == FOOD_CONFIG[FoodType.HONEY]:
+                    pet.player.summon_bee(pet)
 
             self._cleanup_battle_pets()
 
@@ -151,7 +153,3 @@ class Battle:
     def _proc_knockout(self):
         if self.knockout is not None and self.knockout.pet_config.ABILITY_TYPE == AbilityType.KNOCKOUT:
             self.knockout.pet_config.ABILITY_FUNC(self.knockout, self.knockout.player)
-
-    def _summon_bees(self):
-        for original_pet, bee in self.bees:
-            bee.player.summon_pets(original_pet, [bee])
