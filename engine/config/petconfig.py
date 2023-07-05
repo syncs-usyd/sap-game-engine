@@ -37,7 +37,7 @@ PET_CONFIG = {
                         tier = 1,
                         base_attack = 4,
                         base_health = 1,
-                        ability_type = AbilityType.BUY_ROUND_START,
+                        ability_type = AbilityType.SELL,
                         ability_func = PetAbilities.pig_ability,),
 
     PetType.ANT: PetConfig(pet_name = "Ant",
