@@ -138,7 +138,8 @@ class PlayerState:
     def friend_ate_food(self, fat_pet: 'PetState'):
         self.pet_that_ate_food = fat_pet
         for pet in self.pets:
-            pet.proc_on_demand_ability(AbilityType.FRIEND_ATE_FOOD)
+            if pet is not None:
+                pet.proc_on_demand_ability(AbilityType.FRIEND_ATE_FOOD)
 
         # Clear the reference now its not needed
         self.pet_that_ate_food = None
