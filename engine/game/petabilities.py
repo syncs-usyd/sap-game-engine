@@ -197,7 +197,7 @@ class PetAbilities:
 
         # Known bug: this wont retrigger other pets hurt ability multiple times
         for _ in range(elephant.get_level()):
-            elephant.damage_enemy_with_ability(1, target_friend)
+            player.battle.hurt_and_faint_and_bee.append(target_friend)
 
     @staticmethod
     # When a friendly eats food, give them +L health
