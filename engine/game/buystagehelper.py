@@ -62,7 +62,7 @@ class BuyStageHelper:
         new_pet.proc_on_demand_ability(AbilityType.BUY)
         player.friend_summoned(new_pet)
 
-        log = f"Bought {new_pet} for position {input.index_to + 1}"
+        log = f"Bought {new_pet} for position {input.index_to + 1}; {player.coins} remaining coins"
         self.log.write_buy_stage_log(player, log)
 
     def _buy_food(self, player: 'PlayerState', input: 'PlayerInput'):
@@ -76,6 +76,8 @@ class BuyStageHelper:
         if food.food_config.IS_TARGETED:
             pet = player.pets[input.index_to]
             log += f" for {pet}"
+
+        log += f"; {player.coins} remaining coins"
 
         # For carried food, the effects are hard-coded
         if food.food_config.IS_CARRIED:
@@ -106,7 +108,7 @@ class BuyStageHelper:
         pet.proc_on_demand_ability(AbilityType.BUY)
         player.friend_summoned(pet)
 
-        log = f"Leveled up {pet} by buying {shop_pet}"
+        log = f"Leveled up {pet} by buying {shop_pet}; {player.coins} remaining coins"
         self.log.write_buy_stage_log(player, log)
 
     def _sell_pet(self, player: 'PlayerState', input: 'PlayerInput'):
@@ -116,14 +118,14 @@ class BuyStageHelper:
         pet.proc_on_demand_ability(AbilityType.SELL)
         player.coins += pet.get_level()
 
-        log = f"Sold {pet}"
+        log = f"Sold {pet}; Now have {player.coins} coins"
         self.log.write_buy_stage_log(player, log)
 
     def _reroll(self, player: 'PlayerState', input: 'PlayerInput'):
         player.reset_shop_options()
         player.coins -= REROLL_COST
 
-        log = f"Rerolled shop"
+        log = f"Rerolled shop; {player.coins} remaining coins"
         self.log.write_buy_stage_log(player, log)
 
     def _freeze_pet(self, player: 'PlayerState', input: 'PlayerInput'):
@@ -163,9 +165,11 @@ class BuyStageHelper:
 
         log = ""
         if pet_a is not None and pet_b is not None:
-            log = f"Swapped {pet_a} and {pet_b} positions"
+            log = f"Swapped {pet_a} @ {input.index_from + 1} and {pet_b} @ {input.index_to + 1}"
         elif pet_a is not None:
-            log = f"Moved {pet_a} to position {input.index_to}"
+            log = f"Moved {pet_a} to empty position {input.index_to + 1}"
+        elif pet_b is not None:
+            log = f"Moved {pet_b} to empty position {input.index_from + 1}"
         else:
-            log = f"Moved {pet_b} to position {input.index_from}"
+            log = f"Swapped two empty positions {input.index_to + 1} and {input.index_from + 1}"
         self.log.write_buy_stage_log(player, log)

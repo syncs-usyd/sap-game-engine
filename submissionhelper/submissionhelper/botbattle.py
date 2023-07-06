@@ -12,6 +12,7 @@ class BotBattle:
         self._from_engine = open("./io/from_engine.pipe", "r", encoding = "utf-8") 
         self._to_engine = open("./io/to_engine.pipe", "w", encoding = "utf-8")
         self._game_info: Optional['GameInfo'] = None
+        self._made_move_before_get_game_info = True
 
     def get_game_info(self) -> 'GameInfo':
         dict_game_info = self._read_from_pipe()
@@ -143,6 +144,9 @@ class BotBattle:
         self._write_to_pipe(dict_move)
 
     def _read_from_pipe(self):
+        assert self._made_move_before_get_game_info
+        self._made_move_before_get_game_info = False
+
         json_game_info = ""
         while not json_game_info or json_game_info[-1] != ";":
             json_game_info += self._from_engine.read(1)
@@ -151,6 +155,9 @@ class BotBattle:
         return dict_game_info
 
     def _write_to_pipe(self, dict_move):
+        assert not self._made_move_before_get_game_info
+        self._made_move_before_get_game_info = True
+
         dict_move = dumps(dict_move)
         dict_move += ";"
         self._to_engine.write(dict_move)
