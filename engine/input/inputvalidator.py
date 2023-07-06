@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from engine.input.playerinput import PlayerInput
     from engine.state.foodstate import FoodState
     from engine.state.gamestate import GameState
+    from engine.state.petstate import PetState
     from engine.state.playerstate import PlayerState
 
 
@@ -72,7 +73,12 @@ class InputValidator:
         return_message = ""
 
         return_message += InputValidator._check_from_pet_index(player, input.index_from, should_be_empty = False)
-        return_message += InputValidator._check_target_pet_index(player, input.index_to, should_be_empty = False)
+        target_pet_message = InputValidator._check_target_pet_index(player, input.index_to, should_be_empty = False)
+
+        if target_pet_message == "":
+            return_message += InputValidator._check_level_up(player.pets[input.index_to])
+        else:
+            return_message += target_pet_message
 
         return return_message
 
@@ -81,7 +87,13 @@ class InputValidator:
         return_message = ""
 
         return_message += InputValidator._check_shop_pets_index_in_range(player, input.index_from)
-        return_message += InputValidator._check_target_pet_index(player, input.index_to, should_be_empty = False)
+        target_pet_message = InputValidator._check_target_pet_index(player, input.index_to, should_be_empty = False)
+
+        if target_pet_message == "":
+            return_message += InputValidator._check_level_up(player.pets[input.index_to])
+        else:
+            return_message += target_pet_message
+
         return_message += InputValidator._check_sufficient_coins_for_pet(player)
 
         return return_message
@@ -203,5 +215,12 @@ class InputValidator:
     def _check_sufficient_coins_for_food(player: 'PlayerState', food: 'FoodState') -> str:
         if player.coins < food.cost:
             return f"Not enough currency to buy food. You need {food.cost} but only have {player.coins} available\n"
+        else:
+            return ""
+
+    @staticmethod
+    def _check_level_up(pet: 'PetState'):
+        if pet.get_level() == 3:
+            return "Cannot level pet up as its already the maximum level (3)\n"
         else:
             return ""
