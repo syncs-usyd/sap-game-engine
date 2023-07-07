@@ -15,10 +15,8 @@ class PetAbilities:
     def fish_ability(fish: 'PetState', player: 'PlayerState'):
         other_pets = [pet for pet in player.pets if pet != fish and pet is not None]
 
-        # If there are no other pets we're done
-        if other_pets == 0: return
+        num_choose = min(len(other_pets), 2)
 
-        num_choose = 2 if len(other_pets) >= 2 else 1
         pets_to_upgrade = sample(other_pets, num_choose)
         for pet in pets_to_upgrade:
             pet.perm_increase_health(fish.get_level() - 1)
@@ -35,10 +33,8 @@ class PetAbilities:
     def beaver_ability(beaver: 'PetState', player: 'PlayerState'):
         other_pets = [pet for pet in player.pets if pet != beaver and pet is not None]
 
-        # If there are no other pets we're done
-        if other_pets == 0: return
+        num_choose = min(len(other_pets), 2)
 
-        num_choose = 2 if len(other_pets) >= 2 else 1
         pets_to_upgrade = sample(other_pets, num_choose)
         for pet in pets_to_upgrade:
             pet.perm_increase_attack(beaver.get_level())
@@ -60,10 +56,8 @@ class PetAbilities:
     def mosquito_ability(mosquito: 'PetState', player: 'PlayerState'):
         targets = player.opponent.battle_pets
 
-        # If there are no other pets we're done
-        if len(targets) == 0: return
+        num_choose = min(len(targets), mosquito.get_level())
 
-        num_choose = mosquito.get_level() if len(targets) >= mosquito.get_level() else len(targets)
         pets_to_snipe = sample(targets, num_choose)
         for pet in pets_to_snipe:
             mosquito.damage_enemy_with_ability(1, pet)
@@ -265,9 +259,8 @@ class PetAbilities:
     def penguin_ability(penguin: 'PetState', player: 'PlayerState'):
         strong_pets = [pet for pet in player.pets if pet != penguin and pet is not None and pet.get_level() >= 2]
 
-        if len(strong_pets) == 0: return
-        
-        num_choose = 2 if len(strong_pets) >= 2 else 1
+        num_choose = min(len(strong_pets), 2)
+
         pets_to_upgrade = sample(strong_pets, num_choose)
         for pet in pets_to_upgrade:
             pet.perm_increase_health(penguin.get_level())

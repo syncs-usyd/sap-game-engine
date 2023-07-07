@@ -23,7 +23,8 @@ class FoodEffects:
     def salad_bowl_effect(unused: 'PetState', player: 'PlayerState', state: 'GameState'):
         pets = [pet for pet in player.pets if pet is not None]
 
-        num_choose = 2 if len(pets) >= 2 else len(pets)
+        num_choose = min(len(pets), 2)
+
         pets_to_upgrade = sample(pets, num_choose)
         for pet in pets_to_upgrade:
             pet.perm_increase_health(1)
