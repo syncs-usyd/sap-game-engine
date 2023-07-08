@@ -80,6 +80,9 @@ class InputValidator:
         else:
             return_message += target_pet_message
 
+        if input.index_from == input.index_to:
+            return_message += "You cannot upgrade a pet using itself"
+
         return return_message
 
     @staticmethod
