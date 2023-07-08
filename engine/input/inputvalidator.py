@@ -72,13 +72,13 @@ class InputValidator:
     def _validate_upgrade_pet_from_pet(input: 'PlayerInput', player: 'PlayerState') -> str:
         return_message = ""
 
-        return_message += InputValidator._check_from_pet_index(player, input.index_from, should_be_empty = False)
+        from_pet_message = InputValidator._check_from_pet_index(player, input.index_from, should_be_empty = False)
         target_pet_message = InputValidator._check_target_pet_index(player, input.index_to, should_be_empty = False)
+        return_message += from_pet_message
+        return_message += target_pet_message
 
-        if target_pet_message == "":
-            return_message += InputValidator._check_level_up(player.pets[input.index_to])
-        else:
-            return_message += target_pet_message
+        if from_pet_message == "" and target_pet_message == "":
+            return_message += InputValidator._check_pets_for_level_up(player.pets[input.index_from], player.pets[input.index_to])
 
         if input.index_from == input.index_to:
             return_message += "You cannot upgrade a pet using itself"
@@ -89,13 +89,13 @@ class InputValidator:
     def _validate_upgrade_pet_from_shop(input: 'PlayerInput', player: 'PlayerState') -> str:
         return_message = ""
 
-        return_message += InputValidator._check_shop_pets_index_in_range(player, input.index_from)
+        shop_pet_message = InputValidator._check_shop_pets_index_in_range(player, input.index_from)
         target_pet_message = InputValidator._check_target_pet_index(player, input.index_to, should_be_empty = False)
+        return_message += shop_pet_message
+        return_message += target_pet_message
 
-        if target_pet_message == "":
-            return_message += InputValidator._check_level_up(player.pets[input.index_to])
-        else:
-            return_message += target_pet_message
+        if shop_pet_message == "" and target_pet_message == "":
+            return_message += InputValidator._check_pets_for_level_up(player.shop_pets[input.index_from], player.pets[input.index_to])
 
         return_message += InputValidator._check_sufficient_coins_for_pet(player)
 
@@ -222,8 +222,13 @@ class InputValidator:
             return ""
 
     @staticmethod
-    def _check_level_up(pet: 'PetState'):
-        if pet.get_level() == 3:
-            return "Cannot level pet up as its already the maximum level (3)\n"
-        else:
-            return ""
+    def _check_pets_for_level_up(from_pet: 'PetState', to_pet: 'PetState'):
+        return_message = ""
+
+        if from_pet.get_level() == 3 or to_pet.get_level() == 3:
+            return_message +=  "Cannot use a level 3 pet for leveling up\n"
+
+        if from_pet.pet_config.PET_NAME != to_pet.pet_config.PET_NAME:
+            return_message += "You must use two pets of the same type to level up\n"
+
+        return return_message
