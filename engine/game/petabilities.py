@@ -232,9 +232,7 @@ class PetAbilities:
     def bison_ability(bison: 'PetState', player: 'PlayerState'):
         level_3_friend = False
         for pet in player.pets:
-            if pet == None: continue
-            
-            elif pet.get_level() == 3:
+            if pet is not None and pet.get_level() == 3:
                 level_3_friend = True
                 break
             

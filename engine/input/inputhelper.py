@@ -64,8 +64,13 @@ class InputHelper:
 
         alarm(WRITE_PIPE_TIMEOUT_SECONDS) # Enable timer
         start = time()
-        self.from_engine_pipes[player.player_num].write(json)
-        self.from_engine_pipes[player.player_num].flush()
+
+        try:
+            self.from_engine_pipes[player.player_num].write(json)
+            self.from_engine_pipes[player.player_num].flush()
+        except BrokenPipeError:
+            self.output_handler.terminate_fail(TerminationType.WRITE_TIMEOUT, player)
+
         end = time()
         alarm(0) # Disable timer
 
@@ -80,8 +85,13 @@ class InputHelper:
 
         alarm(READ_PIPE_TIMEOUT_SECONDS) # Enable timer
         start = time()
-        while not json or json[-1] != ';':
-            json += self.to_engine_pipes[player.player_num].read(1)
+
+        try:
+            while not json or json[-1] != ';':
+                json += self.to_engine_pipes[player.player_num].read(1)
+        except BrokenPipeError:
+            self.output_handler.terminate_fail(TerminationType.READ_TIMEOUT, player)
+
         end = time()
         alarm(0) # Disable timer
 
