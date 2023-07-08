@@ -3,8 +3,7 @@ from typing import TYPE_CHECKING, Optional
 from engine.config.foodconfig import FOOD_CONFIG, FoodConfig
 from engine.config.foodtype import FoodType
 from engine.config.gameconfig import LEVEL_2_CUTOFF, LEVEL_3_CUTOFF, PET_BUY_COST
-from engine.config.petconfig import PET_CONFIG, PetConfig
-from engine.config.pettype import PetType
+from engine.config.petconfig import PetConfig
 from engine.game.abilitytype import AbilityType
 
 if TYPE_CHECKING:
@@ -63,16 +62,22 @@ class PetState:
             return self.sub_level
 
     def level_up(self, other_pet: 'PetState'):
-        old_level = self.get_level() 
+        old_level = self.get_level()
 
         self.sub_level += other_pet.sub_level + 1
-        max_sub_level = LEVEL_2_CUTOFF + LEVEL_3_CUTOFF
-        self.sub_level = min(self.sub_level, max_sub_level)
+        self.sub_level = min(self.sub_level, LEVEL_3_CUTOFF)
 
         new_level = self.get_level()
 
-        self.perm_increase_health(1)
-        self.perm_increase_attack(1)
+        temp_health = self._health - self._perm_health
+        temp_attack = self._attack - self._perm_attack
+        new_health = max(self._perm_health, other_pet._perm_health) + 1
+        new_attack = max(self._perm_attack, other_pet._perm_attack) + 1
+
+        self._set_perm_health(new_health)
+        self._set_perm_attack(new_attack)
+        self._set_health(new_health + temp_health)
+        self._set_attack(new_attack + temp_attack)
 
         if old_level < new_level:
             self.player.add_level_up_shop_pet()
@@ -90,19 +95,17 @@ class PetState:
 
     def perm_increase_health(self, amount: int):
         self.change_health(amount)
-        self._change_perm_health(amount)
+        self._set_perm_health(self._perm_health + amount)
 
     def perm_increase_attack(self, amount: int):
         self.change_attack(amount)
-        self._change_perm_attack(amount)
+        self._set_perm_attack(self._perm_attack + amount)
 
     def change_health(self, amount: int):
-        self._health += amount
-        self._health = min(max(0, self._health), 50)
+        self._set_health(self._health + amount)
 
     def change_attack(self, amount: int):
-        self._attack += amount
-        self._attack = min(max(0, self._attack), 50)
+        self._set_attack(self._attack + amount)
 
     def get_bonus_attack(self) -> int:
         if self.carried_food == FOOD_CONFIG[FoodType.MEAT_BONE]:
@@ -163,13 +166,17 @@ class PetState:
         if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
             self.player.battle.add_hurt_or_fainted_or_bee(self)
 
-    def _change_perm_health(self, amount: int):
-        self._perm_health += amount
-        self._perm_health = min(max(0, self._perm_health), 50)
+    def _set_health(self, health: int):
+        self._health = min(max(0, health), 50)
 
-    def _change_perm_attack(self, amount: int):
-        self._perm_attack += amount
-        self._perm_attack = min(max(0, self._perm_attack), 50)
+    def _set_attack(self, attack: int):
+        self._attack = min(max(0, attack), 50)
+
+    def _set_perm_health(self, perm_health: int):
+        self._perm_health = min(max(0, perm_health), 50)
+
+    def _set_perm_attack(self, perm_attack: int):
+        self._perm_attack = min(max(0, perm_attack), 50)
 
     def _take_damage(self, amount: int):
         if not self.is_alive(): return
