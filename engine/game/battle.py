@@ -24,17 +24,19 @@ class Battle:
         self.knockout: Optional['PetState'] = None
 
     def run(self) -> bool:
-        self.start_battle()
+        if len(self.player.battle_pets) > 0 and len(self.challenger.battle_pets) > 0:
+            self.start_battle()
+        else:
+            self.end_battle_round()
+            return
+
 
         while len(self.player.battle_pets) > 0 and len(self.challenger.battle_pets) > 0:
             self.run_attack_turn()
+        
+        self.end_battle_round()
+        
 
-        player_lost = self._determine_winner()
-        round_config = RoundConfig.get_round_config(self.state.round)
-        if player_lost:
-            self.player.health -= round_config.HEALTH_LOST
-
-        self.log.write_battle_stage_log(self.player, self.challenger, player_lost, round_config.HEALTH_LOST)
 
     def start_battle(self):
         # Set opponent + create copy of pets (player.battle_pets)
@@ -153,3 +155,11 @@ class Battle:
     def _proc_knockout(self):
         if self.knockout is not None and self.knockout.pet_config.ABILITY_TYPE == AbilityType.KNOCKOUT:
             self.knockout.pet_config.ABILITY_FUNC(self.knockout, self.knockout.player)
+
+    def end_battle_round(self):
+        player_lost = self._determine_winner()
+        round_config = RoundConfig.get_round_config(self.state.round)
+        if player_lost:
+            self.player.health -= round_config.HEALTH_LOST
+
+        self.log.write_battle_stage_log(self.player, self.challenger, player_lost, round_config.HEALTH_LOST)
