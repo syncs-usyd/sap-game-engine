@@ -23,31 +23,36 @@ class Battle:
         self.hurt_and_faint_and_bee: List['PetState'] = []
         self.knockout: Optional['PetState'] = None
 
-    def run(self) -> bool:
-        self.start_battle()
+    def run(self):
+        self._setup_battle()
 
+        # End early if one of the players has no pets
+        if len(self.player.battle_pets) == 0 or len(self.challenger.battle_pets) == 0:
+            self._end_battle()
+            return
+
+        self._run_start_battle()
         while len(self.player.battle_pets) > 0 and len(self.challenger.battle_pets) > 0:
-            self.run_attack_turn()
+            self._run_attack_turn()
 
-        player_lost = self._determine_winner()
-        round_config = RoundConfig.get_round_config(self.state.round)
-        if player_lost:
-            self.player.health -= round_config.HEALTH_LOST
+        self._end_battle()
 
-        self.log.write_battle_stage_log(self.player, self.challenger, player_lost, round_config.HEALTH_LOST)
+    def add_hurt_or_fainted_or_bee(self, pet: 'PetState'):
+        if pet not in self.hurt_and_faint_and_bee:
+            self.hurt_and_faint_and_bee.append(pet)
 
-    def start_battle(self):
+    def _setup_battle(self):
         # Set opponent + create copy of pets (player.battle_pets)
         self.player.start_battle(self.challenger)
         self.challenger.start_battle(self.player)
         self._cleanup_battle_pets()
 
+    def _run_start_battle(self):
         self._proc_battle_round_start()
         self._proc_hurt_and_faint()
-
         self._cleanup_battle_pets()
 
-    def run_attack_turn(self):
+    def _run_attack_turn(self):
         self.hurt_and_faint_and_bee = []
         self.knockout = None
 
@@ -67,9 +72,14 @@ class Battle:
 
         self._cleanup_battle_pets()
 
-    def add_hurt_or_fainted_or_bee(self, pet: 'PetState'):
-        if pet not in self.hurt_and_faint_and_bee:
-            self.hurt_and_faint_and_bee.append(pet)
+    def _end_battle(self):
+        round_config = RoundConfig.get_round_config(self.state.round)
+
+        player_lost = self._determine_winner()
+        if player_lost:
+            self.player.health -= round_config.HEALTH_LOST
+
+        self.log.write_battle_stage_log(self.player, self.challenger, player_lost, round_config.HEALTH_LOST)
 
     # Remove dead pets and empty slots
     def _cleanup_battle_pets(self):
