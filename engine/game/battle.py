@@ -73,6 +73,15 @@ class Battle:
         if pet not in self.hurt_and_faint_and_bee:
             self.hurt_and_faint_and_bee.append(pet)
 
+    def end_battle_round(self):
+        player_lost = self._determine_winner()
+        round_config = RoundConfig.get_round_config(self.state.round)
+        if player_lost:
+            self.player.health -= round_config.HEALTH_LOST
+
+        self.log.write_battle_stage_log(self.player, self.challenger, player_lost, round_config.HEALTH_LOST)
+
+
     # Remove dead pets and empty slots
     def _cleanup_battle_pets(self):
         self.player.battle_pets = [pet for pet in self.player.battle_pets if pet is not None and (pet.is_alive() or pet in self.hurt_and_faint_and_bee)]
@@ -156,10 +165,3 @@ class Battle:
         if self.knockout is not None and self.knockout.pet_config.ABILITY_TYPE == AbilityType.KNOCKOUT:
             self.knockout.pet_config.ABILITY_FUNC(self.knockout, self.knockout.player)
 
-    def end_battle_round(self):
-        player_lost = self._determine_winner()
-        round_config = RoundConfig.get_round_config(self.state.round)
-        if player_lost:
-            self.player.health -= round_config.HEALTH_LOST
-
-        self.log.write_battle_stage_log(self.player, self.challenger, player_lost, round_config.HEALTH_LOST)
