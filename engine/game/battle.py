@@ -26,7 +26,7 @@ class Battle:
     def run(self):
         self._setup_battle()
 
-        # End early if one of the players has not pets
+        # End early if one of the players has no pets
         if len(self.player.battle_pets) == 0 or len(self.challenger.battle_pets) == 0:
             self._end_battle()
             return
