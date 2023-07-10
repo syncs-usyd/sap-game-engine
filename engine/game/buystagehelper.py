@@ -83,6 +83,7 @@ class BuyStageHelper:
         if food.food_config.IS_CARRIED:
             assert pet is not None
             pet.carried_food = food.food_config
+            player.friend_ate_food(pet)
         else:
             food.food_config.EFFECT_FUNC(pet, player, self.state)
 
