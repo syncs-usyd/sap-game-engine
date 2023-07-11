@@ -76,7 +76,7 @@ class PetState:
 
         self._set_perm_health(new_health)
         self._set_perm_attack(new_attack)
-        self._set_health(new_health + temp_health)
+        self.set_health(new_health + temp_health)
         self._set_attack(new_attack + temp_attack)
 
         if old_level < new_level:
@@ -102,7 +102,7 @@ class PetState:
         self._set_perm_attack(self._perm_attack + amount)
 
     def change_health(self, amount: int):
-        self._set_health(self._health + amount)
+        self.set_health(self._health + amount)
 
     def change_attack(self, amount: int):
         self._set_attack(self._attack + amount)
