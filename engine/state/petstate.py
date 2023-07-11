@@ -76,7 +76,7 @@ class PetState:
 
         self._set_perm_health(new_health)
         self._set_perm_attack(new_attack)
-        self._set_health(new_health + temp_health)
+        self.set_health(new_health + temp_health)
         self._set_attack(new_attack + temp_attack)
 
         if old_level < new_level:
@@ -102,7 +102,7 @@ class PetState:
         self._set_perm_attack(self._perm_attack + amount)
 
     def change_health(self, amount: int):
-        self._set_health(self._health + amount)
+        self.set_health(self._health + amount)
 
     def change_attack(self, amount: int):
         self._set_attack(self._attack + amount)
@@ -127,6 +127,9 @@ class PetState:
 
     def is_alive(self) -> bool:
         return self._health > 0
+    
+    def set_health(self, health: int):
+        self._health = min(max(0, health), 50)
 
     def get_view_for_self(self) -> dict:
         return {
@@ -158,9 +161,6 @@ class PetState:
             "level": self.prev_level,
             "carried_food": self.prev_carried_food.FOOD_NAME if self.prev_carried_food is not None else None
         }
-
-    def _set_health(self, health: int):
-        self._health = min(max(0, health), 50)
 
     def _set_attack(self, attack: int):
         self._attack = min(max(0, attack), 50)
