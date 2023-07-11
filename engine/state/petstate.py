@@ -162,7 +162,6 @@ class PetState:
             "carried_food": self.prev_carried_food.FOOD_NAME if self.prev_carried_food is not None else None
         }
 
-
     def _set_attack(self, attack: int):
         self._attack = min(max(0, attack), 50)
 
