@@ -76,11 +76,11 @@ class PetAbilities:
     @staticmethod
     # Start of combat, gain 0.5L health from the healthiest friend
     def crab_ability(crab: 'PetState', player: 'PlayerState'):
-        friend_pets = [pet.get_health() for pet in player.battle_pets if pet != crab]
-        
-        if len(friend_pets) == 0: return
-        
-        highest_health = max(friend_pets, key = lambda pet: pet.get_health())
+        other_pets = [pet for pet in player.battle_pets if pet != crab and pet.is_alive()]
+
+        if len(other_pets) == 0: return
+
+        highest_health = max(other_pets, key = lambda pet: pet.get_health())
         crab.set_health(int(0.5 * highest_health * crab.get_level()))
 
     @staticmethod
