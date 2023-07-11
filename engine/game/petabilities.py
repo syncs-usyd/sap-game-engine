@@ -77,7 +77,7 @@ class PetAbilities:
     # Start of combat, gain 0.5L health from the healthiest friend
     def crab_ability(crab: 'PetState', player: 'PlayerState'):
         highest_health = max([pet.get_health() for pet in player.pets if pet != crab and pet is not None])
-        crab.change_health(int(0.5 * highest_health * crab.get_level()))
+        crab._set_health(int(0.5 * highest_health * crab.get_level()))
 
     @staticmethod
     # Start of turn (buy period), gain L gold
