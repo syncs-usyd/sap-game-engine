@@ -78,6 +78,8 @@ class PetAbilities:
     def crab_ability(crab: 'PetState', player: 'PlayerState'):
         friend_pets = [pet.get_health() for pet in player.battle_pets if pet != crab]
         
+        if len(friend_pets) == 0: return
+        
         highest_health = max(friend_pets, key = lambda pet: pet.get_health())
         crab.set_health(int(0.5 * highest_health * crab.get_level()))
 
