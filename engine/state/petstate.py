@@ -127,6 +127,9 @@ class PetState:
 
     def is_alive(self) -> bool:
         return self._health > 0
+    
+    def set_health(self, health: int):
+        self._health = min(max(0, health), 50)
 
     def get_view_for_self(self) -> dict:
         return {
@@ -166,8 +169,6 @@ class PetState:
         if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
             self.player.battle.add_hurt_or_fainted_or_bee(self)
 
-    def _set_health(self, health: int):
-        self._health = min(max(0, health), 50)
 
     def _set_attack(self, attack: int):
         self._attack = min(max(0, attack), 50)
