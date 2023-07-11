@@ -162,13 +162,6 @@ class PetState:
             "carried_food": self.prev_carried_food.FOOD_NAME if self.prev_carried_food is not None else None
         }
 
-    def on_death(self):
-        if self.pet_config.ABILITY_TYPE == AbilityType.FAINTED:
-            self.player.battle.add_hurt_or_fainted_or_bee(self)
-
-        if self.carried_food == FOOD_CONFIG[FoodType.HONEY]:
-            self.player.battle.add_hurt_or_fainted_or_bee(self)
-
 
     def _set_attack(self, attack: int):
         self._attack = min(max(0, attack), 50)
@@ -180,6 +173,8 @@ class PetState:
         self._perm_attack = min(max(0, perm_attack), 50)
 
     def _take_damage(self, amount: int):
+        # If the pet is already dead, we don't want to trigger
+        # another hurt or faint proc
         if not self.is_alive(): return
 
         if self.carried_food == FOOD_CONFIG[FoodType.GARLIC]:
@@ -187,11 +182,9 @@ class PetState:
 
         self.change_health(-amount)
 
-        if self.pet_config.ABILITY_TYPE == AbilityType.HURT:
-            self.player.battle.add_hurt_or_fainted_or_bee(self)
-
+        self.player.battle.add_hurt(self)
         if not self.is_alive():
-            self.on_death()
+            self.player.battle.add_fainted_or_bee(self)
 
     def __repr__(self) -> str:
         return f"{self.pet_config.PET_NAME}:{self.id}"
